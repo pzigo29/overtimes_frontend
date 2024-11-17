@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OvertimePageComponent } from './overtime-page.component';
+import { TitleBarComponent } from './title-bar.component';
 
-describe('OvertimePageComponent', () => {
-  let component: OvertimePageComponent;
-  let fixture: ComponentFixture<OvertimePageComponent>;
+describe('TitleBarComponent', () => {
+  let component: TitleBarComponent;
+  let fixture: ComponentFixture<TitleBarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OvertimePageComponent]
+      imports: [TitleBarComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OvertimePageComponent);
+    fixture = TestBed.createComponent(TitleBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

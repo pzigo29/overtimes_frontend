@@ -1,19 +1,119 @@
-/* You can add global styles to this file, and also import other style files */
-/*
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f4f4f4;
+  overflow-x: hidden;
 }
 
 .container {
-  max-width: 600px;
+  width: 95%;
+  height: 95%;
   margin: 50px auto;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+}
+
+
+
+.personal-data {
+  width: 100%;
+  max-width: 35%;
+  justify-content: space-between;
+  align-items: end;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 20px;
+
+  // margin: 0 auto;
+}
+
+.personal-data div {
+  width: 100%;
+  max-width: 50%;
+  padding: 5px;
+  margin: 0 auto;
+  min-width: 100px;
+  width: max-content;
+}
+
+
+.title-bar {
+  background-color: #08954c; /* Green background */
+  padding: 10px;
+  display: grid;
+  align-items: center; /* Vertically center the items */
+  // justify-content: center; /* Distribute space between items */
+  border-radius: 8px; /* Rounded corners at the top */
+  // position: relative;
+  grid-template-columns: 1fr 1fr 1fr; /* Define three columns */
+}
+
+.title-bar a {
+  display: inline-block;
+  max-width: 100%;
+  max-width: 250px;
+  align-items: center;
+  // position: relative;
+  grid-column: 1;
+}
+
+.title-image {
+  height: auto;
+  width: 100%; /* Adjust the width as needed */
+  max-width: 250px; /* Maximum width */
+  align-items: center;
+  grid-column: 1;
+}
+
+.top-title {
+  color: #fff; /* White text color */
+  text-align: center;
+  margin: 0;  
+  grid-column: 2;
+  // flex-grow: 1; /* Grow to fill the remaining space */
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -250px; /* Initially hide the sidebar */
+  width: 250px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.active {
+  right: 0; /* Show the sidebar */
+}
+
+.sidebar-content {
+  padding: 20px;
+}
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  grid-column: 3;
+  position: absolute;
+}
+
+.sidebar-toggle span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px 0;
+  background-color: #fff;
 }
 
 h2 {
@@ -35,20 +135,96 @@ input {
   box-sizing: border-box;
 }
 
-button {
-  background: #007bff;
-  color: #fff;
-  border: none;
+.low-value {
+  background-color: #ffcccc !important; /* Light red background */
+}
+
+.medium-value {
+  background-color: #ccffcc !important; /* Light green background */
+}
+
+.high-value {
+  background-color: #ffcccc !important; /* Light red background */
+}
+
+input[readonly] {
+  background-color: #e9ecef; /* Light grey background */
+  color: #6c757d; /* Grey text color */
+  border-radius: 10px;
+}
+
+.submit-btn {
+  background-color: #08954c; /* Green background */
+  color: #fff; /* White text color */
   padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  border-radius: 4px;
+  
 }
 
-button:hover {
-  background: #0056b3;
+.submit-btn:hover {
+  background-color: #0a8d46; /* Darker green */
 }
 
-h3 {
-  color: #007bff;
+@media (max-width: 430px) {
+  .container {
+    padding: 15px;
+  }
+
+  input, button {
+    font-size: 14px;
+  }
+
+  .title-image {
+    width: 50%; /* Adjust the width for smaller screens */
+    max-width: 200px; /* Maximum width for smaller screens */
+    display: none; /* Hide the image */
+  }
+
+  .title-image-link {
+    display: none; /* Hide the logo on small screens */
+  }
+
+  .personal-data {
+    width: 100%;
+    max-width: 100%;
+    justify-content: space-between;
+    align-items: end;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }
+  .sidebar-toggle {
+    display: block; /* Show the toggle button on small screens */
+  }
 }
-*/
+
+@media (min-width: 431px) {  
+    .sidebar-toggle {
+      display: none; /* Hide the toggle button on larger screens */
+    }
+    .sidebar {
+      display: none;
+    }
+    .personal-data {
+      width: 100%;
+      max-width: 35%;
+      justify-content: space-between;
+      align-items: end;
+      display: flex;
+      flex-direction: row;
+      padding-bottom: 20px;
+  
+      // margin: 0 auto;
+    }
+  
+    .personal-data div {
+      width: 100%;
+      max-width: 50%;
+      padding: 5px;
+      margin: 0 auto;
+      min-width: 100px;
+      width: max-content;
+    } 
+}

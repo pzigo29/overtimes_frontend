@@ -1,0 +1,30 @@
+.overtime-form {
+  flex: 0 0 auto; /* Prevent shrinking and growing */
+  padding: 10px;
+  box-sizing: border-box; /* Include padding in the width */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.overtime-form div {
+  padding: 10px;
+  box-sizing: border-box; /* Include padding in the width */
+  width: 100%;
+  align-items: center;
+}
+
+.div-of-form {
+  display: flex; /* Use Flexbox layout */
+  flex-direction: row; /* Arrange items in a row */
+  padding: 10px;
+  justify-content: flex-start; /* Align items to the start */
+  align-items: flex-start; /* Align items to the top */
+  overflow-x: auto; /* Allow horizontal scrolling */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.submit-btn-container {
+  display: flex;
+  justify-content: center;
+}

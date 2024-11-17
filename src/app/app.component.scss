@@ -1,0 +1,26 @@
+  nav {
+    position: relative;
+    z-index: 10; /* Ensure the nav is on top */
+    background-color: #08954c; /* Background color */
+    padding: 10px 20px; /* Padding */
+    display: flex; /* Flexbox layout */
+    justify-content: start; /* Space between items */
+    align-items: center; /* Center items vertically */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow for depth */
+  }
+  
+  nav a {
+    color: #fff; /* White text color */
+    text-decoration: none; /* Remove underline */
+    padding: 8px 16px; /* Padding for links */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition */
+  }
+  
+  nav a:hover {
+    background-color: #078644; /* Darker background on hover */
+  }
+  
+  nav a.active {
+    background-color: #078644; /* Active link background */
+  }
