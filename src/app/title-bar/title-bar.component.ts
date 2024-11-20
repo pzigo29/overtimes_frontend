@@ -1,6 +1,8 @@
 import { Component, HostListener, Inject, PLATFORM_ID, Input } from '@angular/core';
 import { OvertimeThpComponent } from '../overtime-thp/overtime-thp.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+// import { SidebarService } from '../sidebar/sidebar.service';
 
 @Component({
   selector: 'app-title-bar',
@@ -13,10 +15,14 @@ export class TitleBarComponent {
   static isSidebarActive: boolean = false;
   static isSidebarVisible: boolean = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    if (isPlatformBrowser(this.platformId)) {
-      TitleBarComponent.isSidebarVisible = window.innerWidth < 430;
-    }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router) {
+    this.updateSidebarVisibility();
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.updateSidebarVisibility();
+      }
+    });
   }
 
   @Input() title: string = 'Nadčasy R&D';
@@ -27,6 +33,10 @@ export class TitleBarComponent {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
+    this.updateSidebarVisibility();
+  }
+
+  private updateSidebarVisibility(): void {
     if (isPlatformBrowser(this.platformId)) {
       TitleBarComponent.isSidebarVisible = window.innerWidth < 430;
     }

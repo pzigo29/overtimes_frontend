@@ -11,6 +11,7 @@ import { TitleBarComponent } from "../title-bar/title-bar.component";
   styleUrl: './overtime-thp.component.scss'
 })
 export class OvertimeThpComponent {
+  title: string = 'Moje nadčasy';
   personUserName: string = 'zigopvo';
   personalNumber: string = '31216548';
   costCenter: string = '0045-1709';

@@ -1,8 +1,8 @@
 <div class="container">
-    <app-title-bar></app-title-bar>
+    <app-title-bar [title]="title"></app-title-bar>
     <div class="sidebar" [class.active]="isSidebarActive()">
         <div class="sidebar-content">
-            <div class="personal-data">
+            <div *ngIf="isSidebarVisible()" class="personal-data">
                 <div>
                     <label for="personUserName">Username:</label>
                     <input type="text" id="personUserName" name="personUserName" [(ngModel)]="personUserName" required readonly>
