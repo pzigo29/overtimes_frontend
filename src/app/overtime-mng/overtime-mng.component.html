@@ -1,3 +1,75 @@
 <div class="container">
-    <app-title-bar [title]="title + segment"></app-title-bar>
+    <app-title-bar [title]="title"></app-title-bar>
+        <form *ngIf="currentForm === 'segmentForm'" name="segmentForm" class="overtime-form">
+            <div>
+                <label for="personUserName">Username:</label>
+                <input type="text" id="personUserName" name="personUserName" [(ngModel)]="segmentManager.personUserName" required readonly>
+            </div>
+            <div>
+                <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
+                <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="segmentManager.overtimeMaxLimit" required readonly>
+            </div>
+            <div>
+                <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
+                <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="segmentManager.overtimeMinLimit" required readonly>
+            </div>
+            <div>
+                <label for="realOvertime">Reálny počet hodín:</label>
+                <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="segmentManager.realOvertime" [ngClass]="getOvertimeStatus(segmentManager)" required readonly>
+            </div>
+            <div class="submit-btn-container">
+                <button type="button" class="submit-btn" (click)="showForm('TLForm')">Zobraz tímy</button>
+            </div>
+        </form>
+
+        <div *ngIf="currentForm === 'TLForm'" class="div-of-form">
+            <form name="TLForm" *ngFor="let user of teamLeaders" class="overtime-form-tl">
+                <div>
+                    <label for="personUserName">Username:</label>
+                    <input type="text" id="personUserName" name="personUserName" [(ngModel)]="user.personUserName" required readonly>
+                </div>
+                <div>
+                    <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
+                    <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="user.overtimeMaxLimit" required readonly>
+                </div>
+                <div>
+                    <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
+                    <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="user.overtimeMinLimit" required readonly>
+                </div>
+                <div>
+                    <label for="realOvertime">Reálny počet hodín:</label>
+                    <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="user.realOvertime" [ngClass]="getOvertimeStatus(user)" required readonly>
+                </div>
+                <div class="submit-btn-container">
+                    <button type="submit" class="submit-btn" (click)="onTLButtonClick(user)">Zobraz členov tímu</button>
+                </div>
+            </form>
+            <div class="submit-btn-container">
+                <button type="submit" class="submit-btn back-btn" (click)="showForm('segmentForm')">Späť</button>
+            </div>
+        </div>
+
+        <div *ngIf="currentForm === 'THPForm'" class="div-of-form">
+            <form name="THPForm" *ngFor="let user of filteredUsers" class="overtime-form-tl">
+                <div>
+                    <label for="personUserName">Username:</label>
+                    <input type="text" id="personUserName" name="personUserName" [(ngModel)]="user.personUserName" required readonly>
+                </div>
+                <div>
+                    <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
+                    <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="user.overtimeMaxLimit" required readonly>
+                </div>
+                <div>
+                    <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
+                    <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="user.overtimeMinLimit" required readonly>
+                </div>
+                <div>
+                    <label for="realOvertime">Reálny počet hodín:</label>
+                    <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="user.realOvertime" [ngClass]="getOvertimeStatus(user)" required readonly>
+                </div>
+            </form>
+            <div class="submit-btn-container">
+                <button type="button" class="submit-btn back-btn" (click)="showForm('TLForm')">Späť</button>
+            </div>
+        </div>
 </div>

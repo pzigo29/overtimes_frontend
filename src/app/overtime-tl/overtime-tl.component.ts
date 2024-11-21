@@ -12,6 +12,17 @@ import { User } from '../models/user.model';
   styleUrl: './overtime-tl.component.scss'
 })
 export class OvertimeTLComponent {
+  segmentManager: User = {
+    personUserName: 'lasjra',
+    personalNumber: '312165481',
+    costCenter: '0045-1709',
+    overtimeMaxLimit: 200,
+    overtimeMinLimit: 30,
+    realOvertime: 120.54,
+    teamLeader: null,
+    segmentManager: null
+  };
+  
   users: User[] = [
     {
       personUserName: 'zigopvo',
@@ -19,7 +30,9 @@ export class OvertimeTLComponent {
       costCenter: '0045-1709',
       overtimeMaxLimit: 40,
       overtimeMinLimit: 5,
-      realOvertime: 10.46
+      realOvertime: 10.46,
+      teamLeader: null,
+      segmentManager: this.segmentManager
     },
     {
       personUserName: 'roskovld',
@@ -27,7 +40,9 @@ export class OvertimeTLComponent {
       costCenter: '0045-1710',
       overtimeMaxLimit: 35,
       overtimeMinLimit: 4,
-      realOvertime: 3.18
+      realOvertime: 3.18,
+      teamLeader: null,
+      segmentManager: this.segmentManager
     },
     {
       personUserName: 'murcosmu',
@@ -35,7 +50,9 @@ export class OvertimeTLComponent {
       costCenter: '0045-1710',
       overtimeMaxLimit: 10,
       overtimeMinLimit: 0,
-      realOvertime: 0.21
+      realOvertime: 0.21,
+      teamLeader: null,
+      segmentManager: this.segmentManager
     },
     {
       personUserName: 'pilcmre',
@@ -43,9 +60,13 @@ export class OvertimeTLComponent {
       costCenter: '0045-1710',
       overtimeMaxLimit: 12,
       overtimeMinLimit: 3,
-      realOvertime: 1.21
+      realOvertime: 1.21,
+      teamLeader: null,
+      segmentManager: this.segmentManager
     }
   ];
+
+  
   
   title: string = 'Môj tím';
 

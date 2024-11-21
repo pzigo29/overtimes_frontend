@@ -5,4 +5,6 @@ export interface User {
     overtimeMaxLimit: number;
     overtimeMinLimit: number;
     realOvertime: number;
+    teamLeader: User | null;
+    segmentManager: User | null;
   }

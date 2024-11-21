@@ -1,0 +1,46 @@
+.overtime-form {
+    width: 100%;
+    max-width: 50%;
+    justify-content: center;
+    align-items: center;
+    // display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .overtime-form-tl {
+    flex: 0 0 auto; /* Prevent shrinking and growing */
+    padding: 10px;
+    box-sizing: border-box; /* Include padding in the width */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+  }
+  
+  .overtime-form-tl div {
+    padding: 10px;
+    box-sizing: border-box; /* Include padding in the width */
+    width: 100%;
+    align-items: center;
+  }
+  
+  .div-of-form {
+    display: flex; /* Use Flexbox layout */
+    flex-direction: row; /* Arrange items in a row */
+    padding: 10px;
+    justify-content: flex-start; /* Align items to the start */
+    align-items: flex-start; /* Align items to the top */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    white-space: nowrap; /* Prevent wrapping */
+    position: relative;
+  }
+
+  .back-btn {
+    position: absolute;
+    right: 10px;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    // margin-left: auto;
+  }
