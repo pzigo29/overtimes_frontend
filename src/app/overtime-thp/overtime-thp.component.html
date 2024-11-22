@@ -1,0 +1,58 @@
+<div class="container">
+    <app-title-bar [title]="title"></app-title-bar>
+    <div class="sidebar" [class.active]="isSidebarActive()">
+        <div class="sidebar-content">
+            <div *ngIf="isSidebarVisible()" class="personal-data">
+                <div>
+                    <label for="personUserName">Username:</label>
+                    <input type="text" id="personUserName" name="personUserName" [(ngModel)]="personUserName" required readonly>
+                </div>
+                <div>
+                    <label for="personalNumber">Personal Number:</label>
+                    <input type="text" id="personalNumber" name="personalNumber" [(ngModel)]="personalNumber" required readonly>
+                </div>
+                <div>
+                    <label for="costCenter">Nákladové stredisko:</label>
+                    <input type="text" id="costCenter" name="costCenter" [(ngModel)]="costCenter" required readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!isSidebarVisible()" class="personal-data">
+        <div>
+            <label for="personUserName">Username:</label>
+            <input type="text" id="personUserName" name="personUserName" [(ngModel)]="personUserName" required readonly>
+        </div>
+        <div>
+            <label for="personalNumber">Personal Number:</label>
+            <input type="text" id="personalNumber" name="personalNumber" [(ngModel)]="personalNumber" required readonly>
+        </div>
+        <div>
+            <label for="costCenter">Nákladové stredisko:</label>
+            <input type="text" id="costCenter" name="costCenter" [(ngModel)]="costCenter" required readonly>
+        </div>
+    </div>
+    <div class="overtime-form">
+        <form (ngSubmit)="calculateHoursToLimit()" >
+            
+            <div>
+                <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
+                <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="overtimeMaxLimit" required readonly>
+            </div>
+            <div>
+                <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
+                <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="overtimeMinLimit" required readonly>
+            </div>
+            <div>
+                <label for="realOvertime">Reálny počet hodín:</label>
+                <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="realOvertime" [ngClass]="getOvertimeStatus()" required readonly>
+            </div>
+
+            <!-- <button type="submit">Vypočítať zostatok do maxima</button> -->
+
+        </form>
+    </div>
+    <div *ngIf="hoursToLimit != null">
+        <h3>Zostávajúce hodiny do maxima: {{ hoursToLimit }}</h3>
+    </div>
+</div>

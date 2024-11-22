@@ -1,0 +1,100 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TitleBarComponent } from '../title-bar/title-bar.component';
+import { User } from '../models/user.model';
+
+@Component({
+  selector: 'app-overtime-tl',
+  standalone: true,
+  imports: [CommonModule, TitleBarComponent, FormsModule],
+  templateUrl: './overtime-tl.component.html',
+  styleUrl: './overtime-tl.component.scss'
+})
+export class OvertimeTLComponent {
+  teamLeader: User = {
+    personUserName: 'mrenmchl',
+    firstName: 'Michal',
+    lastName: 'Mrena',
+    personalNumber: '312165481',
+    costCenter: '0045-1709',
+    overtimeMaxLimit: 200,
+    overtimeMinLimit: 50,
+    realOvertime: 98.54,
+    manager: null,
+    dSegment: '2'
+  };
+  
+  users: User[] = [
+    {
+      personUserName: 'zigopvo',
+      firstName: '',
+      lastName: '',
+      personalNumber: '312165481',
+      costCenter: '0045-1709',
+      overtimeMaxLimit: 40,
+      overtimeMinLimit: 5,
+      realOvertime: 10.46,
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
+    },
+    {
+      personUserName: 'roskovld',
+      firstName: '',
+      lastName: '',
+      personalNumber: '12345678',
+      costCenter: '0045-1710',
+      overtimeMaxLimit: 35,
+      overtimeMinLimit: 4,
+      realOvertime: 3.18,
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
+    },
+    {
+      personUserName: 'murcosmu',
+      firstName: '',
+      lastName: '',
+      personalNumber: '3012115842',
+      costCenter: '0045-1710',
+      overtimeMaxLimit: 10,
+      overtimeMinLimit: 0,
+      realOvertime: 0.21,
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
+    },
+    {
+      personUserName: 'pilcmre',
+      firstName: '',
+      lastName: '',
+      personalNumber: '3012116442',
+      costCenter: '0045-1710',
+      overtimeMaxLimit: 12,
+      overtimeMinLimit: 3,
+      realOvertime: 1.21,
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
+    }
+  ];
+
+  
+  
+  title: string = 'Môj tím';
+
+  isSidebarActive(): boolean {
+    return TitleBarComponent.isSidebarActive;
+  }
+
+  isSidebarVisible(): boolean {
+    return TitleBarComponent.isSidebarVisible;
+  }
+
+  getOvertimeStatus(user: User): string {
+    if (user.realOvertime < user.overtimeMinLimit) {
+      return 'low-value';
+    } else if (user.realOvertime + (user.overtimeMaxLimit * 0.1) > user.overtimeMaxLimit) {
+      return 'high-value';
+    } else {
+      return 'medium-value';
+    }
+  }
+}
