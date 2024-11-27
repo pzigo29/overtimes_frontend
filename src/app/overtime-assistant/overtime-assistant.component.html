@@ -1,8 +1,76 @@
 <div class="container">
     <app-title-bar [title]="title"></app-title-bar>
-
+    <div *ngIf="!isSidebarVisible()">
+    <div class="filter-btn-container">
+        <button (click)="toggleFilters()" class="submit-btn">{{showFilters ? 'Skry filtre' : 'Zobraz filtre'}}</button>
+        <button (click)="resetFilters()" class="submit-btn" *ngIf="showFilters">Zmaž filtre</button>
+    </div> 
+        <div class="filter-container" *ngIf="showFilters">
+            <div class="overtime-form">
+                <div class="filter">
+                  <!-- <label for="filter-select">Limity: </label> -->
+                  <select class="filter-select" name="filter-select" id="filter-select" [(ngModel)]="filter">
+                    <option value="all" selected>Všetko</option>
+                    <option value="overtime-in-limit">Splnené limity</option>
+                    <option value="overtime-off-limit">Nesplnené limity</option>
+                  </select>
+                </div>
+             </div>
+            <div class="input-filters overtime-form">
+                <div class="filter">
+                  <label for="personalNumber">Osobné číslo: </label>
+                  <input type="text" id="personalNumber" [(ngModel)]="personalNumber">
+                </div>
+                <div class="filter">
+                  <label for="manager">Nadriadený: </label>
+                  <input type="text" id="manager" [(ngModel)]="manager">
+                </div>
+                <div class="filter">
+                  <label for="dSegment">D - segment: </label>
+                  <input type="text" id="dSegment" [(ngModel)]="dSegment">
+                </div>
+                <div class="filter">
+                  <label for="username">Prihlasovacie meno: </label>
+                  <input type="text" id="username" [(ngModel)]="username">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar" [class.active]="isSidebarActive()">
+        <div class="filter-btn-container">
+            <button (click)="resetFilters()" class="submit-btn">Zmaž filtre</button>
+        </div>
+        <div class="overtime-form">
+            <div class="filter">
+              <!-- <label for="filter-select">Limity: </label> -->
+              <select class="filter-select" name="filter-select" id="filter-select" [(ngModel)]="filter">
+                <option value="all" selected>Všetko</option>
+                <option value="overtime-in-limit">Splnené limity</option>
+                <option value="overtime-off-limit">Nesplnené limity</option>
+              </select>
+            </div>
+        </div>
+        <div class="input-filters overtime-form">
+            <div class="filter">
+              <label for="personalNumber">Osobné číslo: </label>
+              <input type="text" id="personalNumber" [(ngModel)]="personalNumber">
+            </div>
+            <div class="filter">
+              <label for="manager">Nadriadený: </label>
+              <input type="text" id="manager" [(ngModel)]="manager">
+            </div>
+            <div class="filter">
+              <label for="dSegment">D - segment: </label>
+              <input type="text" id="dSegment" [(ngModel)]="dSegment">
+            </div>
+            <div class="filter">
+              <label for="username">Prihlasovacie meno: </label>
+              <input type="text" id="username" [(ngModel)]="username">
+            </div>
+        </div>
+    </div>
     <div class="div-of-form">
-        <form *ngFor="let user of users" class="overtime-form">
+        <form *ngFor="let user of filterUsers()" class="overtime-form">
             <div>
                 <label for="personUserName">Username:</label>
                 <input type="text" id="personUserName" name="personUserName" [(ngModel)]="user.personUserName" required readonly>

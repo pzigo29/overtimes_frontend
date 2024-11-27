@@ -17,7 +17,47 @@ body {
   
 }
 
+.filter-btn-container {
+  display: flex;
+  justify-content: left;
+  padding: 10px;
+}
 
+.filter-btn-container button {
+  margin: 10px;
+}
+
+.filter-select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 10px;
+  // appearance: none; /* Remove default arrow */
+  // background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="#333" d="M2 0L0 2h4z"/></svg>');
+  // background-repeat: no-repeat;
+  // background-position: right 10px center;
+  // background-size: 10px;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: row;
+  max-width: fit-content;
+}
+
+.input-filters {
+  display: flex;
+  flex-direction: row;
+}
+
+.filter input{
+  border-radius: 8px;
+}
 
 .personal-data {
   width: 100%;
@@ -206,6 +246,11 @@ input[readonly] {
   }
   .sidebar-toggle {
     display: block; /* Show the toggle button on small screens */
+  }
+
+  .input-filters {
+    display: flex;
+    flex-direction: column;
   }
 }
 
