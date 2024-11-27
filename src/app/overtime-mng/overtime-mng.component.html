@@ -22,7 +22,9 @@
             </div>
         </form>
 
+        <h3 *ngIf="currentForm === 'TLForm'" class="header-TL">Team Leaders</h3>
         <div *ngIf="currentForm === 'TLForm'" class="div-of-form">
+            
             <form name="TLForm" *ngFor="let user of teamLeaders" class="overtime-form-tl">
                 <div>
                     <label for="personUserName">Username:</label>
@@ -45,10 +47,11 @@
                 </div>
             </form>
             <div class="submit-btn-container">
-                <button type="submit" class="submit-btn back-btn" (click)="showForm('segmentForm')">Späť</button>
+                <button type="button" class="submit-btn back-btn" (click)="showForm('segmentForm')">Späť</button>
             </div>
         </div>
 
+        <h3 *ngIf="currentForm === 'THPForm'" class="header-TL">{{filterTL?.firstName + ' ' + filterTL?.lastName}}</h3>
         <div *ngIf="currentForm === 'THPForm'" class="div-of-form">
             <form name="THPForm" *ngFor="let user of filteredUsers" class="overtime-form-tl">
                 <div>

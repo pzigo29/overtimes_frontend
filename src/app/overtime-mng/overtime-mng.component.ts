@@ -20,78 +20,92 @@ export class OvertimeMngComponent {
 
   segmentManager: User = {
     personUserName: 'lasjra',
+    firstName: 'Juraj',
+    lastName: 'Laš',
     personalNumber: '312165481',
     costCenter: '0045-1709',
     overtimeMaxLimit: 200,
     overtimeMinLimit: 50,
     realOvertime: 98.54,
-    teamLeader: null,
-    segmentManager: null
+    manager: null,
+    dSegment: '2'
   };
   
   teamLeaders: User[] = [
     {
       personUserName: 'mrenmchl',
+      firstName: 'Michal',
+      lastName: 'Mrena',
       personalNumber: '312655481',
       costCenter: '0045-1709',
       overtimeMaxLimit: 60,
       overtimeMinLimit: 15,
       realOvertime: 16.54,
-      teamLeader: null,
-      segmentManager: this.segmentManager
+      manager: this.segmentManager,
+      dSegment: this.segmentManager.dSegment
     },
     {
-      personUserName: 'zimorvo',
+      personUserName: 'ziakrmn',
+      firstName: 'Roman',
+      lastName: 'Žiak',
       personalNumber: '12345678',
       costCenter: '0045-1710',
       overtimeMaxLimit: 50,
       overtimeMinLimit: 10,
       realOvertime: 52.20,
-      teamLeader: null,
-      segmentManager: this.segmentManager
+      manager: this.segmentManager,
+      dSegment: this.segmentManager.dSegment
     }
   ];
     
   users: User[] = [
     {
       personUserName: 'zigopvo',
+      firstName: '',
+      lastName: '',
       personalNumber: '312165481',
       costCenter: '0045-1709',
       overtimeMaxLimit: 40,
       overtimeMinLimit: 5,
       realOvertime: 10.46,
-      teamLeader: this.teamLeaders.find(tl => tl.personUserName === 'mrenmchl') || null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeaders.find(tl => tl.personUserName === 'mrenmchl') || null,
+      dSegment: this.segmentManager.dSegment
     },
     {
       personUserName: 'roskovld',
+      firstName: '',
+      lastName: '',
       personalNumber: '12345678',
       costCenter: '0045-1710',
       overtimeMaxLimit: 35,
       overtimeMinLimit: 4,
       realOvertime: 3.18,
-      teamLeader: this.teamLeaders.find(tl => tl.personUserName === 'mrenmchl') || null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeaders.find(tl => tl.personUserName === 'mrenmchl') || null,
+      dSegment: this.segmentManager.dSegment
     },
     {
       personUserName: 'murcosmu',
+      firstName: '',
+      lastName: '',
       personalNumber: '3012115842',
       costCenter: '0045-1710',
       overtimeMaxLimit: 10,
       overtimeMinLimit: 0,
       realOvertime: 0.21,
-      teamLeader: this.teamLeaders.find(tl => tl.personUserName === 'zimorvo') || null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeaders.find(tl => tl.personUserName === 'ziakrmn') || null,
+      dSegment: this.segmentManager.dSegment
     },
     {
       personUserName: 'pilcmre',
+      firstName: '',
+      lastName: '',
       personalNumber: '3012116442',
       costCenter: '0045-1710',
       overtimeMaxLimit: 12,
       overtimeMinLimit: 3,
       realOvertime: 1.21,
-      teamLeader: this.teamLeaders.find(tl => tl.personUserName === 'zimorvo') || null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeaders.find(tl => tl.personUserName === 'ziakrmn') || null,
+      dSegment: this.segmentManager.dSegment
     }
   ];
 
@@ -102,13 +116,13 @@ export class OvertimeMngComponent {
   }
 
   get filteredUsers() {
-    return this.users.filter(user => user.teamLeader === this.filterTL)
+    return this.users.filter(user => user.manager === this.filterTL)
   }
 
   onTLButtonClick(user: User) {
     this.setFilter(user);
     this.showForm('THPForm');
-    this.title = 'Tím: ' + this.filterTL?.personUserName;
+    // this.title = 'Tím: ' + this.filterTL?.personUserName;
     }
 
   sumOvertimeMaxLimits(users: User[]): number {

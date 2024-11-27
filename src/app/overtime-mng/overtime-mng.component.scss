@@ -1,4 +1,4 @@
-.overtime-form {
+  .overtime-form {
     width: 100%;
     max-width: 50%;
     justify-content: center;
@@ -7,6 +7,9 @@
     flex-direction: column;
     padding: 20px;
     margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px auto;
   }
 
   .overtime-form-tl {
@@ -36,11 +39,7 @@
     position: relative;
   }
 
-  .back-btn {
-    position: absolute;
-    right: 10px;
-    top: auto;
-    bottom: auto;
-    left: auto;
-    // margin-left: auto;
+  .header-TL {
+    text-align: center;
+    padding: 10px;
   }

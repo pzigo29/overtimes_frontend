@@ -163,6 +163,15 @@ input[readonly] {
   
 }
 
+.back-btn {
+  position: absolute;
+  right: 10px;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  // margin-left: auto;
+}
+
 .submit-btn:hover {
   background-color: #0a8d46; /* Darker green */
 }

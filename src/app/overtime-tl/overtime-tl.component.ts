@@ -12,57 +12,67 @@ import { User } from '../models/user.model';
   styleUrl: './overtime-tl.component.scss'
 })
 export class OvertimeTLComponent {
-  segmentManager: User = {
-    personUserName: 'lasjra',
+  teamLeader: User = {
+    personUserName: 'mrenmchl',
+    firstName: 'Michal',
+    lastName: 'Mrena',
     personalNumber: '312165481',
     costCenter: '0045-1709',
     overtimeMaxLimit: 200,
-    overtimeMinLimit: 30,
-    realOvertime: 120.54,
-    teamLeader: null,
-    segmentManager: null
+    overtimeMinLimit: 50,
+    realOvertime: 98.54,
+    manager: null,
+    dSegment: '2'
   };
   
   users: User[] = [
     {
       personUserName: 'zigopvo',
+      firstName: '',
+      lastName: '',
       personalNumber: '312165481',
       costCenter: '0045-1709',
       overtimeMaxLimit: 40,
       overtimeMinLimit: 5,
       realOvertime: 10.46,
-      teamLeader: null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
     },
     {
       personUserName: 'roskovld',
+      firstName: '',
+      lastName: '',
       personalNumber: '12345678',
       costCenter: '0045-1710',
       overtimeMaxLimit: 35,
       overtimeMinLimit: 4,
       realOvertime: 3.18,
-      teamLeader: null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
     },
     {
       personUserName: 'murcosmu',
+      firstName: '',
+      lastName: '',
       personalNumber: '3012115842',
       costCenter: '0045-1710',
       overtimeMaxLimit: 10,
       overtimeMinLimit: 0,
       realOvertime: 0.21,
-      teamLeader: null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
     },
     {
       personUserName: 'pilcmre',
+      firstName: '',
+      lastName: '',
       personalNumber: '3012116442',
       costCenter: '0045-1710',
       overtimeMaxLimit: 12,
       overtimeMinLimit: 3,
       realOvertime: 1.21,
-      teamLeader: null,
-      segmentManager: this.segmentManager
+      manager: this.teamLeader,
+      dSegment: this.teamLeader.dSegment
     }
   ];
 
