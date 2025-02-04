@@ -1,27 +1,138 @@
 <div class="container">
     <app-title-bar [title]="title"></app-title-bar>
-        <div class="div-of-form">
-            <form *ngFor="let user of users" class="overtime-form">
-                <div>
-                    <label for="personUserName">Username:</label>
-                    <input type="text" id="personUserName" name="personUserName" [(ngModel)]="user.personUserName" required readonly>
-                </div>
-                <div>
-                    <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
-                    <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="user.overtimeMaxLimit" required >
-                </div>
-                <div>
-                    <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
-                    <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="user.overtimeMinLimit" required >
-                </div>
-                <div>
-                    <label for="realOvertime">Reálny počet hodín:</label>
-                    <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="user.realOvertime" [ngClass]="getOvertimeStatus(user)" required readonly>
-                </div>
-                <div class="submit-btn-container">
-                    <button type="submit" class="submit-btn">Uložiť</button>
-                </div>
-            </form>
+    <div class="top-right-div" *ngIf="shownSite[1]">
+        <app-user-filters></app-user-filters>
+        <button class="submit-btn" (click)="showSite('')">Späť</button>
+    </div>
+    <div class="top-right-div" *ngIf="shownSite[2]">
+        <div></div>
+        <button class="submit-btn" (click)="showSite('team')">Späť</button>
+    </div>
+    
+    <div class="row-aligned">
+        <app-months-table></app-months-table>
+        <div class="overtime-form-row" *ngIf="shownSite[0] && !loading">
+            <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
+                <thead>
+                    <tr>
+                        <th>Sumár</th>
+                        <th>Minimálny limit</th>
+                        <th>Maximálny limit</th>
+                        <th>Reálne hodiny nadčasov</th>
+                        <th>Komentár od Manažéra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Môj Tím</td>
+                        <td><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
+                        <td><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
+                        <!-- <td></td> -->
+                        <td [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                        <td><!--{{commentMng}}--></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="centered-div">
+                <button class="submit-btn" (click)="showSite('team')">Zobraz členov tímu</button>
+            </div>
         </div>
+        <div *ngIf="loading" class="overtime-form-row">Loading...</div>
+        <div class="overtime-form-row" *ngIf="!loading && shownSite[1]">
+            <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
+                <thead>
+                    <tr>
+                        <th>Zamestnanec</th>
+                        <th>Minimálny limit</th>
+                        <th>Maximálny limit</th>
+                        <th>Reálne hodiny nadčasov</th>
+                        <th>Dôvod</th>
+                        <th>Schválené</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let member of team">
+                        <td (dblclick)="showSite('team/detail/{{member.username}}')" (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.first_name}} {{member?.last_name}}</td>
+                        <td><input type="number" [ngModel]="teamMinLimits.get(member.username)" (ngModelChange)="teamMinLimits.set(member.username, $event)" min="0" step="0.5"></td>
+                        <td><input type="number" [ngModel]="teamMaxLimits.get(member.username)" (ngModelChange)="teamMaxLimits.set(member.username, $event)" min="0" step="0.5"></td>
+                        <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
+                        <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
+                        <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
+                    </tr>
+                    <tr >
+                        <td class="light-green" style="font-weight: bold;">Sumár</td>
+                        <td class="light-green"><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
+                        <td class="light-green"><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
+                        <!-- <td></td> -->
+                        <td class="light-green" [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                        <td class="light-green"><!--{{commentMng}}--></td>
+                        <td class="light-green"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="overtime-form-col centered-div" *ngIf="shownSite[2]">
+            <table class="excel-table limits-table">
+                <thead>
+                    <tr>
+                        <th colspan="2">{{selectedEmployee?.first_name}} {{selectedEmployee?.last_name}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Minimálny limit</td>
+                        <td><input type="number" [ngModel]="teamMinLimits.get(selectedEmployee?.username || '')" (ngModelChange)="teamMinLimits.set(selectedEmployee?.username || '', $event)" min="0" step="0.5"></td>
+                    </tr>
+                    <tr>
+                        <td>Maximálny limit</td>
+                        <td><input type="number" [ngModel]="teamMaxLimits.get(selectedEmployee?.username || '')" (ngModelChange)="teamMaxLimits.set(selectedEmployee?.username || '', $event)" min="0" step="0.5"></td>
+                    </tr>
+                    <tr>
+                        <td>Reálne hodiny nadčasov</td>
+                        <td [ngClass]="selectedEmployee ? getOvertimeStatus(selectedEmployee) : ''">{{teamRealOvertimes.get(selectedEmployee?.username || '')}}</td>
+                    </tr>
+                    <tr>
+                        <td>HO hodiny</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Office hodiny</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Dôvod</td>
+                        <td>Nič zatiaľ</td>
+                    </tr>
+                    <tr>
+                        <td>Schválené</td>
+                        <td><input type="checkbox" name="approved" id="approved" disabled></td>
+                    </tr>
+                    <tr>
+                        <td>Žiadosť o zmenu</td>
+                        <td><input type="checkbox" name="changeRequest" id="changeRequest" disabled></td>
+                    </tr>
+                    <!-- <tr>
+                        <td><button class="submit-btn">Odhad zamestnanca</button></td>
+                        <td><button class="submit-btn">Ulož zmeny</button></td>
+                    </tr> -->
+                    <!-- <tr>
+                            <table>
+                                <tr>
+                                    <td><button class="submit-btn">Odhad zamestnanca</button></td>
+                                    <td><button class="submit-btn">Ulož zmeny</button></td>
+                                </tr>
+                            </table>
+                    </tr> -->
+                </tbody>
+            </table>
+            <div class="button-container">
+                <button class="submit-btn">Odhad zamestnanca</button>
+                <button class="submit-btn">Ulož zmeny</button>
+            </div>
+        </div>
+    </div> 
+    <div class="bottom-right-div" *ngIf="shownSite[1]">
+        <button class="submit-btn">Ulož zmeny</button>
+    </div>   
 </div>
 

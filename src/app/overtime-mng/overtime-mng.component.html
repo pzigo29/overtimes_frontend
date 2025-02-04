@@ -23,6 +23,7 @@
         </form>
 
         <h3 *ngIf="currentForm === 'TLForm'" class="header-TL">Team Leaders</h3>
+        <app-user-filters *ngIf="currentForm === 'TLForm'"></app-user-filters>
         <div *ngIf="currentForm === 'TLForm'" class="div-of-form">
             
             <form name="TLForm" *ngFor="let user of teamLeaders" class="overtime-form-tl">

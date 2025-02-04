@@ -1,20 +1,18 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { TitleBarComponent } from '../title-bar/title-bar.component';
+import { UserFilterService } from '../services/user-filter.service';
+import { User } from '../models/data.model';
 import { FormsModule } from '@angular/forms';
-import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { User } from "../models/data.model"
-import { UserFilterService } from "../services/user-filter.service";
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { CommonModule } from '@angular/common';
+import { Component, Input, numberAttribute, booleanAttribute } from '@angular/core'; 
 
 @Component({
-  selector: 'app-overtime-assistant',
+  selector: 'app-user-filters',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent],
-  templateUrl: './overtime-assistant.component.html',
-  styleUrl: './overtime-assistant.component.scss'
+  imports: [FormsModule, CommonModule],
+  templateUrl: './user-filters.component.html',
+  styleUrl: './user-filters.component.scss'
 })
-export class OvertimeAssistantComponent {
-  title: string = 'Nadčasy R&D';
+export class UserFiltersComponent {
 
   managerDemo: User = {
     personUserName: 'lasjra',
@@ -116,43 +114,8 @@ export class OvertimeAssistantComponent {
     }
   ];
 
-  
-  getOvertimeStatus(user: User): string {
-    if (user.realOvertime < user.overtimeMinLimit) {
-      return 'low-value';
-    } else if (user.realOvertime + (user.overtimeMaxLimit * 0.1) > user.overtimeMaxLimit) {
-      return 'high-value';
-    } else {
-      return 'medium-value';
-    }
-  }
-  
-  // userFilterComponent: UserFiltersComponent;
-  // users: User[];
-
-  // newUser: User = {
-  //   personUserName: 'janono',
-  //   firstName: '',
-  //   lastName: '',
-  //   personalNumber: '312165489',
-  //   costCenter: '0045-1709',
-  //   overtimeMaxLimit: 40,
-  //   overtimeMinLimit: 5,
-  //   realOvertime: 10.46,
-  //   manager: null,
-  //   dSegment: '3'
-  // };
-
   constructor(private userFilterService: UserFilterService) { }
-  // constructor() {
-  //   this.userFilterComponent = new UserFiltersComponent(new UserFilterService);
-  //   this.users = this.userFilterComponent.users;
-    
-  //   this.users.push(this.newUser);
-  // }
-
   
-
   filter: string = 'all';
   personalNumber: string | null = null;
   manager: User | null = null;
@@ -171,8 +134,6 @@ export class OvertimeAssistantComponent {
     this.dSegment = null;
     this.username = null;
   }
-
-  
 
   filterUsers(): User[] {
     let filteredUsers = this.users;
@@ -200,9 +161,6 @@ export class OvertimeAssistantComponent {
     }
 
     return filteredUsers;
-    // this.users = this.userFilterComponent.filterUsers();
-    // this.userFilterComponent.filter = this.filter;
-    // return this.userFilterComponent.filterUsers();
   }
 
   isSidebarActive(): boolean {
@@ -212,5 +170,13 @@ export class OvertimeAssistantComponent {
   isSidebarVisible(): boolean {
     return TitleBarComponent.isSidebarVisible;
   }
+
+
+
+
+
+  
+
+
 
 }

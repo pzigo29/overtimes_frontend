@@ -1,58 +1,78 @@
 <div class="container">
     <app-title-bar [title]="title"></app-title-bar>
-    <div class="sidebar" [class.active]="isSidebarActive()">
-        <div class="sidebar-content">
-            <div *ngIf="isSidebarVisible()" class="personal-data">
-                <div>
-                    <label for="personUserName">Username:</label>
-                    <input type="text" id="personUserName" name="personUserName" [(ngModel)]="personUserName" required readonly>
+    
+    <div >
+        <div class="wf-btn">
+            <button class="submit-btn">Zobraz WF</button>
+        </div>
+        <div class="sidebar" [class.active]="isSidebarActive()">
+            <div class="sidebar-content">
+                <div *ngIf="isSidebarVisible()">
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Osobné číslo</th>
+                                <th>Nákladové stredisko</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{employee?.personal_number}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
+                                <td>{{employee?.cost_center}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div>
-                    <label for="personalNumber">Personal Number:</label>
-                    <input type="text" id="personalNumber" name="personalNumber" [(ngModel)]="personalNumber" required readonly>
-                </div>
-                <div>
-                    <label for="costCenter">Nákladové stredisko:</label>
-                    <input type="text" id="costCenter" name="costCenter" [(ngModel)]="costCenter" required readonly>
-                </div>
+            </div>
+        </div>
+        <div class="row-aligned">
+            <div *ngIf="!isSidebarVisible() " class="personal-data">
+                <table class="excel-table personal-data-table">
+                    <thead>
+                        <tr>
+                            <th>Osobné číslo</th>
+                            <th>Nákladové stredisko</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{employee?.personal_number}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
+                            <td>{{employee?.cost_center}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="row-aligned">
+            <app-months-table></app-months-table>
+            <div *ngIf="loading" class="overtime-form-row">Loading...</div>
+            <div class="overtime-form-row" *ngIf="!loading">
+                <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
+                    <thead>
+                        <tr>
+                            <th>Zamestnanec</th>
+                            <th>Minimálny limit</th>
+                            <th>Maximálny limit</th>
+                            <th>Reálne hodiny nadčasov</th>
+                            <th>Dôvod</th>
+                            <th>Schválené</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{employee?.first_name}} {{employee?.last_name}}</td>
+                            <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5"></td>
+                            <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5"></td>
+                            <td [ngClass]="getOvertimeStatus()">{{realOvertime}}</td>
+                            <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
+                            <td><input type="checkbox" [(ngModel)]="approved" disabled></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <div *ngIf="!isSidebarVisible()" class="personal-data">
-        <div>
-            <label for="personUserName">Username:</label>
-            <input type="text" id="personUserName" name="personUserName" [(ngModel)]="personUserName" required readonly>
-        </div>
-        <div>
-            <label for="personalNumber">Personal Number:</label>
-            <input type="text" id="personalNumber" name="personalNumber" [(ngModel)]="personalNumber" required readonly>
-        </div>
-        <div>
-            <label for="costCenter">Nákladové stredisko:</label>
-            <input type="text" id="costCenter" name="costCenter" [(ngModel)]="costCenter" required readonly>
-        </div>
-    </div>
-    <div class="overtime-form">
-        <form (ngSubmit)="calculateHoursToLimit()" >
-            
-            <div>
-                <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
-                <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="overtimeMaxLimit" required readonly>
-            </div>
-            <div>
-                <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
-                <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="overtimeMinLimit" required readonly>
-            </div>
-            <div>
-                <label for="realOvertime">Reálny počet hodín:</label>
-                <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="realOvertime" [ngClass]="getOvertimeStatus()" required readonly>
-            </div>
-
-            <!-- <button type="submit">Vypočítať zostatok do maxima</button> -->
-
-        </form>
-    </div>
-    <div *ngIf="hoursToLimit != null">
-        <h3>Zostávajúce hodiny do maxima: {{ hoursToLimit }}</h3>
-    </div>
+    
+    
 </div>

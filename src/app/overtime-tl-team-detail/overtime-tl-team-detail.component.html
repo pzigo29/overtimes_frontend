@@ -1,0 +1,70 @@
+<div class="container">
+    <app-title-bar [title]="title"></app-title-bar>
+    <div class="top-right-div">
+        <div></div>
+        <button class="submit-btn" (click)="showSite('tl/team')">Späť</button>
+    </div>
+    <div class="row-aligned">
+        <app-months-table></app-months-table>
+        <div class="overtime-form-col centered-div">
+            <table class="excel-table limits-table">
+                <thead>
+                    <tr>
+                        <th colspan="2">{{selectedEmployee?.first_name}} {{selectedEmployee?.last_name}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Minimálny limit</td>
+                        <td><input type="number" [(ngModel)]="minLimit" min="0" step="0.5"></td>
+                    </tr>
+                    <tr>
+                        <td>Maximálny limit</td>
+                        <td><input type="number" [(ngModel)]="maxLimit" min="0" step="0.5"></td>
+                    </tr>
+                    <tr>
+                        <td>Reálne hodiny nadčasov</td>
+                        <td [ngClass]="selectedEmployee ? getOvertimeStatus(selectedEmployee) : ''">{{realOvertime}}</td>
+                    </tr>
+                    <tr>
+                        <td>HO hodiny</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Office hodiny</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Dôvod</td>
+                        <td>Nič zatiaľ</td>
+                    </tr>
+                    <tr>
+                        <td>Schválené</td>
+                        <td><input type="checkbox" name="approved" id="approved" disabled></td>
+                    </tr>
+                    <tr>
+                        <td>Žiadosť o zmenu</td>
+                        <td><input type="checkbox" name="changeRequest" id="changeRequest" disabled></td>
+                    </tr>
+                    <!-- <tr>
+                        <td><button class="submit-btn">Odhad zamestnanca</button></td>
+                        <td><button class="submit-btn">Ulož zmeny</button></td>
+                    </tr> -->
+                    <!-- <tr>
+                            <table>
+                                <tr>
+                                    <td><button class="submit-btn">Odhad zamestnanca</button></td>
+                                    <td><button class="submit-btn">Ulož zmeny</button></td>
+                                </tr>
+                            </table>
+                    </tr> -->
+                </tbody>
+            </table>
+            <div class="button-container">
+                <button class="submit-btn">Odhad zamestnanca</button>
+                <button class="submit-btn">Ulož zmeny</button>
+            </div>
+        </div>
+    </div>
+    
+</div>

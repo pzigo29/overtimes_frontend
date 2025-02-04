@@ -38,7 +38,7 @@ export class TitleBarComponent {
 
   private updateSidebarVisibility(): void {
     if (isPlatformBrowser(this.platformId)) {
-      TitleBarComponent.isSidebarVisible = window.innerWidth < 430;
+      TitleBarComponent.isSidebarVisible = window.innerWidth < 470;
     }
   }
 }

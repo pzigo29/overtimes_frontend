@@ -1,0 +1,44 @@
+<div class="container">
+    <app-title-bar [title]="title"></app-title-bar>
+    <div class="top-right-div">
+        <app-user-filters></app-user-filters>
+        <button class="submit-btn" (click)="showSite('tl')">Späť</button>
+    </div>
+    <div class="row-aligned">
+        <app-months-table></app-months-table>
+    <div *ngIf="loading" class="overtime-form-row">Loading...</div>
+    <div class="overtime-form-row" *ngIf="!loading">
+        <table class="excel-table limits-table" id="limits-table">
+            <thead>
+                <tr>
+                    <th>Zamestnanec</th>
+                    <th>Minimálny limit</th>
+                    <th>Maximálny limit</th>
+                    <th>Reálne hodiny nadčasov</th>
+                    <th>Dôvod</th>
+                    <th>Schválené</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let member of team">
+                    <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.first_name}} {{member?.last_name}}</td>
+                    <td><input type="number" [ngModel]="teamMinLimits.get(member.username)" (ngModelChange)="teamMinLimits.set(member.username, $event)" min="0" step="0.5"></td>
+                    <td><input type="number" [ngModel]="teamMaxLimits.get(member.username)" (ngModelChange)="teamMaxLimits.set(member.username, $event)" min="0" step="0.5"></td>
+                    <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
+                    <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
+                    <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
+                </tr>
+                <tr >
+                    <td class="light-green" style="font-weight: bold;">Sumár</td>
+                    <td class="light-green"><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
+                    <td class="light-green"><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
+                    <!-- <td></td> -->
+                    <td class="light-green" [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                    <td class="light-green"><!--{{commentMng}}--></td>
+                    <td class="light-green"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    

@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { User } from "../models/user.model"
+import { User } from "../models/data.model"
+import { UserFiltersComponent } from "../user-filters/user-filters.component";
 
 @Component({
   selector: 'app-overtime-rnd',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule],
+  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent],
   templateUrl: './overtime-rnd.component.html',
   styleUrl: './overtime-rnd.component.scss'
 })

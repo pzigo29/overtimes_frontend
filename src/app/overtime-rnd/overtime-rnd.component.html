@@ -1,6 +1,6 @@
 <div class="container">
     <app-title-bar [title]="title"></app-title-bar>
-
+    
 
     <div *ngIf="currentForm === 'RnDForm' && isFormOpen" class="collapsible" >
         <form name="RnDForm" class="overtime-form">
@@ -28,7 +28,11 @@
     <div *ngFor="let user of segmentManagers">
         <h3  *ngIf="!isFormOpen">Segment D{{user.dSegment}}</h3>
     </div>
-    <div *ngIf="currentForm === 'segmentForm' && isFormOpen"  >
+    <app-user-filters *ngIf="currentForm === 'segmentForm' && isFormOpen"></app-user-filters>
+    <div *ngIf="currentForm === 'segmentForm' && isFormOpen" class="div-of-segments" >
+        <div class="submit-btn-container">
+            <button type="button" class="submit-btn back-btn" (click)="showForm('RnDForm')">Späť</button>
+        </div>
         <form name="segmentForm" *ngFor="let user of segmentManagers" class="overtime-form">
             <h3>Segment D{{user.dSegment}}</h3>
             <div>
@@ -51,13 +55,12 @@
                 <button type="button" class="submit-btn" (click)="showForm('TLForm')">Zobraz tímy</button>
             </div>
         </form>
-        <div class="submit-btn-container">
-            <button type="button" class="submit-btn back-btn" (click)="showForm('RnDForm')">Späť</button>
-        </div>
+        
     </div>
 
 
     <h3 *ngIf="currentForm === 'TLForm'" class="header-TL">Team Leaders</h3>
+    <app-user-filters *ngIf="currentForm === 'TLForm' && isFormOpen"></app-user-filters>
     <div *ngIf="currentForm === 'TLForm'" class="div-of-form">
         
         <form name="TLForm" *ngFor="let user of teamLeaders" class="overtime-form-tl">
@@ -88,7 +91,11 @@
 
 
     <h3 *ngIf="currentForm === 'THPForm'" class="header-TL">{{filterTL?.firstName + ' ' + filterTL?.lastName}}</h3>
+    <app-user-filters *ngIf="currentForm === 'THPForm' && isFormOpen"></app-user-filters>
     <div *ngIf="currentForm === 'THPForm'" class="div-of-form">
+        <div class="submit-btn-container">
+            <button type="button" class="submit-btn back-btn" (click)="showForm('TLForm')">Späť</button>
+        </div>
         <form name="THPForm" *ngFor="let user of filteredUsers" class="overtime-form-tl">
             <div>
                 <label for="personUserName">Username:</label>
@@ -107,8 +114,6 @@
                 <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="user.realOvertime" [ngClass]="getOvertimeStatus(user)" required readonly>
             </div>
         </form>
-        <div class="submit-btn-container">
-            <button type="button" class="submit-btn back-btn" (click)="showForm('TLForm')">Späť</button>
-        </div>
+        
     </div>
 </div>
