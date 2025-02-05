@@ -5,11 +5,12 @@ import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { Employee, Overtime, OvertimeLimit } from '../models/data.model';
 import { DataService } from '../services/data.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-overtime-thp',
   standalone: true,
-  imports: [FormsModule, CommonModule, TitleBarComponent, MonthsTableComponent],
+  imports: [FormsModule, CommonModule, TitleBarComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-thp.component.html',
   styleUrl: './overtime-thp.component.scss'
 })

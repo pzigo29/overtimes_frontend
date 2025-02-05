@@ -7,17 +7,18 @@ import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-overtime-tl',
   standalone: true,
-  imports: [CommonModule, TitleBarComponent, FormsModule, UserFiltersComponent, MonthsTableComponent],
+  imports: [CommonModule, TitleBarComponent, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-tl.component.html',
   styleUrl: './overtime-tl.component.scss'
 })
 export class OvertimeTLComponent {
 
-  title: string = 'Môj tím';
+  title: string = 'TL';
   team: Employee[] = [];
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
   teamMinLimits: Map<string, number> = new Map<string, number>();

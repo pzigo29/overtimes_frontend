@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { Employee } from '../models/data.model';
 import { DataService } from '../services/data.service';
@@ -7,83 +7,90 @@ import { NgModel } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MonthsTableComponent } from "../months-table/months-table.component";
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-overtime-tl-team-detail',
   standalone: true,
-  imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent],
+  imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-tl-team-detail.component.html',
   styleUrl: './overtime-tl-team-detail.component.scss'
 })
-export class OvertimeTLTeamDetailComponent {
-  title: string = 'Detail zamestnanca';
+export class OvertimeTLTeamDetailComponent implements OnInit {
+  title: string = 'TL-TEAM-DETAIL';
   selectedEmployee?: Employee;
   minLimit: number = 0;
   maxLimit: number = 0;
   realOvertime: number = 0;
   selectedMonth: Date = new Date();
 
-  constructor(private dataService: DataService, private router: Router) 
-  {
-    
-  }
+  constructor(private dataService: DataService, private router: Router) {}
 
-  ngOnInit(): void
-  {
-    let username = '';
-    this.dataService.getUsername().subscribe(
-      (data: string) => {
-        username = data;
-      }
-    );
-    this.dataService.selectedMonth$.subscribe(
-      (data: Date) => {
-        this.selectedMonth = data;
-        this.setData();
-      }
-    );
+  ngOnInit(): void {
+    const savedEmployee = localStorage.getItem('selectedEmployee');
+    if (savedEmployee) {
+      this.selectedEmployee = JSON.parse(savedEmployee);
+      console.log('Loaded employee from local storage:', this.selectedEmployee);
+      this.setData();
+    }
+
     this.dataService.getSelectedEmployee().subscribe(
       (data: Employee | undefined) => {
         this.selectedEmployee = data;
-        this.setData();
-        
+        if (data) {
+          localStorage.setItem('selectedEmployee', JSON.stringify(data));
+          console.log('Saved employee to local storage:', data);
+          this.setData();
+        } else {
+          console.log('No employee data received');
+        }
       },
       (error: any) => {
         console.error('Error fetching employee', error);
       }
     );
+
+    this.dataService.selectedMonth$.subscribe(
+      (data: Date) => {
+        this.selectedMonth = data;
+        if (this.selectedEmployee) {
+          this.setData();
+        } else {
+          console.log('No selected employee to set data for');
+        }
+      }
+    );
   }
 
-  setData(): void
-  {
-    if (this.selectedEmployee === undefined) {
-      throw new Error('Employee undefined');
+  selectEmployee(employee: Employee): void {
+    this.selectedEmployee = employee;
+    localStorage.setItem('selectedEmployee', JSON.stringify(employee));
+    console.log('Selected employee:', employee);
+    this.setData();
+  }
+
+  setData(): void {
+    if (!this.selectedEmployee) {
+      console.error('Employee is undefined');
+      return;
     }
+    console.log('Setting data for employee:', this.selectedEmployee);
     this.minLimit = this.dataService.getMinLimit(this.selectedEmployee.employee_id, this.selectedMonth);
     this.maxLimit = this.dataService.getMaxLimit(this.selectedEmployee.employee_id, this.selectedMonth);
     this.realOvertime = this.dataService.getSumOvertime(this.selectedEmployee.employee_id, this.selectedMonth);
   }
 
-  getOvertimeStatus(employee: Employee): string 
-  {
-    //console.log('Overtime status: ', this.realOvertime);
-    
-    if ((this.realOvertime) < (this.minLimit)) {
+  getOvertimeStatus(employee: Employee): string {
+    if (this.realOvertime < this.minLimit) {
       return 'low-value';
-    } else if ((this.realOvertime + (this.maxLimit * 0.1) > (this.maxLimit))) {
+    } else if (this.realOvertime + (this.maxLimit * 0.1) > this.maxLimit) {
       return 'high-value';
     } else {
       return 'medium-value';
     }
   }
 
-  showSite(site: string): void
-  {
-    // for (let i = 0; i < this.shownSite.length; i++)
-    // {
-    //   this.shownSite[i] = false;
-    // }
-    // this.shownSite[site] = true;
+  showSite(site: string): void {
     this.router.navigate([`${site}`]);
   }
 }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,45 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'overtimes_frontend';
+  currentLang: string = 'sk';
+  constructor(private translate: TranslateService)
+  {
+    this.translate.addLangs(['en', 'sk', 'de']);
+    this.translate.setDefaultLang('sk');
+
+    if (typeof localStorage !== 'undefined')
+    {
+      const savedLang = localStorage.getItem('lang') || this.translate.getBrowserLang();
+      this.currentLang = savedLang?.match(/en|sk|de/) ? savedLang : 'sk';
+      this.translate.use(savedLang?.match(/en|sk|de/) ? savedLang : 'sk');
+    } 
+    else 
+    {
+      const savedLang = this.translate.getBrowserLang();
+      this.currentLang = savedLang?.match(/en|sk|de/) ? savedLang : 'sk';
+      this.translate.use(savedLang?.match(/en|sk|de/) ? savedLang : 'sk');
+    }
+  }
+
+  // changeLanguage(event: Event)
+  // {
+  //   const lang = (event.target as HTMLSelectElement).value;
+  //   this.translate.use(lang);
+  //   this.currentLang = lang;
+  //   if (typeof localStorage !== 'undefined')
+  //   {
+  //     localStorage.setItem('lang', lang);
+  //   }
+  // }
+
+  changeLanguage(event: Event, lang: string)
+  {
+    event.preventDefault();
+    this.translate.use(lang);
+    this.currentLang = lang;
+    if (typeof localStorage !== 'undefined')
+    {
+      localStorage.setItem('lang', lang);
+    }
+  }
 }

@@ -4,11 +4,12 @@ import { User } from '../models/data.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Component, Input, numberAttribute, booleanAttribute } from '@angular/core'; 
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-filters',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, TranslateModule],
   templateUrl: './user-filters.component.html',
   styleUrl: './user-filters.component.scss'
 })

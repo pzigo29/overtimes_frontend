@@ -13,7 +13,7 @@ export const routes: Routes = [
   { path: 'thp', component: OvertimeThpComponent },
   { path: 'tl', component: OvertimeTLComponent },
   { path: 'tl/team', component: OvertimeTLTeamComponent },
-  { path: 'tl/team/detail/:username', component: OvertimeTLTeamDetailComponent },
+  { path: 'tl/team/detail', component: OvertimeTLTeamDetailComponent },
   { path: 'mng', component: OvertimeMngComponent },
   { path: 'rnd', component: OvertimeRndComponent },
   { path: 'assistant', component: OvertimeAssistantComponent }

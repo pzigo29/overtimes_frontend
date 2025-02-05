@@ -48,12 +48,12 @@ export class DataService {
     {
       employee_id: 2,
       personal_number: '31211308',
-      username: 'zigo29',
+      username: 'kralmln',
       level_role: 5,
       manager_id: 3,
       cost_center: '1234-5679',
-      first_name: 'Palo',
-      last_name: 'Žigoho',
+      first_name: 'Milan',
+      last_name: 'Kráľ',
       email: 'zigopvo@schaeffler.com',
       employed: true,
       approver: false
@@ -61,12 +61,12 @@ export class DataService {
     {
       employee_id: 3,
       personal_number: '36511308',
-      username: 'japrvy',
+      username: 'rechjoz',
       level_role: 2,
       manager_id: null,
       cost_center: '1234-5679',
-      first_name: 'Pivo',
-      last_name: 'Živo',
+      first_name: 'Jozef',
+      last_name: 'Rechtorík',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
@@ -201,7 +201,7 @@ export class DataService {
 
   // const os = require('os');
   // const username = os.userInfo().username;
-  mngUsername: string = 'japrvy'; // toto sa bude načítavať z windowsu
+  mngUsername: string = 'rechjoz'; // toto sa bude načítavať z windowsu
   selectedEmployee?: Employee;
 
   constructor() { }

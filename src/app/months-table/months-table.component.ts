@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../services/data.service';
 import { Observable } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-months-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './months-table.component.html',
   styleUrl: './months-table.component.scss'
 })
@@ -27,6 +28,14 @@ export class MonthsTableComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching months', error);
+      }
+    );
+    this.dataService.selectedMonth$.subscribe(
+      (data: Date) => {
+        this.selectedMonth = data;
+      },
+      (error: any) => {
+        console.error('Error fetching selected month', error);
       }
     );
   }

@@ -1,0 +1,39 @@
+{
+    "BUTTON": {
+        "SAVE-CHANGES": "Ulož zmeny",
+        "BACK": "Späť",
+        "SHOW-TEAM-MEMBERS": "Zobraz členov tímu",
+        "HIDE": "Skry",
+        "SHOW": "Zobraz",
+        "FILTERS": "filtre",
+        "DELETE": "Zmaž",
+        "EMPLOYEE-ESTIMATE": "Odhad zamestnanca"
+    },
+
+    "SUMMARY": "Sumár",
+    "MONTH": "Mesiac",
+    "EMPLOYEE": "Zamestnanec",
+    "MIN-LIMIT": "Minimálny limit",
+    "MAX-LIMIT": "Maximálny limit",
+    "REAL-OVERTIMES": "Reálne hodiny nadčasov",
+    "REASON": "Dôvod",
+    "APPROVED": "Schválené",
+
+    "LIMITS": {
+        "ALL": "Všetky limity",
+        "FULFILLED": "Splnené limity",
+        "NOT-FULFILLED": "Nesplnené limity"
+    },
+
+    "PERSONAL-NUMBER": "Osobné číslo",
+    "SUPERIOR": "Nadriadený",
+    "D-SEGMENT": "D-segment",
+    "USERNAME": "Používateľské meno",
+    "TITLE": {
+        "TL-TEAM-DETAIL": "Detail zamestnanca",
+        "TL": "Môj tím"
+    },
+
+    "OVERTIME-RULES": "Pravidlá pre nadčasy"
+        
+}

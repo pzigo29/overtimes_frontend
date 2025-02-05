@@ -1,8 +1,8 @@
 <div class="container">
-    <app-title-bar [title]="title"></app-title-bar>
+    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
     <div class="top-right-div">
         <app-user-filters></app-user-filters>
-        <button class="submit-btn" (click)="showSite('tl')">Späť</button>
+        <button class="submit-btn" (click)="showSite('tl')">{{'BUTTON.BACK' | translate}}</button>
     </div>
     <div class="row-aligned">
         <app-months-table></app-months-table>
@@ -11,12 +11,12 @@
         <table class="excel-table limits-table" id="limits-table">
             <thead>
                 <tr>
-                    <th>Zamestnanec</th>
-                    <th>Minimálny limit</th>
-                    <th>Maximálny limit</th>
-                    <th>Reálne hodiny nadčasov</th>
-                    <th>Dôvod</th>
-                    <th>Schválené</th>
+                    <th>{{'EMPLOYEE' | translate}}</th>
+                    <th>{{'MIN-LIMIT' | translate}}</th>
+                    <th>{{'MAX-LIMIT' | translate}}</th>
+                    <th>{{'REAL-OVERTIMES' | translate}}</th>
+                    <th>{{'REASON' | translate}}</th>
+                    <th>{{'APPROVED' | translate}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,7 +29,7 @@
                     <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
                 </tr>
                 <tr >
-                    <td class="light-green" style="font-weight: bold;">Sumár</td>
+                    <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>
                     <td class="light-green"><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
                     <td class="light-green"><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
                     <!-- <td></td> -->
@@ -40,5 +40,8 @@
             </tbody>
         </table>
     </div>
+    <div class="bottom-right-div">
+        <button class="submit-btn">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+    </div> 
 </div>
     

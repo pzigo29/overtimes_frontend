@@ -7,17 +7,18 @@ import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-overtime-tl-team',
   standalone: true,
-  imports: [FormsModule, CommonModule, TitleBarComponent, UserFiltersComponent, MonthsTableComponent],
+  imports: [FormsModule, CommonModule, TitleBarComponent, UserFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-tl-team.component.html',
   styleUrl: './overtime-tl-team.component.scss'
 })
 export class OvertimeTLTeamComponent {
 
-  title: string = 'Môj tím';
+  title: string = 'TL';
   // selectedEmployee?: Employee;
   leader?: Employee;
   team: Employee[] = [];
@@ -100,7 +101,7 @@ export class OvertimeTLTeamComponent {
   selectEmployee(employee: Employee): void
   {
     // this.selectedEmployee = employee;
-    this.router.navigate([`tl/team/detail/${employee.username}`]);
+    this.router.navigate(['tl/team/detail']);
     this.dataService.setSelectedEmployee(employee.username);
   }
 

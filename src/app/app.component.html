@@ -6,5 +6,40 @@
   <a href="/rnd">Overtime R&D</a>
   <a href="/assistant">Overtime Assistant</a>
 </nav> -->
+<!-- <div>
+  <select [value]="currentLang" (change)="changeLanguage($event)">
+    <option value="sk">Slovenčina</option>
+    <option value="en">English</option>
+    <option value="de">Deutsch</option>
+  </select>
+</div> -->
+<!-- <div class="language-selector">
+  <button (click)="changeLanguage($event)" title="English" [value]="'en'">
+    <i class="fas fa-language"></i> EN
+  </button>
+  <button (click)="changeLanguage($event)" title="Slovenčina" [value]="'sk'">
+    <i class="fas fa-flag"></i> SK
+  </button>
+  <button (click)="changeLanguage($event)" title="Deutsch" [value]="'de'">
+    <i class="fas fa-flag-ge"></i> DE
+  </button>
+</div> -->
+<div class="dropdown">
+  <button class="drop-btn">
+    <i class="fas fa-language"></i>
+  </button>
+  <div class="dropdown-content">
+    <a href="#" (click)="changeLanguage($event, 'en')">
+      English
+    </a>
+    <a href="#" (click)="changeLanguage($event, 'sk')">
+      Slovenčina
+    </a>
+    <a href="#" (click)="changeLanguage($event, 'de')">
+      Deutsch
+    </a>
+  </div>
+</div>
+
+
 <router-outlet></router-outlet>
-<!-- <app-overtime-tl></app-overtime-tl> -->
