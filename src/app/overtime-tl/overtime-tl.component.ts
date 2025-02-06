@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
@@ -6,7 +6,7 @@ import { Employee } from '../models/data.model';
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './overtime-tl.component.html',
   styleUrl: './overtime-tl.component.scss'
 })
-export class OvertimeTLComponent {
+export class OvertimeTLComponent implements OnInit {
 
   title: string = 'TL';
   team: Employee[] = [];
@@ -32,16 +32,18 @@ export class OvertimeTLComponent {
   loading: boolean = true;
   selectedMonth: Date = new Date();
   selectedEmployee?: Employee;
-
-  shownSite: boolean[] = [true, false]; //teamSummary, teamMembers
+  sourceSite: string | null = null;
+  // shownSite: boolean[] = [true, false]; //teamSummary, teamMembers
   
-  constructor(private dataService: DataService, private router: Router) 
-  {
-    
-  }
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) 
+  { }
 
   ngOnInit(): void 
     {
+      this.route.queryParams.subscribe(params => {
+        this.sourceSite = params['source'];
+        console.log('source: ', this.sourceSite);
+      });
       let username = '';
       this.dataService.getUsername().subscribe(
         (data: string) => {
@@ -132,7 +134,7 @@ export class OvertimeTLComponent {
     //   this.shownSite[i] = false;
     // }
     // this.shownSite[site] = true;
-    this.router.navigate([`/tl/${site}`]);
+    this.router.navigate([site]);
   }
 
   selectEmployee(employee: Employee): void

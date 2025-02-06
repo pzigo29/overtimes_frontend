@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
     <app-title-bar [title]="title"></app-title-bar>
         <form *ngIf="currentForm === 'segmentForm'" name="segmentForm" class="overtime-form">
             <div>
@@ -76,4 +76,37 @@
                 <button type="button" class="submit-btn back-btn" (click)="showForm('TLForm')">Späť</button>
             </div>
         </div>
+</div> -->
+
+<div class="container">
+    <app-title-bar [title]="('TITLE.' + title | translate) + segment"></app-title-bar>    
+    <div class="row-aligned">
+        <app-months-table></app-months-table>
+        <div class="overtime-form-row" *ngIf="!loading">
+            <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
+                <thead>
+                    <tr>
+                        <th>{{'SUMMARY' | translate}}</th>
+                        <th>{{'MIN-LIMIT' | translate}}</th>
+                        <th>{{'MAX-LIMIT' | translate}}</th>
+                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <th>{{'MNG-RND-COMMENT' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{'TITLE.' + title | translate}}{{segment}}</td>
+                        <td><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
+                        <td><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
+                        <!-- <td></td> -->
+                        <td [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                        <td><!--{{commentMng}}--></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="centered-div">
+                <button class="submit-btn" (click)="showSite('mng/teams')">{{'BUTTON.SHOW-TEAMS' | translate}}</button>
+            </div>
+        </div>
+        <div *ngIf="loading" class="overtime-form-row">Loading...</div> 
 </div>

@@ -50,7 +50,7 @@ export class DataService {
       personal_number: '31211308',
       username: 'kralmln',
       level_role: 5,
-      manager_id: 3,
+      manager_id: 5,
       cost_center: '1234-5679',
       first_name: 'Milan',
       last_name: 'Kráľ',
@@ -62,11 +62,37 @@ export class DataService {
       employee_id: 3,
       personal_number: '36511308',
       username: 'rechjoz',
-      level_role: 2,
-      manager_id: null,
+      level_role: 4,
+      manager_id: 4,
       cost_center: '1234-5679',
       first_name: 'Jozef',
       last_name: 'Rechtorík',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: true
+    },
+    {
+      employee_id: 4,
+      personal_number: '36841308',
+      username: 'roskmln',
+      level_role: 2,
+      manager_id: null,
+      cost_center: '1234-5679',
+      first_name: 'Milan',
+      last_name: 'Roško',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: true
+    },
+    {
+      employee_id: 5,
+      personal_number: '36841708',
+      username: 'vrabarn',
+      level_role: 4,
+      manager_id: 4,
+      cost_center: '1234-5679',
+      first_name: 'Arnold',
+      last_name: 'Vrabko',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
@@ -201,7 +227,8 @@ export class DataService {
 
   // const os = require('os');
   // const username = os.userInfo().username;
-  mngUsername: string = 'rechjoz'; // toto sa bude načítavať z windowsu
+  mngUsername: string = 'roskmln'; // toto sa bude načítavať z windowsu
+  // mngUsername: string = 'rechjoz';
   selectedEmployee?: Employee;
 
   constructor() { }
@@ -283,6 +310,101 @@ export class DataService {
       return 0;
     }
     return limit;
+  }
+
+  getMinLimitTeam(manager_id: number, month: Date): Map<string, number>
+  {
+    let team: Employee[] = this.employees.filter(x => x.manager_id === manager_id);
+    let teamMinLimits: Map<string, number> = new Map();
+    team.forEach(member => {
+
+      let subordinates: Employee[] = this.employees.filter(x => x.manager_id === member.employee_id);
+      if (subordinates.length > 0)
+      {
+        let subMinLimits: Map<string, number> = this.getMinLimitTeam(member.employee_id, month);
+        subMinLimits.forEach((value, key) => {
+          teamMinLimits.set(key, value);
+        });
+      }
+      else
+      {
+        teamMinLimits.set(member.username, this.getMinLimit(member.employee_id, month));
+      }      
+    });
+    return teamMinLimits;
+  }
+
+  getMaxLimitTeam(manager_id: number, month: Date): Map<string, number>
+  {
+    let team: Employee[] = this.employees.filter(x => x.manager_id === manager_id);
+    let teamMaxLimits: Map<string, number> = new Map();
+    team.forEach(member => {
+      let subordinates: Employee[] = this.employees.filter(x => x.manager_id === member.employee_id);
+      if (subordinates.length > 0)
+      {
+        let subMaxLimits: Map<string, number> = this.getMaxLimitTeam(member.employee_id, month);
+        subMaxLimits.forEach((value, key) => {
+          teamMaxLimits.set(key, value);
+        });
+      }
+      else
+      {
+        teamMaxLimits.set(member.username, this.getMaxLimit(member.employee_id, month));
+      }
+    });
+    return teamMaxLimits;
+  }
+
+  getSumOvertimeTeam(manager_id: number, month: Date): Map<string, number>
+  {
+    let team: Employee[] = this.employees.filter(x => x.manager_id === manager_id);
+    let teamRealOvertimes: Map<string, number> = new Map();
+    team.forEach(member => {
+      let subordinates: Employee[] = this.employees.filter(x => x.manager_id === member.employee_id);
+      if (subordinates.length > 0)
+      {
+        let subRealOvertimes: Map<string, number> = this.getSumOvertimeTeam(member.employee_id, month);
+        subRealOvertimes.forEach((value, key) => {
+          teamRealOvertimes.set(key, value);
+        });
+      }
+      else
+      {
+        teamRealOvertimes.set(member.username, this.getSumOvertime(member.employee_id, month)); // ak sa má zaratávať aj TL, len to dať preč z else
+      }
+    });
+    // console.log('Team real overtimes: ', teamRealOvertimes);
+    return teamRealOvertimes;
+  }
+
+  getMinLimitTeamSum(manager_id: number, month: Date): number
+  {
+    let teamMinLimits: Map<string, number> = this.getMinLimitTeam(manager_id, month);
+    let sum: number = 0;
+    teamMinLimits.forEach((value, key) => {
+      sum += value;
+    });
+    return sum;
+  }
+
+  getMaxLimitTeamSum(manager_id: number, month: Date): number
+  {
+    let teamMaxLimits: Map<string, number> = this.getMaxLimitTeam(manager_id, month);
+    let sum: number = 0;
+    teamMaxLimits.forEach((value, key) => {
+      sum += value;
+    });
+    return sum;
+  }
+
+  getSumOvertimeTeamSum(manager_id: number, month: Date): number
+  {
+    let teamRealOvertimes: Map<string, number> = this.getSumOvertimeTeam(manager_id, month);
+    let sum: number = 0;
+    teamRealOvertimes.forEach((value, key) => {
+      sum += value;
+    });
+    return sum;
   }
 
   getApproval(limit_id: number): boolean

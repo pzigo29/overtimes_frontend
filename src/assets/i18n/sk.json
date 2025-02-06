@@ -3,6 +3,7 @@
         "SAVE-CHANGES": "Ulož zmeny",
         "BACK": "Späť",
         "SHOW-TEAM-MEMBERS": "Zobraz členov tímu",
+        "SHOW-TEAMS": "Zobraz tímy",
         "HIDE": "Skry",
         "SHOW": "Zobraz",
         "FILTERS": "filtre",
@@ -13,11 +14,14 @@
     "SUMMARY": "Sumár",
     "MONTH": "Mesiac",
     "EMPLOYEE": "Zamestnanec",
+    "TEAM": "Tím",
     "MIN-LIMIT": "Minimálny limit",
     "MAX-LIMIT": "Maximálny limit",
     "REAL-OVERTIMES": "Reálne hodiny nadčasov",
     "REASON": "Dôvod",
     "APPROVED": "Schválené",
+    "MNG-COMMENT": "Komentár od manažéra",
+    "MNG-RND-COMMENT": "Komentár od manažéra RnD",
 
     "LIMITS": {
         "ALL": "Všetky limity",
@@ -31,7 +35,8 @@
     "USERNAME": "Používateľské meno",
     "TITLE": {
         "TL-TEAM-DETAIL": "Detail zamestnanca",
-        "TL": "Môj tím"
+        "TL": "Môj tím",
+        "SEGMENT": "Segment D"
     },
 
     "OVERTIME-RULES": "Pravidlá pre nadčasy"

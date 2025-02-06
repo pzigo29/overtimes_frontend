@@ -1,5 +1,10 @@
 <div class="container">
-    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>    
+    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
+    <div class="top-right-div" *ngIf="sourceSite === '/mng/teams'">
+        <!-- <app-user-filters></app-user-filters> -->
+        <div></div>
+        <button class="submit-btn" (click)="showSite('/mng/teams')">{{'BUTTON.BACK' | translate}}</button>
+    </div>
     <div class="row-aligned">
         <app-months-table></app-months-table>
         <div class="overtime-form-row" *ngIf="!loading">
@@ -10,7 +15,7 @@
                         <th>{{'MIN-LIMIT' | translate}}</th>
                         <th>{{'MAX-LIMIT' | translate}}</th>
                         <th>{{'REAL-OVERTIMES' | translate}}</th>
-                        <th>Komentár od Manažéra</th>
+                        <th>{{'MNG-COMMENT' | translate}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,7 +30,7 @@
                 </tbody>
             </table>
             <div class="centered-div">
-                <button class="submit-btn" (click)="showSite('team')">{{'BUTTON.SHOW-TEAM-MEMBERS' | translate}}</button>
+                <button class="submit-btn" (click)="showSite('tl/team')">{{'BUTTON.SHOW-TEAM-MEMBERS' | translate}}</button>
             </div>
         </div>
         <div *ngIf="loading" class="overtime-form-row">Loading...</div> 

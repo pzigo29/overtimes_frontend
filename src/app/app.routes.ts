@@ -2,6 +2,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { OvertimeThpComponent } from './overtime-thp/overtime-thp.component';
 import { OvertimeTLComponent } from './overtime-tl/overtime-tl.component';
 import { OvertimeMngComponent } from './overtime-mng/overtime-mng.component';
+import { OvertimeMngTeamsComponent } from './overtime-mng-teams/overtime-mng-teams.component';
 import { OvertimeRndComponent } from './overtime-rnd/overtime-rnd.component';
 import { OvertimeAssistantComponent } from './overtime-assistant/overtime-assistant.component';
 import { OvertimeTLTeamComponent } from './overtime-tl-team/overtime-tl-team.component';
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'tl/team', component: OvertimeTLTeamComponent },
   { path: 'tl/team/detail', component: OvertimeTLTeamDetailComponent },
   { path: 'mng', component: OvertimeMngComponent },
+  { path: 'mng/teams', component: OvertimeMngTeamsComponent },
   { path: 'rnd', component: OvertimeRndComponent },
   { path: 'assistant', component: OvertimeAssistantComponent }
 ];
