@@ -63,7 +63,7 @@ export class OvertimeRndSegmentsComponent implements OnInit {
         );
         if (this.rndManager != undefined)
         {
-          this.dataService.getTeamMembers(this.rndManager.employee_id).subscribe(
+          this.dataService.getSegmentManagers(this.rndManager.employee_id).subscribe(
             (data: Employee[]) =>
             {
               this.managers = data;

@@ -1,130 +1,128 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { User } from "../models/data.model"
+import { Employee, User } from "../models/data.model"
 import { UserFilterService } from "../services/user-filter.service";
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { MonthsTableComponent } from "../months-table/months-table.component";
+import { TranslateModule } from '@ngx-translate/core';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-overtime-assistant',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent],
+  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-assistant.component.html',
   styleUrl: './overtime-assistant.component.scss'
 })
-export class OvertimeAssistantComponent {
-  title: string = 'Nadčasy R&D';
+export class OvertimeAssistantComponent implements OnInit{
+  title: string = 'RND';
+  loading: boolean = true;
+  isTableVisible: boolean = true;
+  employees: Employee[] = [];
+  employeesRealOvertimes: Map<string, number> = new Map<string, number>();
+  employeesMinLimits: Map<string, number> = new Map<string, number>();
+  employeesMaxLimits: Map<string, number> = new Map<string, number>();
+  assistant?: Employee;
+  selectedMonth: Date = new Date();
+  // realOvertimeSum: number = 0;
+  // minOvertimeSum: number = 0;
+  // maxOvertimeSum: number = 0;
 
-  managerDemo: User = {
-    personUserName: 'lasjra',
-    firstName: 'Juraj',
-    lastName: 'Laš',
-    personalNumber: '312165489',
-    costCenter: '0045-1709',
-    overtimeMaxLimit: 40,
-    overtimeMinLimit: 5,
-    realOvertime: 10.46,
-    manager: null,
-    dSegment: '3'
-  }
+  constructor(private userFilterService: UserFilterService, private dataService: DataService) { }
 
-  users: User[] = [
+  ngOnInit(): void 
     {
-      personUserName: 'zigopvo',
-      firstName: '',
-      lastName: '',
-      personalNumber: '312165487',
-      costCenter: '0045-1709',
-      overtimeMaxLimit: 40,
-      overtimeMinLimit: 5,
-      realOvertime: 10.46,
-      manager: this.managerDemo,
-      dSegment: this.managerDemo.dSegment
-    },
-    {
-      personUserName: 'roskovld',
-      firstName: '',
-      lastName: '',
-      personalNumber: '12345678',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 35,
-      overtimeMinLimit: 4,
-      realOvertime: 3.18,
-      manager: null,
-      dSegment: null
-    },
-    {
-      personUserName: 'murcosmu',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012115846',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 10,
-      overtimeMinLimit: 0,
-      realOvertime: 0.21,
-      manager: null,
-      dSegment: null
-    },
-    {
-      personUserName: 'pilcmre',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012116445',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 12,
-      overtimeMinLimit: 3,
-      realOvertime: 1.21,
-      manager: null,
-      dSegment: null
-    },
-    {
-      personUserName: 'ujofero',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012116444',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 2,
-      overtimeMinLimit: 0,
-      realOvertime: 1.25,
-      manager: null,
-      dSegment: null
-    },
-    {
-      personUserName: 'tetajana',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012116443',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 5,
-      overtimeMinLimit: 0,
-      realOvertime: 4.20,
-      manager: null,
-      dSegment: null
-    },
-    {
-      personUserName: 'schlzolf',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012116442',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 15,
-      overtimeMinLimit: 3,
-      realOvertime: 15.5,
-      manager: null,
-      dSegment: null
+      let username = '';
+      this.dataService.getAssistantUsername().subscribe(
+        (data: string | null) => {
+          if (data !== null)
+            username = data;
+        }
+      );
+      if (username !== '')
+      {
+        this.dataService.getEmployee(username).subscribe(
+          (data: Employee | undefined) => {
+            this.assistant = data;
+            if (this.assistant === undefined) {
+              this.loading = true;
+              throw new Error('Employee undefined' + username);
+            }
+            //console.log(this.employee.username);
+            // this.setData();
+            this.loading = false;  // Set to false when data is fully loaded
+            //console.log(this.employee.username);
+          },
+          (error: any) => {
+              this.loading = false;
+              console.error('Error fetching employee', error);
+          }
+        );
+        if (this.assistant != undefined && this.assistant.level_role === 0)
+        {
+          this.dataService.getEmployees().subscribe(
+            (data: Employee[]) =>
+            {
+              this.employees = data;
+              console.log('team member 0: ', this.employees[0]);
+              this.setData();
+            }
+          );
+          for (let i = 0; i < this.employees.length; i++)
+          {
+            this.employeesRealOvertimes.set(this.employees[i].username, 0);
+            this.employeesMinLimits.set(this.employees[i].username, 0);   
+            this.employeesMaxLimits.set(this.employees[i].username, 0);  
+          }
+        }
+        this.dataService.selectedMonth$.subscribe(
+          month => {
+            this.loading = true;
+            this.selectedMonth = month;
+            this.setData();
+            this.loading = false;
+          }
+        );
+      }
+      else
+      {
+        this.loading = true;
+      }
     }
-  ];
-
   
-  getOvertimeStatus(user: User): string {
-    if (user.realOvertime < user.overtimeMinLimit) {
+  getOvertimeStatus(employee: Employee): string 
+  {
+    //console.log('Overtime status: ', this.realOvertime);
+    
+    if ((this.employeesRealOvertimes.get(employee.username) || 0) < (this.employeesMinLimits.get(employee.username) || 0)) {
       return 'low-value';
-    } else if (user.realOvertime + (user.overtimeMaxLimit * 0.1) > user.overtimeMaxLimit) {
+    } else if ((this.employeesRealOvertimes.get(employee.username) || 0) + ((this.employeesMaxLimits.get(employee.username) || 0) * 0.1) > (this.employeesMaxLimits.get(employee.username) || 0)) {
       return 'high-value';
     } else {
       return 'medium-value';
     }
+  }
+
+  selectEmployee(employee: Employee): void 
+  {
+    // this.selectedEmployee = employee;
+    // this.router.navigate(['/employee', employee.username]);
+  }
+
+  setData(): void
+  {
+    if (this.assistant == undefined)
+      throw new Error('Leader undefined');
+    this.employees.forEach(employee => {
+      let overtimes = this.dataService.getSumOvertime(employee.employee_id, this.selectedMonth);
+      let minLimit = this.dataService.getMinLimit(employee.employee_id, this.selectedMonth);
+      let maxLimit = this.dataService.getMaxLimit(employee.employee_id, this.selectedMonth);
+      this.employeesRealOvertimes.set(employee.username, overtimes);
+      this.employeesMinLimits.set(employee.username, minLimit);
+      this.employeesMaxLimits.set(employee.username, maxLimit);
+    });
   }
   
   // userFilterComponent: UserFiltersComponent;
@@ -143,7 +141,7 @@ export class OvertimeAssistantComponent {
   //   dSegment: '3'
   // };
 
-  constructor(private userFilterService: UserFilterService) { }
+  
   // constructor() {
   //   this.userFilterComponent = new UserFiltersComponent(new UserFilterService);
   //   this.users = this.userFilterComponent.users;
@@ -153,57 +151,59 @@ export class OvertimeAssistantComponent {
 
   
 
-  filter: string = 'all';
-  personalNumber: string | null = null;
-  manager: User | null = null;
-  dSegment: string | null = null;
-  username: string | null = null;
-  showFilters: boolean = false;
+  // filter: string = 'all';
+  // personalNumber: string | null = null;
+  // manager: User | null = null;
+  // dSegment: string | null = null;
+  // username: string | null = null;
+  // showFilters: boolean = false;
 
-  toggleFilters(): void {
-    this.showFilters = !this.showFilters;
-  }
+  // toggleFilters(): void {
+  //   this.showFilters = !this.showFilters;
+  // }
 
-  resetFilters(): void {
-    this.filter = 'all';
-    this.personalNumber = null;
-    this.manager = null;
-    this.dSegment = null;
-    this.username = null;
-  }
+  // resetFilters(): void {
+  //   this.filter = 'all';
+  //   this.personalNumber = null;
+  //   this.manager = null;
+  //   this.dSegment = null;
+  //   this.username = null;
+  // }
 
   
 
-  filterUsers(): User[] {
-    let filteredUsers = this.users;
+  // filterUsers(): User[] {
+  //   let filteredUsers = this.users;
 
-    if (this.filter === 'overtime-off-limit') {
-      filteredUsers = this.userFilterService.filterUsersByOvertimeOffLimit(filteredUsers);
-    } else if (this.filter === 'overtime-in-limit') {
-      filteredUsers = this.userFilterService.filterUsersByOvertimeInLimit(filteredUsers);
-    }
+  //   if (this.filter === 'overtime-off-limit') {
+  //     filteredUsers = this.userFilterService.filterUsersByOvertimeOffLimit(filteredUsers);
+  //   } else if (this.filter === 'overtime-in-limit') {
+  //     filteredUsers = this.userFilterService.filterUsersByOvertimeInLimit(filteredUsers);
+  //   }
 
-    if (this.personalNumber) {
-      filteredUsers = this.userFilterService.filterUsersByPersonalNumber(filteredUsers, this.personalNumber);
-    }
+  //   if (this.personalNumber) {
+  //     filteredUsers = this.userFilterService.filterUsersByPersonalNumber(filteredUsers, this.personalNumber);
+  //   }
 
-    if (this.manager) {
-      filteredUsers = this.userFilterService.filterUsersByManager(filteredUsers, this.manager);
-    }
+  //   if (this.manager) {
+  //     filteredUsers = this.userFilterService.filterUsersByManager(filteredUsers, this.manager);
+  //   }
 
-    if (this.dSegment) {
-      filteredUsers = this.userFilterService.filterUsersByDSegment(filteredUsers, this.dSegment);
-    }
+  //   if (this.dSegment) {
+  //     filteredUsers = this.userFilterService.filterUsersByDSegment(filteredUsers, this.dSegment);
+  //   }
 
-    if (this.username) {
-      filteredUsers = this.userFilterService.filterUsersByUserName(filteredUsers, this.username);
-    }
+  //   if (this.username) {
+  //     filteredUsers = this.userFilterService.filterUsersByUserName(filteredUsers, this.username);
+  //   }
 
-    return filteredUsers;
-    // this.users = this.userFilterComponent.filterUsers();
-    // this.userFilterComponent.filter = this.filter;
-    // return this.userFilterComponent.filterUsers();
-  }
+  //   return filteredUsers;
+  //   // this.users = this.userFilterComponent.filterUsers();
+  //   // this.userFilterComponent.filter = this.filter;
+  //   // return this.userFilterComponent.filterUsers();
+  // }
+
+  
 
   isSidebarActive(): boolean {
     return TitleBarComponent.isSidebarActive;

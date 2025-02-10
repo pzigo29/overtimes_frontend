@@ -149,6 +149,19 @@ export class DataService {
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: false
+    },
+    {
+      employee_id: 10,
+      personal_number: '87896861',
+      username: 'mikimaja',
+      level_role: 0,
+      manager_id: 7,
+      cost_center: '1234-5679',
+      first_name: 'Maja',
+      last_name: 'Mikitiuková',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: false
     }
   ];
 
@@ -306,6 +319,7 @@ export class DataService {
   tlUsername: string | null = 'klmkjn';
   thpUsername: string | null = 'zigopvo';
   // mngUsername: string = 'rechjoz';
+  assistantUsername: string | null = 'mikimaja';
   selectedEmployee?: Employee;
 
   private apiUrl = 'https://localhost:7198/api';
@@ -379,6 +393,11 @@ export class DataService {
   getSegmentManagers(rnd_id: number): Observable<Employee[]>
   {
     return of(this.employees.filter(x => x.manager_id === rnd_id && (x.level_role === 2 || x.level_role === 3 )));
+  }
+
+  getEmployees(): Observable<Employee[]>
+  {
+    return of(this.employees);
   }
 
   getSumOvertime(employee_id: number, month: Date): number
@@ -531,5 +550,10 @@ export class DataService {
   getThpUsername(): Observable<string | null>
   {
     return of(this.thpUsername);
+  }
+
+  getAssistantUsername(): Observable<string | null>
+  {
+    return of(this.assistantUsername);
   }
 }
