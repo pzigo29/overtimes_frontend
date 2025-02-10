@@ -8,7 +8,8 @@
         "SHOW": "Show",
         "FILTERS": "filters",
         "DELETE": "Delete",
-        "EMPLOYEE-ESTIMATE": "Employee estimate"
+        "EMPLOYEE-ESTIMATE": "Employee estimate",
+        "SHOW-SEGMENTS": "Show segments"
     },
 
     "SUMMARY": "Summary",
@@ -37,8 +38,10 @@
     "TITLE": {
         "TL-TEAM-DETAIL": "Employee detail",
         "TL": "My team",
-        "SEGMENT": "Segment D"
+        "SEGMENT": "Segment D",
+        "RND": "Overtimes RnD"
     },
 
-    "OVERTIME-RULES": "Overtime rules"
+    "OVERTIME-RULES": "Overtime rules",
+    "SEGMENT": "Segment"
 }

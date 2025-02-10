@@ -1,10 +1,10 @@
-<div class="container">
+<!-- <div class="container">
     <app-title-bar [title]="title"></app-title-bar>
     
 
     <div *ngIf="currentForm === 'RnDForm' && isFormOpen" class="collapsible" >
         <form name="RnDForm" class="overtime-form">
-            <!-- <h3>Segment D{{user.dSegment}}</h3> -->
+            <-- <h3>Segment D{{user.dSegment}}</h3> --
             <h3>Nadčasy R&D Kysuce</h3>
             <div>
                 <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
@@ -116,4 +116,37 @@
         </form>
         
     </div>
+</div> -->
+
+<div class="container">
+    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>    
+    <div class="row-aligned">
+        <app-months-table></app-months-table>
+        <div class="overtime-form-row" *ngIf="!loading">
+            <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
+                <thead>
+                    <tr>
+                        <th>{{'SUMMARY' | translate}}</th>
+                        <th>{{'MIN-LIMIT' | translate}}</th>
+                        <th>{{'MAX-LIMIT' | translate}}</th>
+                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <!-- <th>{{'APPROVED' | translate}}</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{'TITLE.' + title | translate}}</td>
+                        <td><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
+                        <td><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
+                        <!-- <td></td> -->
+                        <td [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                        <!-- <td><input type="checkbox" name="approved" id="approved" [disabled]="approvedDisabled"></td> -->
+                    </tr>
+                </tbody>
+            </table>
+            <div class="centered-div">
+                <button class="submit-btn" (click)="showSite('rnd/segments')">{{'BUTTON.SHOW-SEGMENTS' | translate}}</button>
+            </div>
+        </div>
+        <div *ngIf="loading" class="overtime-form-row">Loading...</div> 
 </div>

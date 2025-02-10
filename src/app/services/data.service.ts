@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { of, Observable, BehaviorSubject } from 'rxjs';
 import { Approval, Employee, Overtime, OvertimeLimit, User } from '../models/data.model';
 import { error } from 'node:console';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -76,7 +77,7 @@ export class DataService {
       personal_number: '36841308',
       username: 'roskmln',
       level_role: 2,
-      manager_id: null,
+      manager_id: 7,
       cost_center: '1234-5679',
       first_name: 'Milan',
       last_name: 'Roško',
@@ -96,6 +97,58 @@ export class DataService {
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
+    },
+    {
+      employee_id: 6,
+      personal_number: '87841708',
+      username: 'biromchl',
+      level_role: 5,
+      manager_id: 4,
+      cost_center: '1234-5679',
+      first_name: 'Michal',
+      last_name: 'Bíroš',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: true
+    },
+    {
+      employee_id: 7,
+      personal_number: '87895708',
+      username: 'klmkjn',
+      level_role: 1,
+      manager_id: null,
+      cost_center: '1234-5679',
+      first_name: 'Ján',
+      last_name: 'Klimko',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: true
+    },
+    {
+      employee_id: 8,
+      personal_number: '87895638',
+      username: 'lacojan',
+      level_role: 3,
+      manager_id: 7,
+      cost_center: '1234-5679',
+      first_name: 'Ján',
+      last_name: 'Laco',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: true
+    },
+    {
+      employee_id: 9,
+      personal_number: '87896521',
+      username: 'trmpdnl',
+      level_role: 5,
+      manager_id: 8,
+      cost_center: '1234-5679',
+      first_name: 'Donald',
+      last_name: 'Trump',
+      email: 'zigopivo@schaeffler.com',
+      employed: true,
+      approver: false
     }
   ];
 
@@ -209,6 +262,24 @@ export class DataService {
       start_date: new Date(2025, 1),
       end_date: new Date(2025, 2),
       status_id: 'A'
+    },
+    {
+      limit_id: 6,
+      employee_id: 9,
+      min_hours: 0.23,
+      max_hours: 65,
+      start_date: new Date(2025, 1),
+      end_date: new Date(2025, 2),
+      status_id: 'A'
+    },
+    {
+      limit_id: 7,
+      employee_id: 4,
+      min_hours: 0.54,
+      max_hours: 16,
+      start_date: new Date(2025, 1),
+      end_date: new Date(2025, 2),
+      status_id: 'A'
     }
     
   ];
@@ -227,11 +298,24 @@ export class DataService {
 
   // const os = require('os');
   // const username = os.userInfo().username;
-  mngUsername: string = 'roskmln'; // toto sa bude načítavať z windowsu
+  rndUsername: string = 'klmkjn';
+  // mngUsername: string | null = 'lacojan'; // toto sa bude načítavať z windowsu
+  // tlUsername: string | null = 'lacojan';
+  // thpUsername: string | null = 'roskmln';
+  mngUsername: string | null = 'roskmln'; // toto sa bude načítavať z windowsu
+  tlUsername: string | null = 'klmkjn';
+  thpUsername: string | null = 'zigopvo';
   // mngUsername: string = 'rechjoz';
   selectedEmployee?: Employee;
 
-  constructor() { }
+  private apiUrl = 'https://localhost:7198/api';
+
+  constructor(private http: HttpClient) { } 
+
+  getMessage(username: string): Observable<string>
+  {
+    return this.http.get<string>(`${this.apiUrl}/Employee?username=${username}`, { responseType: 'text' as 'json' });
+  }
 
   compareYearAndMonth(date1: Date, date2: Date): boolean
   {
@@ -270,6 +354,8 @@ export class DataService {
   //   return of(this.selectedMonth);
   // }
 
+  // VSETKY TIETO GETTRE BY ASI MALI BYT API VOLANIA NA BACKEND, KTORE BY UROBILI SELECT Z DATABAZY!!!
+
   getEmployee(username: string): Observable<Employee | undefined>
   {
     return of(this.employees.find(x => x.username === username));
@@ -278,6 +364,21 @@ export class DataService {
   getTeamMembers(manager_id: number): Observable<Employee[]>
   {
     return of(this.employees.filter(x => x.manager_id === manager_id));
+  }
+
+  getTeamLeaders(manager_id: number): Observable<Employee[]>
+  {
+    let teamLeaders = this.employees.filter(x => x.manager_id === manager_id);
+    teamLeaders = teamLeaders.filter(leader => {
+      let subordinates = this.employees.filter(x => x.manager_id === leader.employee_id);
+      return subordinates.length > 0;
+    });
+    return of(teamLeaders);
+  }
+
+  getSegmentManagers(rnd_id: number): Observable<Employee[]>
+  {
+    return of(this.employees.filter(x => x.manager_id === rnd_id && (x.level_role === 2 || x.level_role === 3 )));
   }
 
   getSumOvertime(employee_id: number, month: Date): number
@@ -412,8 +513,23 @@ export class DataService {
     return this.approvals.find(x => x.limit_id == limit_id)?.status_id === 'A';
   }
 
-  getUsername(): Observable<string>
+  getRndUsername(): Observable<string | null>
+  {
+    return of(this.rndUsername);
+  }
+
+  getMngUsername(): Observable<string | null>
   {
     return of(this.mngUsername);
+  }
+
+  getTlUsername(): Observable<string | null>
+  {
+    return of(this.tlUsername);
+  }
+
+  getThpUsername(): Observable<string | null>
+  {
+    return of(this.thpUsername);
   }
 }

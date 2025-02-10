@@ -8,7 +8,8 @@
         "SHOW": "Zobraz",
         "FILTERS": "filtre",
         "DELETE": "Zmaž",
-        "EMPLOYEE-ESTIMATE": "Odhad zamestnanca"
+        "EMPLOYEE-ESTIMATE": "Odhad zamestnanca",
+        "SHOW-SEGMENTS": "Zobraz segmenty"
     },
 
     "SUMMARY": "Sumár",
@@ -36,9 +37,11 @@
     "TITLE": {
         "TL-TEAM-DETAIL": "Detail zamestnanca",
         "TL": "Môj tím",
-        "SEGMENT": "Segment D"
+        "SEGMENT": "Segment D",
+        "RND": "Nadčasy RnD"
     },
 
-    "OVERTIME-RULES": "Pravidlá pre nadčasy"
+    "OVERTIME-RULES": "Pravidlá pre nadčasy",
+    "SEGMENT": "Segment"
         
 }

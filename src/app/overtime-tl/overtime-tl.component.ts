@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
 import { Employee } from '../models/data.model';
@@ -12,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-overtime-tl',
   standalone: true,
-  imports: [CommonModule, TitleBarComponent, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  imports: [CommonModule, TitleBarComponent, FormsModule, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-tl.component.html',
   styleUrl: './overtime-tl.component.scss'
 })
@@ -35,21 +35,23 @@ export class OvertimeTLComponent implements OnInit {
   sourceSite: string | null = null;
   // shownSite: boolean[] = [true, false]; //teamSummary, teamMembers
   
-  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) 
-  { }
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
   ngOnInit(): void 
-    {
-      this.route.queryParams.subscribe(params => {
-        this.sourceSite = params['source'];
-        console.log('source: ', this.sourceSite);
-      });
-      let username = '';
-      this.dataService.getUsername().subscribe(
-        (data: string) => {
+  {
+    this.route.queryParams.subscribe(params => {
+      this.sourceSite = params['source'];
+      console.log('source: ', this.sourceSite);
+    });
+    let username = '';
+    this.dataService.getTlUsername().subscribe(
+      (data: string | null) => {
+        if (data !== null)
           username = data;
-        }
-      );
+      }
+    );
+    if (username !== '')
+    {
       this.dataService.getEmployee(username).subscribe(
         (data: Employee | undefined) => {
           this.leader = data;
@@ -93,12 +95,20 @@ export class OvertimeTLComponent implements OnInit {
         }
       );
     }
+    else
+    {
+      this.loading = true;
+    }
+    
+  }
 
-  isSidebarActive(): boolean {
+  isSidebarActive(): boolean 
+  {
     return TitleBarComponent.isSidebarActive;
   }
 
-  isSidebarVisible(): boolean {
+  isSidebarVisible(): boolean 
+  {
     return TitleBarComponent.isSidebarVisible;
   }
 
@@ -129,12 +139,18 @@ export class OvertimeTLComponent implements OnInit {
 
   showSite(site: string): void
   {
-    // for (let i = 0; i < this.shownSite.length; i++)
-    // {
-    //   this.shownSite[i] = false;
-    // }
-    // this.shownSite[site] = true;
+    if (this.sourceSite === '/mng/teams' && site === '/mng/teams')
+    {
+      // get username from windows
+      this.dataService.mngUsername = 'roskmln';
+      console.log(this.dataService.mngUsername);
+    }
     this.router.navigate([site]);
+  }
+
+  goBack(): void
+  {
+    this.location.back();
   }
 
   selectEmployee(employee: Employee): void

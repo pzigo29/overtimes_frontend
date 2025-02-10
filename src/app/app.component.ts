@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  darkMode: boolean = false;
   title = 'overtimes_frontend';
   currentLang: string = 'sk';
   constructor(private translate: TranslateService)
@@ -50,6 +51,19 @@ export class AppComponent {
     if (typeof localStorage !== 'undefined')
     {
       localStorage.setItem('lang', lang);
+    }
+  }
+
+  toggleDarkMode(): void
+  {
+    this.darkMode = !this.darkMode;
+    if (this.darkMode)
+    {
+      document.body.classList.add('dark-mode');
+    }
+    else
+    {
+      document.body.classList.remove('dark-mode');
     }
   }
 }

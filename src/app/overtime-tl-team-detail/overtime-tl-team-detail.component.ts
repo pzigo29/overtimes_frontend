@@ -5,7 +5,7 @@ import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';
 import { NgModel } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -24,7 +24,7 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
   realOvertime: number = 0;
   selectedMonth: Date = new Date();
 
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(private dataService: DataService, private router: Router, private location: Location) {}
 
   ngOnInit(): void {
     const savedEmployee = localStorage.getItem('selectedEmployee');
@@ -92,5 +92,10 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
 
   showSite(site: string): void {
     this.router.navigate([`${site}`]);
+  }
+
+  goBack(): void
+  {
+    this.location.back();
   }
 }

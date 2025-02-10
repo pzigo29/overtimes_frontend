@@ -2,7 +2,8 @@
     <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
     <div class="top-right-div">
         <div></div>
-        <button class="submit-btn" (click)="showSite('tl/team')">{{'BUTTON.BACK' | translate}}</button>
+        <!-- <button class="submit-btn" (click)="showSite('tl/team')">{{'BUTTON.BACK' | translate}}</button> -->
+        <button class="submit-btn" (click)="goBack()">{{'BUTTON.BACK' | translate}}</button>
     </div>
     <div class="row-aligned">
         <app-months-table></app-months-table>

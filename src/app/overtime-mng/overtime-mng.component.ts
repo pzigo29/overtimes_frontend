@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { User } from "../models/data.model";
@@ -9,7 +9,7 @@ import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 import { Employee } from '../models/data.model';
 import { DataService } from '../services/data.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -24,6 +24,7 @@ export class OvertimeMngComponent {
   segment: number = 3;
   title: string = 'SEGMENT';
   loading: boolean = false;
+  approvedDisabled = true;
 
   team: Employee[] = [];
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
@@ -38,71 +39,84 @@ export class OvertimeMngComponent {
   selectedEmployee?: Employee;
   manager?: Employee;
 
-  constructor(private dataService: DataService, private router: Router) { }
+  sourceSite: string | null = null;
+
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
   ngOnInit(): void 
     {
+      this.route.queryParams.subscribe(params => {
+        this.sourceSite = params['source'];
+        console.log('source: ', this.sourceSite);
+      });
       let username = '';
-      this.dataService.getUsername().subscribe(
-        (data: string) => {
-          username = data;
+      this.dataService.getMngUsername().subscribe(
+        (data: string | null) => {
+          if (data !== null)
+            username = data;
         }
       );
-      this.dataService.getEmployee(username).subscribe(
-        (data: Employee | undefined) => {
-          this.manager = data;
-          if (this.manager === undefined) {
-            this.loading = false;
-            throw new Error('Employee undefined' + username);
-          }
-          //console.log(this.employee.username);
-          // this.setData();
-          this.loading = false;  // Set to false when data is fully loaded
-          //console.log(this.employee.username);
-        },
-        (error: any) => {
-            this.loading = false;
-            console.error('Error fetching employee', error);
-        }
-      );
-      if (this.manager !== undefined) 
+      if (username !== '')
       {
-        if (this.manager?.level_role < 4)
-        {
-          this.dataService.getTeamMembers(this.manager.employee_id).subscribe(
-            (data: Employee[]) =>
-            {
-              this.team = data;
-              console.log('team member 0: ', this.team[0]);
-              this.setData();
-            }
-          );
-          for (let i = 0; i < this.team.length; i++)
-          {
-            this.teamRealOvertimes.set(this.team[i].username, 0);
-            this.teamMinLimits.set(this.team[i].username, 0);
-            this.teamMaxLimits.set(this.team[i].username, 0);
-          }
-        
-          this.dataService.selectedMonth$.subscribe(
-            month => {
-              this.loading = true;
-              this.selectedMonth = month;
-              this.setData();
+        this.dataService.getEmployee(username).subscribe(
+          (data: Employee | undefined) => {
+            this.manager = data;
+            if (this.manager === undefined) {
               this.loading = false;
+              throw new Error('Employee undefined' + username);
             }
-          );
+            //console.log(this.employee.username);
+            // this.setData();
+            this.loading = false;  // Set to false when data is fully loaded
+            //console.log(this.employee.username);
+          },
+          (error: any) => {
+              this.loading = false;
+              console.error('Error fetching employee', error);
+          }
+        );
+        if (this.manager !== undefined) 
+        {
+          if (this.manager?.level_role < 4)
+          {
+            this.dataService.getTeamMembers(this.manager.employee_id).subscribe(
+              (data: Employee[]) =>
+              {
+                this.team = data;
+                console.log('team member 0: ', this.team[0]);
+                this.setData();
+              }
+            );
+            for (let i = 0; i < this.team.length; i++)
+            {
+              this.teamRealOvertimes.set(this.team[i].username, 0);
+              this.teamMinLimits.set(this.team[i].username, 0);
+              this.teamMaxLimits.set(this.team[i].username, 0);
+            }
+          
+            this.dataService.selectedMonth$.subscribe(
+              month => {
+                this.loading = true;
+                this.selectedMonth = month;
+                this.setData();
+                this.loading = false;
+              }
+            );
+          }
+          else
+          {
+            console.log('manager doesnt have access');
+          }
         }
         else
         {
-          console.log('manager doesnt have access');
+          console.log('manager undef');
         }
       }
       else
       {
-        console.log('manager undef');
+        this.loading = true;
       }
-      
     }
 
   // filterTL: User | null = null;
@@ -164,6 +178,16 @@ export class OvertimeMngComponent {
     this.router.navigate([site]);
   }
 
+  showTeamsSite(): void
+  {
+    this.manager?.level_role == 3 ? this.showSite('/tl/team') : (this.manager?.level_role == 2 ? this.showSite('/mng/teams') : this.showSite(''));
+  }
+
+  goBack(): void
+  {
+    this.location.back();
+  }
+
   setData(): void
   {
     if (this.manager !== undefined)
@@ -184,7 +208,6 @@ export class OvertimeMngComponent {
         this.maxOvertimeSum += value;
       });
     }
-    
   }
 
 }

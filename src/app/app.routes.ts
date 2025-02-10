@@ -1,4 +1,5 @@
 import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core';
 import { OvertimeThpComponent } from './overtime-thp/overtime-thp.component';
 import { OvertimeTLComponent } from './overtime-tl/overtime-tl.component';
 import { OvertimeMngComponent } from './overtime-mng/overtime-mng.component';
@@ -7,7 +8,7 @@ import { OvertimeRndComponent } from './overtime-rnd/overtime-rnd.component';
 import { OvertimeAssistantComponent } from './overtime-assistant/overtime-assistant.component';
 import { OvertimeTLTeamComponent } from './overtime-tl-team/overtime-tl-team.component';
 import { OvertimeTLTeamDetailComponent } from './overtime-tl-team-detail/overtime-tl-team-detail.component';
-import { NgModule } from '@angular/core';
+import { OvertimeRndSegmentsComponent } from './overtime-rnd-segments/overtime-rnd-segments.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/thp', pathMatch: 'full' },
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'mng', component: OvertimeMngComponent },
   { path: 'mng/teams', component: OvertimeMngTeamsComponent },
   { path: 'rnd', component: OvertimeRndComponent },
+  { path: 'rnd/segments', component: OvertimeRndSegmentsComponent},
   { path: 'assistant', component: OvertimeAssistantComponent }
 ];
 

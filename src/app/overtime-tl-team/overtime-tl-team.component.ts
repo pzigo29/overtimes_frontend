@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
 import { Employee } from '../models/data.model';
@@ -31,66 +31,76 @@ export class OvertimeTLTeamComponent {
   loading: boolean = false;
   selectedMonth: Date = new Date();
 
-  constructor(private dataService: DataService, private router: Router) 
-  {
-    
-  }
+  constructor(private dataService: DataService, private router: Router, private location: Location) { }
 
   ngOnInit(): void 
-      {
-        let username = '';
-        this.dataService.getUsername().subscribe(
-          (data: string) => {
-            username = data;
-          }
-        );
-        this.dataService.getEmployee(username).subscribe(
-          (data: Employee | undefined) => {
-            this.leader = data;
-            if (this.leader === undefined) {
-              this.loading = false;
-              throw new Error('Employee undefined' + username);
-            }
-            //console.log(this.employee.username);
-            // this.setData();
-            this.loading = false;  // Set to false when data is fully loaded
-            //console.log(this.employee.username);
-          },
-          (error: any) => {
-              this.loading = false;
-              console.error('Error fetching employee', error);
-          }
-        );
-        if (this.leader != undefined)
-        {
-          this.dataService.getTeamMembers(this.leader.employee_id).subscribe(
-            (data: Employee[]) =>
-            {
-              this.team = data;
-              console.log('team member 0: ', this.team[0]);
-              this.setData();
-            }
-          );
-          for (let i = 0; i < this.team.length; i++)
-          {
-            this.teamRealOvertimes.set(this.team[i].username, 0);
-            this.teamMinLimits.set(this.team[i].username, 0);   
-            this.teamMaxLimits.set(this.team[i].username, 0);  
-          }
-        }
-        this.dataService.selectedMonth$.subscribe(
-          month => {
-            this.loading = true;
-            this.selectedMonth = month;
-            this.setData();
-            this.loading = false;
-          }
-        );
+  {
+    let username = '';
+    this.dataService.getTlUsername().subscribe(
+      (data: string | null) => {
+        if (data !== null)
+          username = data;
       }
+    );
+    if (username !== '')
+    {
+      this.dataService.getEmployee(username).subscribe(
+        (data: Employee | undefined) => {
+          this.leader = data;
+          if (this.leader === undefined) {
+            this.loading = false;
+            throw new Error('Employee undefined' + username);
+          }
+          //console.log(this.employee.username);
+          // this.setData();
+          this.loading = false;  // Set to false when data is fully loaded
+          //console.log(this.employee.username);
+        },
+        (error: any) => {
+            this.loading = false;
+            console.error('Error fetching employee', error);
+        }
+      );
+      if (this.leader != undefined)
+      {
+        this.dataService.getTeamMembers(this.leader.employee_id).subscribe(
+          (data: Employee[]) =>
+          {
+            this.team = data;
+            console.log('team member 0: ', this.team[0]);
+            this.setData();
+          }
+        );
+        for (let i = 0; i < this.team.length; i++)
+        {
+          this.teamRealOvertimes.set(this.team[i].username, 0);
+          this.teamMinLimits.set(this.team[i].username, 0);   
+          this.teamMaxLimits.set(this.team[i].username, 0);  
+        }
+      }
+      this.dataService.selectedMonth$.subscribe(
+        month => {
+          this.loading = true;
+          this.selectedMonth = month;
+          this.setData();
+          this.loading = false;
+        }
+      );
+    }
+    else
+    {
+      this.loading = true;
+    }
+  }
 
   showSite(site: string): void
   {
     this.router.navigate([`${site}`]);
+  }
+
+  goBack(): void
+  {
+    this.location.back();
   }
 
   selectEmployee(employee: Employee): void

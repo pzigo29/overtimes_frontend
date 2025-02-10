@@ -3,7 +3,8 @@
     <div class="top-right-div" *ngIf="sourceSite === '/mng/teams'">
         <!-- <app-user-filters></app-user-filters> -->
         <div></div>
-        <button class="submit-btn" (click)="showSite('/mng/teams')">{{'BUTTON.BACK' | translate}}</button>
+        <!-- <button class="submit-btn" (click)="showSite('/mng/teams')">{{'BUTTON.BACK' | translate}}</button> -->
+        <button class="submit-btn" (click)="goBack()">{{'BUTTON.BACK' | translate}}</button>
     </div>
     <div class="row-aligned">
         <app-months-table></app-months-table>

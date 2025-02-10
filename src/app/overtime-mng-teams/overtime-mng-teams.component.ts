@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
@@ -33,72 +33,83 @@ export class OvertimeMngTeamsComponent implements OnInit {
   manager?: Employee;
   selectedEmployee?: Employee;
 
-  constructor(private dataService: DataService, private router: Router) 
-  {
-    
-  }
+  constructor(private dataService: DataService, private router: Router, private location: Location) { }
 
   ngOnInit(): void 
-      {
-        let username = '';
-        this.dataService.getUsername().subscribe(
-          (data: string) => {
-            username = data;
-          }
-        );
-        this.dataService.getEmployee(username).subscribe(
-          (data: Employee | undefined) => {
-            this.manager = data;
-            if (this.manager === undefined) {
-              this.loading = false;
-              throw new Error('Employee undefined' + username);
-            }
-            //console.log(this.employee.username);
-            // this.setData();
-            this.loading = false;  // Set to false when data is fully loaded
-            //console.log(this.employee.username);
-          },
-          (error: any) => {
-              this.loading = false;
-              console.error('Error fetching employee', error);
-          }
-        );
-        if (this.manager != undefined)
-        {
-          this.dataService.getTeamMembers(this.manager.employee_id).subscribe(
-            (data: Employee[]) =>
-            {
-              this.teamLeaders = data;
-              console.log('team leader 0: ', this.teamLeaders[0]);
-              this.setData();
-            }
-          );
-          for (let i = 0; i < this.teamLeaders.length; i++)
-          {
-            this.teamRealOvertimes.set(this.teamLeaders[i].username, 0);
-            this.teamMinLimits.set(this.teamLeaders[i].username, 0);   
-            this.teamMaxLimits.set(this.teamLeaders[i].username, 0);  
-          }
-        }
-        this.dataService.selectedMonth$.subscribe(
-          (month: Date) => {
-            this.loading = true;
-            this.selectedMonth = month;
-            this.setData();
-            this.loading = false;
-          }
-        );
+  {
+    let username = '';
+    this.dataService.getMngUsername().subscribe(
+      (data: string | null) => {
+        if (data !== null)
+          username = data;
       }
+    );
+    if (username !== '')
+    {
+      this.dataService.getEmployee(username).subscribe(
+        (data: Employee | undefined) => {
+          this.manager = data;
+          if (this.manager === undefined) {
+            this.loading = false;
+            throw new Error('Employee undefined' + username);
+          }
+          //console.log(this.employee.username);
+          // this.setData();
+          this.loading = false;  // Set to false when data is fully loaded
+          //console.log(this.employee.username);
+        },
+        (error: any) => {
+            this.loading = false;
+            console.error('Error fetching employee', error);
+        }
+      );
+      if (this.manager != undefined)
+      {
+        this.dataService.getTeamLeaders(this.manager.employee_id).subscribe(
+          (data: Employee[]) =>
+          {
+            this.teamLeaders = data;
+            console.log('team leader 0: ', this.teamLeaders[0]);
+            this.setData();
+          }
+        );
+        for (let i = 0; i < this.teamLeaders.length; i++)
+        {
+          this.teamRealOvertimes.set(this.teamLeaders[i].username, 0);
+          this.teamMinLimits.set(this.teamLeaders[i].username, 0);   
+          this.teamMaxLimits.set(this.teamLeaders[i].username, 0);  
+        }
+      }
+      this.dataService.selectedMonth$.subscribe(
+        (month: Date) => {
+          this.loading = true;
+          this.selectedMonth = month;
+          this.setData();
+          this.loading = false;
+        }
+      );
+    }
+    else
+    {
+      this.loading = true;
+    }
+  }
 
-  showSite(site: string) {
+  showSite(site: string) 
+  {
     this.router.navigate([site]);
+  }
+
+  goBack(): void
+  {
+    this.location.back();
   }
 
   selectEmployee(employee: Employee): void
   {
     this.selectedEmployee = employee;
-    this.dataService.mngUsername = employee.username;
-    this.router.navigate(['tl'], { queryParams: { source: this.router.url } });
+    this.dataService.tlUsername = employee.username;
+    this.router.navigate(['tl/team'], { queryParams: { source: this.router.url } });
   }
 
   getOvertimeStatusSum(): string 

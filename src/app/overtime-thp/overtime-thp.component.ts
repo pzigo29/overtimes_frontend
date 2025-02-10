@@ -31,34 +31,54 @@ export class OvertimeThpComponent implements OnInit {
   ngOnInit(): void 
   {
     let username = '';
-    this.dataService.getUsername().subscribe(
-      (data: string) => {
-        username = data;
+    this.dataService.getThpUsername().subscribe(
+      (data: string | null) => {
+        if (data !== null)
+          username = data;
       }
     );
-    this.dataService.getEmployee(username).subscribe(
-      (data: Employee | undefined) => {
-        this.employee = data;
-        if (this.employee === undefined) {
-          this.loading = false;
-          throw new Error('Employee undefined' + username);
+    if (username !== '')
+    {
+      this.dataService.getEmployee(username).subscribe(
+        (data: Employee | undefined) => {
+          this.employee = data;
+          if (this.employee === undefined) {
+            this.loading = false;
+            throw new Error('Employee undefined' + username);
+          }
+          //console.log(this.employee.username);
+          this.setData();
+          this.loading = false;  // Set to false when data is fully loaded
+          //console.log(this.employee.username);
+        },
+        (error: any) => {
+            this.loading = false;
+            console.error('Error fetching employee', error);
         }
-        //console.log(this.employee.username);
-        this.setData();
-        this.loading = false;  // Set to false when data is fully loaded
-        //console.log(this.employee.username);
+      );
+      this.dataService.selectedMonth$.subscribe(
+        month => {
+          this.loading = true;
+          this.selectedMonth = month;
+          this.setData();
+          this.loading = false;
+        }
+      );
+    }
+    else
+    {
+      this.loading = true;
+    }
+  }
+
+  fetchMessage(): void
+  {
+    this.dataService.getMessage('zigopvo').subscribe(
+      (data: string) => {
+        console.log(data);
       },
       (error: any) => {
-          this.loading = false;
-          console.error('Error fetching employee', error);
-      }
-    );
-    this.dataService.selectedMonth$.subscribe(
-      month => {
-        this.loading = true;
-        this.selectedMonth = month;
-        this.setData();
-        this.loading = false;
+        console.error('Error fetching message', error);
       }
     );
   }
