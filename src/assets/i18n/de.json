@@ -1,0 +1,41 @@
+{
+    "BUTTON": {
+        "SAVE-CHANGES": "Änderungen speichern",
+        "BACK": "Zurück",
+        "SHOW-TEAM-MEMBERS": "Teammitglieder anzeigen",
+        "HIDE": "Verstecken",
+        "SHOW": "Zeigen",
+        "FILTERS": "Filter",
+        "DELETE": "Löschen",
+        "EMPLOYEE-ESTIMATE": "Mitarbeiterbewertung"
+    },
+
+    "SUMMARY": "Zusammenfassung",
+    "MONTH": "Monat",
+    "EMPLOYEE": "Mitarbeiter",
+    "TEAM": "Team",
+    "MIN-LIMIT": "Mindestgrenze",
+    "MAX-LIMIT": "Höchstgrenze",
+    "REAL-OVERTIMES": "Echte Überstunden",
+    "REASON": "Grund",
+    "APPROVED": "Genehmigt",
+    
+    "LIMITS": {
+        "ALL": "Alle Grenzen",
+        "FULFILLED": "Erfüllte Grenzen",
+        "NOT-FULFILLED": "Nicht erfüllte Grenzen"
+    },
+
+    "PERSONAL-NUMBER": "Personalnummer",
+    "SUPERIOR": "Vorgesetzter",
+    "D-SEGMENT": "D-Segment",
+    "USERNAME": "Benutzername",
+
+    "TITLE": {
+        "TL-TEAM-DETAIL": "Mitarbeiterdetail",
+        "TL": "Mein team"
+    },
+
+    "OVERTIME-RULES": "Überstundenregeln",
+    "SEGMENT": "Segment"
+}

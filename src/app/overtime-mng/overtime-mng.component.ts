@@ -1,160 +1,186 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { User } from "../models/user.model";
+import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { UserFilterService } from '../services/user-filter.service';
+import { MonthsTableComponent } from "../months-table/months-table.component";
+import { TranslateModule } from '@ngx-translate/core';
+import { Employee } from '../models/data.model';
+import { DataService } from '../services/data.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
   selector: 'app-overtime-mng',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule],
+  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-mng.component.html',
   styleUrl: './overtime-mng.component.scss'
 })
 export class OvertimeMngComponent {
 
+  segment: number = 3;
+  title: string = 'SEGMENT';
+  loading: boolean = false;
+  approvedDisabled = true;
 
-  title: string = 'Segment D' + '3';
-  // segment: number = 3;
+  team: Employee[] = [];
+  teamRealOvertimes: Map<string, number> = new Map<string, number>();
+  teamMinLimits: Map<string, number> = new Map<string, number>();
+  teamMaxLimits: Map<string, number> = new Map<string, number>();
 
-  segmentManager: User = {
-    personUserName: 'lasjra',
-    firstName: 'Juraj',
-    lastName: 'Laš',
-    personalNumber: '312165481',
-    costCenter: '0045-1709',
-    overtimeMaxLimit: 200,
-    overtimeMinLimit: 50,
-    realOvertime: 98.54,
-    manager: null,
-    dSegment: '2'
-  };
-  
-  teamLeaders: User[] = [
-    {
-      personUserName: 'mrenmchl',
-      firstName: 'Michal',
-      lastName: 'Mrena',
-      personalNumber: '312655481',
-      costCenter: '0045-1709',
-      overtimeMaxLimit: 60,
-      overtimeMinLimit: 15,
-      realOvertime: 16.54,
-      manager: this.segmentManager,
-      dSegment: this.segmentManager.dSegment
-    },
-    {
-      personUserName: 'ziakrmn',
-      firstName: 'Roman',
-      lastName: 'Žiak',
-      personalNumber: '12345678',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 50,
-      overtimeMinLimit: 10,
-      realOvertime: 52.20,
-      manager: this.segmentManager,
-      dSegment: this.segmentManager.dSegment
-    }
-  ];
-    
-  users: User[] = [
-    {
-      personUserName: 'zigopvo',
-      firstName: '',
-      lastName: '',
-      personalNumber: '312165481',
-      costCenter: '0045-1709',
-      overtimeMaxLimit: 40,
-      overtimeMinLimit: 5,
-      realOvertime: 10.46,
-      manager: this.teamLeaders.find(tl => tl.personUserName === 'mrenmchl') || null,
-      dSegment: this.segmentManager.dSegment
-    },
-    {
-      personUserName: 'roskovld',
-      firstName: '',
-      lastName: '',
-      personalNumber: '12345678',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 35,
-      overtimeMinLimit: 4,
-      realOvertime: 3.18,
-      manager: this.teamLeaders.find(tl => tl.personUserName === 'mrenmchl') || null,
-      dSegment: this.segmentManager.dSegment
-    },
-    {
-      personUserName: 'murcosmu',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012115842',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 10,
-      overtimeMinLimit: 0,
-      realOvertime: 0.21,
-      manager: this.teamLeaders.find(tl => tl.personUserName === 'ziakrmn') || null,
-      dSegment: this.segmentManager.dSegment
-    },
-    {
-      personUserName: 'pilcmre',
-      firstName: '',
-      lastName: '',
-      personalNumber: '3012116442',
-      costCenter: '0045-1710',
-      overtimeMaxLimit: 12,
-      overtimeMinLimit: 3,
-      realOvertime: 1.21,
-      manager: this.teamLeaders.find(tl => tl.personUserName === 'ziakrmn') || null,
-      dSegment: this.segmentManager.dSegment
-    }
-  ];
+  isTableVisible: boolean = true;
+  realOvertimeSum: number = 0;
+  minOvertimeSum: number = 0;
+  maxOvertimeSum: number = 0;
+  selectedMonth: Date = new Date();
+  selectedEmployee?: Employee;
+  manager?: Employee;
 
-  filterTL: User | null = null;
+  sourceSite: string | null = null;
 
-  setFilter(user: User) {
-    this.filterTL = user;
-  }
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
-  get filteredUsers() {
-    return this.users.filter(user => user.manager === this.filterTL)
-  }
-
-  onTLButtonClick(user: User) {
-    this.setFilter(user);
-    this.showForm('THPForm');
-    // this.title = 'Tím: ' + this.filterTL?.personUserName;
+  async ngOnInit()
+    {
+      this.route.queryParams.subscribe(params => {
+        this.sourceSite = params['source'];
+        // console.log('source: ', this.sourceSite);
+      });
+      const username: string = await this.dataService.getMngUsername().toPromise() || '';
+      if (username !== '')
+      {
+        // console.log('Fetched username:', username);
+        this.manager = await this.dataService.getEmployee(username).toPromise();
+        // console.log('getEmployee: ', JSON.stringify(this.manager));
+        if (this.manager !== undefined) 
+        {
+          if (this.manager?.levelRole < 4)
+          {
+            this.team = await this.dataService.getTeamMembers(this.manager.employeeId).toPromise() || [];
+            // console.log('Team members: ', this.team);
+            for (let i = 0; i < this.team.length; i++)
+            {
+              this.teamRealOvertimes.set(this.team[i].username, 0);
+              this.teamMinLimits.set(this.team[i].username, 0);
+              this.teamMaxLimits.set(this.team[i].username, 0);
+            }
+          
+            this.dataService.selectedMonth$.subscribe(
+              month => {
+                this.loading = true;
+                this.selectedMonth = month;
+                this.setData();
+                this.loading = false;
+              }
+            );
+          }
+          else
+          {
+            console.log('manager doesnt have access');
+          }
+        }
+        else
+        {
+          console.log('manager undef');
+        }
+      }
+      else
+      {
+        this.loading = true;
+      }
     }
 
-  sumOvertimeMaxLimits(users: User[]): number {
-    let sum: number = 0;
-    users.forEach(user => {
-      sum += user.overtimeMaxLimit;
-    });
-    return sum;
-  }
+  // filterTL: User | null = null;
 
-  sumOvertimeMinLimits(users: User[]): number {
-    let sum: number = 0;
-    users.forEach(user => {
-      sum += user.overtimeMinLimit;
-    });
-    return sum;
-  }
+  // setFilter(user: User) {
+  //   this.filterTL = user;
+  // }
 
-  getOvertimeStatus(user: User): string {
-    if (user.realOvertime < user.overtimeMinLimit) {
+  // get filteredUsers() {
+  //   return this.users.filter(user => user.manager === this.filterTL)
+  // }
+
+  // onTLButtonClick(user: User) {
+  //   this.setFilter(user);
+  //   this.showForm('THPForm');
+  //   // this.title = 'Tím: ' + this.filterTL?.personUserName;
+  //   }
+
+  // sumOvertimeMaxLimits(users: User[]): number {
+  //   let sum: number = 0;
+  //   users.forEach(user => {
+  //     sum += user.overtimeMaxLimit;
+  //   });
+  //   return sum;
+  // }
+
+  // sumOvertimeMinLimits(users: User[]): number {
+  //   let sum: number = 0;
+  //   users.forEach(user => {
+  //     sum += user.overtimeMinLimit;
+  //   });
+  //   return sum;
+  // }
+
+  // getOvertimeStatus(user: User): string {
+  //   if (user.realOvertime < user.overtimeMinLimit) {
+  //     return 'low-value';
+  //   } else if (user.realOvertime + (user.overtimeMaxLimit * 0.1) > user.overtimeMaxLimit) {
+  //     return 'high-value';
+  //   } else {
+  //     return 'medium-value';
+  //   }
+  // }
+
+  getOvertimeStatusSum(): string 
+  {
+    //console.log('Overtime status: ', this.realOvertime);
+    if (this.realOvertimeSum < this.minOvertimeSum) {
       return 'low-value';
-    } else if (user.realOvertime + (user.overtimeMaxLimit * 0.1) > user.overtimeMaxLimit) {
+    } else if (this.realOvertimeSum + (this.maxOvertimeSum * 0.1) > this.maxOvertimeSum) {
       return 'high-value';
     } else {
       return 'medium-value';
     }
   }
 
-  currentForm: string | null = 'segmentForm';
-
-  showForm(form: string) {
-    this.currentForm = form;
-    this.title = 'Segment D' + '3';  
+  showSite(site: string): void
+  {
+    this.router.navigate([site]);
   }
+
+  showTeamsSite(): void
+  {
+    this.manager?.levelRole == 3 ? this.showSite('/tl/team') : (this.manager?.levelRole == 2 ? this.showSite('/mng/teams') : this.showSite(''));
+  }
+
+  goBack(): void
+  {
+    this.location.back();
+  }
+
+  setData(): void
+  {
+    if (this.manager !== undefined)
+    {
+      this.teamMinLimits = this.dataService.getMinLimitTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamMaxLimits = this.dataService.getMaxLimitTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamRealOvertimes = this.dataService.getSumOvertimeTeam(this.manager.employeeId, this.selectedMonth);
+      this.realOvertimeSum = 0;
+      this.minOvertimeSum = 0;
+      this.maxOvertimeSum = 0;
+      this.teamRealOvertimes.forEach((value: number, key: string) => {
+        this.realOvertimeSum += value;
+      });
+      this.teamMinLimits.forEach((value: number, key: string) => {
+        this.minOvertimeSum += value;
+      });
+      this.teamMaxLimits.forEach((value: number, key: string) => {
+        this.maxOvertimeSum += value;
+      });
+    }
+  }
+
 }

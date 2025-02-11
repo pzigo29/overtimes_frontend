@@ -1,0 +1,47 @@
+{
+    "BUTTON": {
+        "SAVE-CHANGES": "Save changes",
+        "BACK": "Back",
+        "SHOW-TEAM-MEMBERS": "Show team members",
+        "SHOW-TEAMS": "Show teams",
+        "HIDE": "Hide",
+        "SHOW": "Show",
+        "FILTERS": "filters",
+        "DELETE": "Delete",
+        "EMPLOYEE-ESTIMATE": "Employee estimate",
+        "SHOW-SEGMENTS": "Show segments"
+    },
+
+    "SUMMARY": "Summary",
+    "MONTH": "Month",
+    "EMPLOYEE": "Employee",
+    "TEAM": "Team",
+    "MIN-LIMIT": "Minimal limit",
+    "MAX-LIMIT": "Maximal limit",
+    "REAL-OVERTIMES": "Real overtime hours",
+    "REASON": "Reason",
+    "APPROVED": "Approved",
+    "MNG-COMMENT": "Manager's comment",
+    "MNG-RND-COMMENT": "RnD's Manager's comment",
+    
+    "LIMITS": {
+        "ALL": "All limits",
+        "FULFILLED": "Fulfilled limits",
+        "NOT-FULFILLED": "Not fulfilled limits"
+    },
+
+    "PERSONAL-NUMBER": "Personal number",
+    "SUPERIOR": "Superior",
+    "D-SEGMENT": "D-segment",
+    "USERNAME": "Username",
+    "COST-CENTER": "Cost center",
+    "TITLE": {
+        "TL-TEAM-DETAIL": "Employee detail",
+        "TL": "My team",
+        "SEGMENT": "Segment D",
+        "RND": "Overtimes RnD"
+    },
+
+    "OVERTIME-RULES": "Overtime rules",
+    "SEGMENT": "Segment"
+}

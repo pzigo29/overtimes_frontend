@@ -1,0 +1,21 @@
+<table class="excel-table">
+    <thead>
+        <tr>
+            <th>{{'MONTH' | translate}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngIf="arePrevious">
+            <td (click)="loadPreviousElements()" class="cursor-pointer">▲</td>
+        </tr>
+        <tr *ngFor="let month of displayedMonths">
+            <td (click)="selectMonth(month)" class="cursor-pointer"
+            [ngStyle]="{'background-color': isSelected(month) ? 'green' : 'white', 'color': isSelected(month) ? 'white' : 'black'}" >
+                {{month | date: 'MM/yyyy'}}
+            </td>
+        </tr>
+        <tr *ngIf="areNext">
+            <td (click)="loadNextElements()" class="cursor-pointer">▼</td>
+        </tr>
+    </tbody>
+</table>

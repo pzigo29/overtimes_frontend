@@ -1,13 +1,14 @@
 import { Component, HostListener, Inject, PLATFORM_ID, Input } from '@angular/core';
-import { OvertimeThpComponent } from '../overtime-thp/overtime-thp.component';
+// import { OvertimeThpComponent } from '../overtime-thp/overtime-thp.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 // import { SidebarService } from '../sidebar/sidebar.service';
 
 @Component({
   selector: 'app-title-bar',
   standalone: true,
-  imports: [],
+  imports: [TranslateModule],
   templateUrl: './title-bar.component.html',
   styleUrl: './title-bar.component.scss'
 })
@@ -38,7 +39,7 @@ export class TitleBarComponent {
 
   private updateSidebarVisibility(): void {
     if (isPlatformBrowser(this.platformId)) {
-      TitleBarComponent.isSidebarVisible = window.innerWidth < 430;
+      TitleBarComponent.isSidebarVisible = window.innerWidth < 470;
     }
   }
 }

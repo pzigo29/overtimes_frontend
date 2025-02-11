@@ -1,27 +1,39 @@
 <div class="container">
-    <app-title-bar [title]="title"></app-title-bar>
-        <div class="div-of-form">
-            <form *ngFor="let user of users" class="overtime-form">
-                <div>
-                    <label for="personUserName">Username:</label>
-                    <input type="text" id="personUserName" name="personUserName" [(ngModel)]="user.personUserName" required readonly>
-                </div>
-                <div>
-                    <label for="overtimeMaxLimit">Maximum nadčasov za mesiac:</label>
-                    <input type="number" id="overtimeMaxLimit" name="overtimeMaxLimit" [(ngModel)]="user.overtimeMaxLimit" required >
-                </div>
-                <div>
-                    <label for="overtimeMinLimit">Minimum nadčasov za mesiac:</label>
-                    <input type="number" id="overtimeMinLimit" name="overtimeMinLimit" [(ngModel)]="user.overtimeMinLimit" required >
-                </div>
-                <div>
-                    <label for="realOvertime">Reálny počet hodín:</label>
-                    <input type="number" id="realOvertime" name="realOvertime" [(ngModel)]="user.realOvertime" [ngClass]="getOvertimeStatus(user)" required readonly>
-                </div>
-                <div class="submit-btn-container">
-                    <button type="submit" class="submit-btn">Uložiť</button>
-                </div>
-            </form>
+    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
+    <div class="top-right-div" *ngIf="sourceSite === '/mng/teams'">
+        <!-- <app-user-filters></app-user-filters> -->
+        <div></div>
+        <!-- <button class="submit-btn" (click)="showSite('/mng/teams')">{{'BUTTON.BACK' | translate}}</button> -->
+        <button class="submit-btn" (click)="goBack()">{{'BUTTON.BACK' | translate}}</button>
+    </div>
+    <div class="row-aligned">
+        <app-months-table></app-months-table>
+        <div class="overtime-form-row" *ngIf="!loading">
+            <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
+                <thead>
+                    <tr>
+                        <th>{{'SUMMARY' | translate}}</th>
+                        <th>{{'MIN-LIMIT' | translate}}</th>
+                        <th>{{'MAX-LIMIT' | translate}}</th>
+                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <th>{{'MNG-COMMENT' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{'TITLE.' + title | translate}}</td>
+                        <td><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
+                        <td><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
+                        <!-- <td></td> -->
+                        <td [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                        <td><!--{{commentMng}}--></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="centered-div">
+                <button class="submit-btn" (click)="showSite('tl/team')">{{'BUTTON.SHOW-TEAM-MEMBERS' | translate}}</button>
+            </div>
         </div>
+        <div *ngIf="loading" class="overtime-form-row">Loading...</div> 
 </div>
 

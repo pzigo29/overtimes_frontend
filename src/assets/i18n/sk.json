@@ -1,0 +1,48 @@
+{
+    "BUTTON": {
+        "SAVE-CHANGES": "Ulož zmeny",
+        "BACK": "Späť",
+        "SHOW-TEAM-MEMBERS": "Zobraz členov tímu",
+        "SHOW-TEAMS": "Zobraz tímy",
+        "HIDE": "Skry",
+        "SHOW": "Zobraz",
+        "FILTERS": "filtre",
+        "DELETE": "Zmaž",
+        "EMPLOYEE-ESTIMATE": "Odhad zamestnanca",
+        "SHOW-SEGMENTS": "Zobraz segmenty"
+    },
+
+    "SUMMARY": "Sumár",
+    "MONTH": "Mesiac",
+    "EMPLOYEE": "Zamestnanec",
+    "TEAM": "Tím",
+    "MIN-LIMIT": "Minimálny limit",
+    "MAX-LIMIT": "Maximálny limit",
+    "REAL-OVERTIMES": "Reálne hodiny nadčasov",
+    "REASON": "Dôvod",
+    "APPROVED": "Schválené",
+    "MNG-COMMENT": "Komentár od manažéra",
+    "MNG-RND-COMMENT": "Komentár od manažéra RnD",
+
+    "LIMITS": {
+        "ALL": "Všetky limity",
+        "FULFILLED": "Splnené limity",
+        "NOT-FULFILLED": "Nesplnené limity"
+    },
+
+    "PERSONAL-NUMBER": "Osobné číslo",
+    "SUPERIOR": "Nadriadený",
+    "D-SEGMENT": "D-segment",
+    "USERNAME": "Používateľské meno",
+    "COST-CENTER": "Nákladové stredisko",
+    "TITLE": {
+        "TL-TEAM-DETAIL": "Detail zamestnanca",
+        "TL": "Môj tím",
+        "SEGMENT": "Segment D",
+        "RND": "Nadčasy RnD"
+    },
+
+    "OVERTIME-RULES": "Pravidlá pre nadčasy",
+    "SEGMENT": "Segment"
+        
+}

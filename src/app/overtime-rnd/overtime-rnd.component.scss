@@ -10,6 +10,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     margin: 10px auto;
+    text-wrap: wrap;
   }
 
   .overtime-form-tl {
@@ -39,7 +40,24 @@
     position: relative;
   }
 
+  .div-of-segments {
+    display: flex; /* Use Flexbox layout */
+    flex-direction: column; /* Arrange items in a row */
+    padding: 10px;
+    justify-content: flex-start; /* Align items to the start */
+    align-items: flex-start; /* Align items to the top */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    white-space: nowrap; /* Prevent wrapping */
+    position: relative;
+  }
+
   .header-TL {
     text-align: center;
     padding: 10px;
   }
+
+// @media (max-width: 430px) {
+//   .back-btn {
+    
+//   }  
+// }

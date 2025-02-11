@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
@@ -6,45 +6,36 @@ import { Employee } from '../models/data.model';
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-overtime-tl',
+  selector: 'app-overtime-tl-team',
   standalone: true,
-  imports: [CommonModule, TitleBarComponent, FormsModule, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-tl.component.html',
-  styleUrl: './overtime-tl.component.scss'
+  imports: [FormsModule, CommonModule, TitleBarComponent, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  templateUrl: './overtime-tl-team.component.html',
+  styleUrl: './overtime-tl-team.component.scss'
 })
-export class OvertimeTLComponent implements OnInit {
+export class OvertimeTLTeamComponent {
 
   title: string = 'TL';
+  // selectedEmployee?: Employee;
+  leader?: Employee;
   team: Employee[] = [];
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
   teamMinLimits: Map<string, number> = new Map<string, number>();
   teamMaxLimits: Map<string, number> = new Map<string, number>();
-  
-  leader?: Employee;
-  isTableVisible: boolean = true;
   realOvertimeSum: number = 0;
   minOvertimeSum: number = 0;
   maxOvertimeSum: number = 0;
-  loading: boolean = true;
+  loading: boolean = false;
   selectedMonth: Date = new Date();
-  selectedEmployee?: Employee;
-  sourceSite: string | null = null;
-  // shownSite: boolean[] = [true, false]; //teamSummary, teamMembers
-  
-  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private location: Location, private cd: ChangeDetectorRef) { }
+
+  constructor(private dataService: DataService, private router: Router, private location: Location) { }
 
   async ngOnInit() {
     this.loading = true; // Start loading state
     try {
-      // Fetch query parameters from the route
-      this.route.queryParams.subscribe(params => {
-        this.sourceSite = params['source'];
-        console.log('source: ', this.sourceSite);
-      });
   
       // Get the username from the service
       const username: string = await this.dataService.getTlUsername().toPromise() || '';
@@ -90,14 +81,21 @@ export class OvertimeTLComponent implements OnInit {
     });
   }
 
-  isSidebarActive(): boolean 
+  showSite(site: string): void
   {
-    return TitleBarComponent.isSidebarActive;
+    this.router.navigate([`${site}`]);
   }
 
-  isSidebarVisible(): boolean 
+  goBack(): void
   {
-    return TitleBarComponent.isSidebarVisible;
+    this.location.back();
+  }
+
+  selectEmployee(employee: Employee): void
+  {
+    // this.selectedEmployee = employee;
+    this.router.navigate(['tl/team/detail']);
+    this.dataService.setSelectedEmployee(employee.username);
   }
 
   getOvertimeStatusSum(): string 
@@ -125,30 +123,8 @@ export class OvertimeTLComponent implements OnInit {
     }
   }
 
-  showSite(site: string): void
-  {
-    if (this.sourceSite === '/mng/teams' && site === '/mng/teams')
-    {
-      // get username from windows
-      this.dataService.mngUsername = 'roskmln';
-      console.log(this.dataService.mngUsername);
-    }
-    this.router.navigate([site]);
-  }
-
-  goBack(): void
-  {
-    this.location.back();
-  }
-
-  selectEmployee(employee: Employee): void
-  {
-    this.selectedEmployee = employee;
-  }
-
   setData(): void
   {
-    
     if (this.leader == undefined)
       throw new Error('Leader undefined');
     this.realOvertimeSum = 0;
