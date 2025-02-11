@@ -1,4 +1,4 @@
-import { Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
@@ -26,55 +26,59 @@ export class OvertimeThpComponent implements OnInit {
   loading: boolean = true;
   selectedMonth: Date = new Date();
 
-  constructor(private dataService: DataService) { }
+  name: string = '';
 
-  ngOnInit(): void 
-  {
-    let username = '';
-    this.dataService.getThpUsername().subscribe(
-      (data: string | null) => {
-        if (data !== null)
+  constructor(private dataService: DataService, private cd: ChangeDetectorRef) { }
+
+  async ngOnInit() {
+    this.loading = true; // Start loading state
+    try {
+      let username: string | null = null;
+      await this.dataService.getThpUsername().subscribe(
+        (data: string | null) =>
+        {
           username = data;
-      }
-    );
-    if (username !== '')
-    {
-      this.dataService.getEmployee(username).subscribe(
-        (data: Employee | undefined) => {
-          this.employee = data;
-          if (this.employee === undefined) {
-            this.loading = false;
-            throw new Error('Employee undefined' + username);
+        }
+      ); // Wait for the username to be fetched
+      
+      if (username) {
+        console.log('Fetched username:', username);
+        await this.dataService.getEmployee(username).subscribe(
+          (data: Employee | undefined) =>
+          {
+            this.employee = data;
           }
-          //console.log(this.employee.username);
-          this.setData();
-          this.loading = false;  // Set to false when data is fully loaded
-          //console.log(this.employee.username);
-        },
-        (error: any) => {
-            this.loading = false;
-            console.error('Error fetching employee', error);
+        ); // Wait for employee data to be fetched
+        this.cd.detectChanges();
+        console.log('Employee received from service:', this.employee);
+        this.name = this.employee?.firstName || '';
+        if (this.employee) {
+          this.setData(); // Now we are sure that the employee is not undefined
+        } else {
+          console.error('Employee is undefined for username:', username);
         }
-      );
-      this.dataService.selectedMonth$.subscribe(
-        month => {
-          this.loading = true;
-          this.selectedMonth = month;
-          this.setData();
-          this.loading = false;
-        }
-      );
+      } else {
+        console.error('No username found');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      this.loading = false; // End loading state
     }
-    else
-    {
-      this.loading = true;
-    }
+
+    // Subscribe to the selectedMonth$ 
+    this.dataService.selectedMonth$.subscribe(month => {
+      if (this.employee) {
+        this.selectedMonth = month; // Update selected month
+        this.setData(); // Call setData only if employee is defined
+      }
+    });
   }
 
   fetchMessage(): void
   {
-    this.dataService.getMessage('zigopvo').subscribe(
-      (data: string) => {
+    this.dataService.getEmployee('zigopvo').subscribe(
+      (data: Employee | undefined) => {
         console.log(data);
       },
       (error: any) => {
@@ -87,9 +91,23 @@ export class OvertimeThpComponent implements OnInit {
   {
     if (this.employee == undefined)
       throw new Error('Employee undefined');
-    this.realOvertime = this.dataService.getSumOvertime(this.employee.employee_id, this.selectedMonth);
-    this.minOvertime = this.dataService.getMinLimit(this.employee.employee_id, this.selectedMonth);
-    this.maxOvertime = this.dataService.getMaxLimit(this.employee.employee_id, this.selectedMonth);
+    console.log('setData(): ' + JSON.stringify(this.employee) );
+    // this.employee = {
+    //   "employeeId": 1,
+    // "personalNumber": "12345678",
+    // "username": "zigopvo",
+    // "levelRole": 5,
+    // "managerId": null,
+    // "costCenter": "1234-5678",
+    // "firstName": "Pavol",
+    // "lastName": "Žigo",
+    // "email": "zigopvo@schaeffler.com",
+    // "employed": true,
+    // "approver": false
+    // }
+    this.realOvertime = this.dataService.getSumOvertime(this.employee.employeeId, this.selectedMonth);
+    this.minOvertime = this.dataService.getMinLimit(this.employee.employeeId, this.selectedMonth);
+    this.maxOvertime = this.dataService.getMaxLimit(this.employee.employeeId, this.selectedMonth);
     this.approved = false;
     //console.log('data: ', this.realOvertime, this.minOvertime, this.maxOvertime, this.approved);
   }

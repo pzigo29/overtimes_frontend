@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 import { of, Observable, BehaviorSubject } from 'rxjs';
-import { Approval, Employee, Overtime, OvertimeLimit, User } from '../models/data.model';
+import { Approval, Employee, Overtime, OvertimeLimit } from '../models/data.model';
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 
@@ -34,131 +34,131 @@ export class DataService {
   employees: Employee[] = 
   [
     {
-      employee_id: 1,
-      personal_number: '31211302',
+      employeeId: 1,
+      personalNumber: '12345678',
       username: 'zigopvo',
-      level_role: 5,
-      manager_id: 3,
-      cost_center: '1234-5678',
-      first_name: 'Pavol',
-      last_name: 'Žigo',
+      levelRole: 5,
+      managerId: null,
+      costCenter: '1234-5678',
+      firstName: 'Pavol',
+      lastName: 'Žigo',
       email: 'zigopvo@schaeffler.com',
       employed: true,
       approver: false
     },
     {
-      employee_id: 2,
-      personal_number: '31211308',
+      employeeId: 2,
+      personalNumber: '31211308',
       username: 'kralmln',
-      level_role: 5,
-      manager_id: 5,
-      cost_center: '1234-5679',
-      first_name: 'Milan',
-      last_name: 'Kráľ',
+      levelRole: 5,
+      managerId: 5,
+      costCenter: '1234-5679',
+      firstName: 'Milan',
+      lastName: 'Kráľ',
       email: 'zigopvo@schaeffler.com',
       employed: true,
       approver: false
     },
     {
-      employee_id: 3,
-      personal_number: '36511308',
+      employeeId: 3,
+      personalNumber: '36511308',
       username: 'rechjoz',
-      level_role: 4,
-      manager_id: 4,
-      cost_center: '1234-5679',
-      first_name: 'Jozef',
-      last_name: 'Rechtorík',
+      levelRole: 4,
+      managerId: 4,
+      costCenter: '1234-5679',
+      firstName: 'Jozef',
+      lastName: 'Rechtorík',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
     },
     {
-      employee_id: 4,
-      personal_number: '36841308',
+      employeeId: 4,
+      personalNumber: '36841308',
       username: 'roskmln',
-      level_role: 2,
-      manager_id: 7,
-      cost_center: '1234-5679',
-      first_name: 'Milan',
-      last_name: 'Roško',
+      levelRole: 2,
+      managerId: 7,
+      costCenter: '1234-5679',
+      firstName: 'Milan',
+      lastName: 'Roško',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
     },
     {
-      employee_id: 5,
-      personal_number: '36841708',
+      employeeId: 5,
+      personalNumber: '36841708',
       username: 'vrabarn',
-      level_role: 4,
-      manager_id: 4,
-      cost_center: '1234-5679',
-      first_name: 'Arnold',
-      last_name: 'Vrabko',
+      levelRole: 4,
+      managerId: 4,
+      costCenter: '1234-5679',
+      firstName: 'Arnold',
+      lastName: 'Vrabko',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
     },
     {
-      employee_id: 6,
-      personal_number: '87841708',
+      employeeId: 6,
+      personalNumber: '87841708',
       username: 'biromchl',
-      level_role: 5,
-      manager_id: 4,
-      cost_center: '1234-5679',
-      first_name: 'Michal',
-      last_name: 'Bíroš',
+      levelRole: 5,
+      managerId: 4,
+      costCenter: '1234-5679',
+      firstName: 'Michal',
+      lastName: 'Bíroš',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
     },
     {
-      employee_id: 7,
-      personal_number: '87895708',
+      employeeId: 7,
+      personalNumber: '87895708',
       username: 'klmkjn',
-      level_role: 1,
-      manager_id: null,
-      cost_center: '1234-5679',
-      first_name: 'Ján',
-      last_name: 'Klimko',
+      levelRole: 1,
+      managerId: null,
+      costCenter: '1234-5679',
+      firstName: 'Ján',
+      lastName: 'Klimko',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
     },
     {
-      employee_id: 8,
-      personal_number: '87895638',
+      employeeId: 8,
+      personalNumber: '87895638',
       username: 'lacojan',
-      level_role: 3,
-      manager_id: 7,
-      cost_center: '1234-5679',
-      first_name: 'Ján',
-      last_name: 'Laco',
+      levelRole: 3,
+      managerId: 7,
+      costCenter: '1234-5679',
+      firstName: 'Ján',
+      lastName: 'Laco',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: true
     },
     {
-      employee_id: 9,
-      personal_number: '87896521',
+      employeeId: 9,
+      personalNumber: '87896521',
       username: 'trmpdnl',
-      level_role: 5,
-      manager_id: 8,
-      cost_center: '1234-5679',
-      first_name: 'Donald',
-      last_name: 'Trump',
+      levelRole: 5,
+      managerId: 8,
+      costCenter: '1234-5679',
+      firstName: 'Donald',
+      lastName: 'Trump',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: false
     },
     {
-      employee_id: 10,
-      personal_number: '87896861',
+      employeeId: 10,
+      personalNumber: '87896861',
       username: 'mikimaja',
-      level_role: 0,
-      manager_id: 7,
-      cost_center: '1234-5679',
-      first_name: 'Maja',
-      last_name: 'Mikitiuková',
+      levelRole: 0,
+      managerId: 7,
+      costCenter: '1234-5679',
+      firstName: 'Maja',
+      lastName: 'Mikitiuková',
       email: 'zigopivo@schaeffler.com',
       employed: true,
       approver: false
@@ -315,20 +315,22 @@ export class DataService {
   // mngUsername: string | null = 'lacojan'; // toto sa bude načítavať z windowsu
   // tlUsername: string | null = 'lacojan';
   // thpUsername: string | null = 'roskmln';
-  mngUsername: string | null = 'roskmln'; // toto sa bude načítavať z windowsu
+  mngUsername: string | null = 'dakto'; // toto sa bude načítavať z windowsu
   tlUsername: string | null = 'klmkjn';
   thpUsername: string | null = 'zigopvo';
   // mngUsername: string = 'rechjoz';
   assistantUsername: string | null = 'mikimaja';
   selectedEmployee?: Employee;
 
-  private apiUrl = 'https://localhost:7198/api';
+  // private apiUrl = 'https://localhost:7198/api';
+  private apiUrl = 'http://localhost:5001/api';
 
   constructor(private http: HttpClient) { } 
 
   getMessage(username: string): Observable<string>
   {
-    return this.http.get<string>(`${this.apiUrl}/Employee?username=${username}`, { responseType: 'text' as 'json' });
+    // return this.http.get<string>(`${this.apiUrl}/Employee?username=${username}`, { responseType: 'text' as 'json' });
+    return this.http.get<string>(`${this.apiUrl}/WeatherForecast`, { responseType: 'text' as 'json' });
   }
 
   compareYearAndMonth(date1: Date, date2: Date): boolean
@@ -370,34 +372,38 @@ export class DataService {
 
   // VSETKY TIETO GETTRE BY ASI MALI BYT API VOLANIA NA BACKEND, KTORE BY UROBILI SELECT Z DATABAZY!!!
 
-  getEmployee(username: string): Observable<Employee | undefined>
-  {
-    return of(this.employees.find(x => x.username === username));
+  getEmployee(username: string): Observable<Employee | undefined> {
+    return this.http.get<Employee>(`${this.apiUrl}/Employee/username?username=${username}`);
   }
 
   getTeamMembers(manager_id: number): Observable<Employee[]>
   {
-    return of(this.employees.filter(x => x.manager_id === manager_id));
+    console.log('in getTeamMembers');
+    // return of(this.employees.filter(x => x.managerId === manager_id));
+    return this.http.get<Employee[]>(`${this.apiUrl}/Employee/team?managerId=${manager_id}`);
   }
 
   getTeamLeaders(manager_id: number): Observable<Employee[]>
   {
-    let teamLeaders = this.employees.filter(x => x.manager_id === manager_id);
-    teamLeaders = teamLeaders.filter(leader => {
-      let subordinates = this.employees.filter(x => x.manager_id === leader.employee_id);
-      return subordinates.length > 0;
-    });
-    return of(teamLeaders);
+    // let teamLeaders = this.employees.filter(x => x.managerId === manager_id);
+    // teamLeaders = teamLeaders.filter(leader => {
+    //   let subordinates = this.employees.filter(x => x.managerId === leader.employeeId);
+    //   return subordinates.length > 0;
+    // });
+    // return of(teamLeaders);
+    return this.http.get<Employee[]>(`${this.apiUrl}/Employee/tl?managerId=${manager_id}`);
   }
 
   getSegmentManagers(rnd_id: number): Observable<Employee[]>
   {
-    return of(this.employees.filter(x => x.manager_id === rnd_id && (x.level_role === 2 || x.level_role === 3 )));
+    // return of(this.employees.filter(x => x.managerId === rnd_id && (x.levelRole === 2 || x.levelRole === 3 )));
+    return this.http.get<Employee[]>(`${this.apiUrl}/Employee/mng?managerId=${rnd_id}`);
   }
 
   getEmployees(): Observable<Employee[]>
   {
-    return of(this.employees);
+    // return of(this.employees);
+    return this.http.get<Employee[]>(`${this.apiUrl}/Employee`);
   }
 
   getSumOvertime(employee_id: number, month: Date): number
@@ -434,21 +440,21 @@ export class DataService {
 
   getMinLimitTeam(manager_id: number, month: Date): Map<string, number>
   {
-    let team: Employee[] = this.employees.filter(x => x.manager_id === manager_id);
+    let team: Employee[] = this.employees.filter(x => x.managerId === manager_id);
     let teamMinLimits: Map<string, number> = new Map();
     team.forEach(member => {
 
-      let subordinates: Employee[] = this.employees.filter(x => x.manager_id === member.employee_id);
+      let subordinates: Employee[] = this.employees.filter(x => x.managerId === member.employeeId);
       if (subordinates.length > 0)
       {
-        let subMinLimits: Map<string, number> = this.getMinLimitTeam(member.employee_id, month);
+        let subMinLimits: Map<string, number> = this.getMinLimitTeam(member.employeeId, month);
         subMinLimits.forEach((value, key) => {
           teamMinLimits.set(key, value);
         });
       }
       else
       {
-        teamMinLimits.set(member.username, this.getMinLimit(member.employee_id, month));
+        teamMinLimits.set(member.username, this.getMinLimit(member.employeeId, month));
       }      
     });
     return teamMinLimits;
@@ -456,20 +462,20 @@ export class DataService {
 
   getMaxLimitTeam(manager_id: number, month: Date): Map<string, number>
   {
-    let team: Employee[] = this.employees.filter(x => x.manager_id === manager_id);
+    let team: Employee[] = this.employees.filter(x => x.managerId === manager_id);
     let teamMaxLimits: Map<string, number> = new Map();
     team.forEach(member => {
-      let subordinates: Employee[] = this.employees.filter(x => x.manager_id === member.employee_id);
+      let subordinates: Employee[] = this.employees.filter(x => x.managerId === member.employeeId);
       if (subordinates.length > 0)
       {
-        let subMaxLimits: Map<string, number> = this.getMaxLimitTeam(member.employee_id, month);
+        let subMaxLimits: Map<string, number> = this.getMaxLimitTeam(member.employeeId, month);
         subMaxLimits.forEach((value, key) => {
           teamMaxLimits.set(key, value);
         });
       }
       else
       {
-        teamMaxLimits.set(member.username, this.getMaxLimit(member.employee_id, month));
+        teamMaxLimits.set(member.username, this.getMaxLimit(member.employeeId, month));
       }
     });
     return teamMaxLimits;
@@ -477,20 +483,20 @@ export class DataService {
 
   getSumOvertimeTeam(manager_id: number, month: Date): Map<string, number>
   {
-    let team: Employee[] = this.employees.filter(x => x.manager_id === manager_id);
+    let team: Employee[] = this.employees.filter(x => x.managerId === manager_id);
     let teamRealOvertimes: Map<string, number> = new Map();
     team.forEach(member => {
-      let subordinates: Employee[] = this.employees.filter(x => x.manager_id === member.employee_id);
+      let subordinates: Employee[] = this.employees.filter(x => x.managerId === member.employeeId);
       if (subordinates.length > 0)
       {
-        let subRealOvertimes: Map<string, number> = this.getSumOvertimeTeam(member.employee_id, month);
+        let subRealOvertimes: Map<string, number> = this.getSumOvertimeTeam(member.employeeId, month);
         subRealOvertimes.forEach((value, key) => {
           teamRealOvertimes.set(key, value);
         });
       }
       else
       {
-        teamRealOvertimes.set(member.username, this.getSumOvertime(member.employee_id, month)); // ak sa má zaratávať aj TL, len to dať preč z else
+        teamRealOvertimes.set(member.username, this.getSumOvertime(member.employeeId, month)); // ak sa má zaratávať aj TL, len to dať preč z else
       }
     });
     // console.log('Team real overtimes: ', teamRealOvertimes);

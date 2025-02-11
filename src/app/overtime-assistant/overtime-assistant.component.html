@@ -113,7 +113,7 @@
           </thead>
           <tbody>
               <tr *ngFor="let employee of employees">
-                  <td (dblclick)="selectEmployee(employee)" title="Detail" class="cursor-pointer">{{employee?.first_name}} {{employee?.last_name}}</td>
+                  <td (dblclick)="selectEmployee(employee)" title="Detail" class="cursor-pointer">{{employee?.firstName}} {{employee?.lastName}}</td>
                   <td><input type="number" [ngModel]="employeesMinLimits.get(employee.username)" (ngModelChange)="employeesMinLimits.set(employee.username, $event)" min="0" step="0.5" disabled></td>
                   <td><input type="number" [ngModel]="employeesMaxLimits.get(employee.username)" (ngModelChange)="employeesMaxLimits.set(employee.username, $event)" min="0" step="0.5" disabled></td>
                   <td [ngClass]="getOvertimeStatus(employee)">{{employeesRealOvertimes.get(employee.username)}}</td>

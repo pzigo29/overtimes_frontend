@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { User } from "../models/data.model";
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { UserFilterService } from '../services/user-filter.service';
 import { MonthsTableComponent } from "../months-table/months-table.component";
@@ -43,50 +42,24 @@ export class OvertimeMngComponent {
 
   constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
-  ngOnInit(): void 
+  async ngOnInit()
     {
       this.route.queryParams.subscribe(params => {
         this.sourceSite = params['source'];
-        console.log('source: ', this.sourceSite);
+        // console.log('source: ', this.sourceSite);
       });
-      let username = '';
-      this.dataService.getMngUsername().subscribe(
-        (data: string | null) => {
-          if (data !== null)
-            username = data;
-        }
-      );
+      const username: string = await this.dataService.getMngUsername().toPromise() || '';
       if (username !== '')
       {
-        this.dataService.getEmployee(username).subscribe(
-          (data: Employee | undefined) => {
-            this.manager = data;
-            if (this.manager === undefined) {
-              this.loading = false;
-              throw new Error('Employee undefined' + username);
-            }
-            //console.log(this.employee.username);
-            // this.setData();
-            this.loading = false;  // Set to false when data is fully loaded
-            //console.log(this.employee.username);
-          },
-          (error: any) => {
-              this.loading = false;
-              console.error('Error fetching employee', error);
-          }
-        );
+        // console.log('Fetched username:', username);
+        this.manager = await this.dataService.getEmployee(username).toPromise();
+        // console.log('getEmployee: ', JSON.stringify(this.manager));
         if (this.manager !== undefined) 
         {
-          if (this.manager?.level_role < 4)
+          if (this.manager?.levelRole < 4)
           {
-            this.dataService.getTeamMembers(this.manager.employee_id).subscribe(
-              (data: Employee[]) =>
-              {
-                this.team = data;
-                console.log('team member 0: ', this.team[0]);
-                this.setData();
-              }
-            );
+            this.team = await this.dataService.getTeamMembers(this.manager.employeeId).toPromise() || [];
+            // console.log('Team members: ', this.team);
             for (let i = 0; i < this.team.length; i++)
             {
               this.teamRealOvertimes.set(this.team[i].username, 0);
@@ -180,7 +153,7 @@ export class OvertimeMngComponent {
 
   showTeamsSite(): void
   {
-    this.manager?.level_role == 3 ? this.showSite('/tl/team') : (this.manager?.level_role == 2 ? this.showSite('/mng/teams') : this.showSite(''));
+    this.manager?.levelRole == 3 ? this.showSite('/tl/team') : (this.manager?.levelRole == 2 ? this.showSite('/mng/teams') : this.showSite(''));
   }
 
   goBack(): void
@@ -192,9 +165,9 @@ export class OvertimeMngComponent {
   {
     if (this.manager !== undefined)
     {
-      this.teamMinLimits = this.dataService.getMinLimitTeam(this.manager.employee_id, this.selectedMonth);
-      this.teamMaxLimits = this.dataService.getMaxLimitTeam(this.manager.employee_id, this.selectedMonth);
-      this.teamRealOvertimes = this.dataService.getSumOvertimeTeam(this.manager.employee_id, this.selectedMonth);
+      this.teamMinLimits = this.dataService.getMinLimitTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamMaxLimits = this.dataService.getMaxLimitTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamRealOvertimes = this.dataService.getSumOvertimeTeam(this.manager.employeeId, this.selectedMonth);
       this.realOvertimeSum = 0;
       this.minOvertimeSum = 0;
       this.maxOvertimeSum = 0;

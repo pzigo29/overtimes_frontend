@@ -12,14 +12,14 @@
                     <table class="excel-table">
                         <thead>
                             <tr>
-                                <th>Osobné číslo</th>
-                                <th>Nákladové stredisko</th>
+                                <th>{{'PERSONAL-NUMBER' | translate}}</th>
+                                <th>{{'COST-CENTER' | translate}}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{employee?.personal_number}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
-                                <td>{{employee?.cost_center}}</td>
+                                <td>{{employee?.personalNumber}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
+                                <td>{{employee?.costCenter}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -31,14 +31,14 @@
                 <table class="excel-table personal-data-table">
                     <thead>
                         <tr>
-                            <th>Osobné číslo</th>
-                            <th>Nákladové stredisko</th>
+                            <th>{{'PERSONAL-NUMBER' | translate}}</th>
+                            <th>{{'COST-CENTER' | translate}}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{employee?.personal_number}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
-                            <td>{{employee?.cost_center}}</td>
+                            <td>{{employee?.personalNumber}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
+                            <td>{{employee?.costCenter}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -62,7 +62,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{employee?.first_name}} {{employee?.last_name}}</td>
+                            <td>{{employee?.firstName}} {{employee?.lastName}}</td>
                             <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5"></td>
                             <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5"></td>
                             <td [ngClass]="getOvertimeStatus()">{{realOvertime}}</td>

@@ -22,7 +22,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let member of team">
-                    <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.first_name}} {{member?.last_name}}</td>
+                    <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.firstName}} {{member?.lastName}}</td>
                     <td><input type="number" [ngModel]="teamMinLimits.get(member.username)" (ngModelChange)="teamMinLimits.set(member.username, $event)" min="0" step="0.5"></td>
                     <td><input type="number" [ngModel]="teamMaxLimits.get(member.username)" (ngModelChange)="teamMaxLimits.set(member.username, $event)" min="0" step="0.5"></td>
                     <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>

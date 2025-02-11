@@ -75,9 +75,9 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
       return;
     }
     console.log('Setting data for employee:', this.selectedEmployee);
-    this.minLimit = this.dataService.getMinLimit(this.selectedEmployee.employee_id, this.selectedMonth);
-    this.maxLimit = this.dataService.getMaxLimit(this.selectedEmployee.employee_id, this.selectedMonth);
-    this.realOvertime = this.dataService.getSumOvertime(this.selectedEmployee.employee_id, this.selectedMonth);
+    this.minLimit = this.dataService.getMinLimit(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.maxLimit = this.dataService.getMaxLimit(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.realOvertime = this.dataService.getSumOvertime(this.selectedEmployee.employeeId, this.selectedMonth);
   }
 
   getOvertimeStatus(employee: Employee): string {

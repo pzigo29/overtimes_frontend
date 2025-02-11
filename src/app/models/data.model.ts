@@ -1,26 +1,13 @@
-export interface User {
-    personUserName: string;
-    firstName: string;
-    lastName: string;
-    personalNumber: string;
-    costCenter: string;
-    overtimeMaxLimit: number;
-    overtimeMinLimit: number;
-    realOvertime: number;
-    manager: User | null;
-    dSegment: string | null;
-  }
-
 export interface Employee
 {
-  employee_id: number;
-  personal_number: string; //change
+  employeeId: number;
+  personalNumber: string; //change
   username: string;
-  level_role: number;
-  manager_id: number | null;
-  cost_center: string;
-  first_name: string;
-  last_name: string;
+  levelRole: number;
+  managerId: number | null;
+  costCenter: string;
+  firstName: string;
+  lastName: string;
   email: string;
   employed: boolean;
   approver: boolean;

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { Employee, User } from "../models/data.model"
+import { Employee } from "../models/data.model"
 import { UserFilterService } from "../services/user-filter.service";
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
@@ -60,7 +60,7 @@ export class OvertimeAssistantComponent implements OnInit{
               console.error('Error fetching employee', error);
           }
         );
-        if (this.assistant != undefined && this.assistant.level_role === 0)
+        if (this.assistant != undefined && this.assistant.levelRole === 0)
         {
           this.dataService.getEmployees().subscribe(
             (data: Employee[]) =>
@@ -116,9 +116,9 @@ export class OvertimeAssistantComponent implements OnInit{
     if (this.assistant == undefined)
       throw new Error('Leader undefined');
     this.employees.forEach(employee => {
-      let overtimes = this.dataService.getSumOvertime(employee.employee_id, this.selectedMonth);
-      let minLimit = this.dataService.getMinLimit(employee.employee_id, this.selectedMonth);
-      let maxLimit = this.dataService.getMaxLimit(employee.employee_id, this.selectedMonth);
+      let overtimes = this.dataService.getSumOvertime(employee.employeeId, this.selectedMonth);
+      let minLimit = this.dataService.getMinLimit(employee.employeeId, this.selectedMonth);
+      let maxLimit = this.dataService.getMaxLimit(employee.employeeId, this.selectedMonth);
       this.employeesRealOvertimes.set(employee.username, overtimes);
       this.employeesMinLimits.set(employee.username, minLimit);
       this.employeesMaxLimits.set(employee.username, maxLimit);

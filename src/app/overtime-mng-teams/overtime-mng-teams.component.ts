@@ -35,49 +35,51 @@ export class OvertimeMngTeamsComponent implements OnInit {
 
   constructor(private dataService: DataService, private router: Router, private location: Location) { }
 
-  ngOnInit(): void 
+  async ngOnInit() 
   {
-    let username = '';
-    this.dataService.getMngUsername().subscribe(
-      (data: string | null) => {
-        if (data !== null)
-          username = data;
-      }
-    );
+    const username: string = await this.dataService.getMngUsername().toPromise() || '';
+    //   (data: string | null) => {
+    //     if (data !== null)
+    //       username = data;
+    //   }
+    // );
     if (username !== '')
     {
-      this.dataService.getEmployee(username).subscribe(
-        (data: Employee | undefined) => {
-          this.manager = data;
-          if (this.manager === undefined) {
-            this.loading = false;
-            throw new Error('Employee undefined' + username);
-          }
-          //console.log(this.employee.username);
-          // this.setData();
-          this.loading = false;  // Set to false when data is fully loaded
-          //console.log(this.employee.username);
-        },
-        (error: any) => {
-            this.loading = false;
-            console.error('Error fetching employee', error);
-        }
-      );
+      this.manager = await this.dataService.getEmployee(username).toPromise();
+      //   (data: Employee | undefined) => {
+      //     this.manager = data;
+      //     if (this.manager === undefined) {
+      //       this.loading = false;
+      //       throw new Error('Employee undefined' + username);
+      //     }
+      //     //console.log(this.employee.username);
+      //     // this.setData();
+      //     this.loading = false;  // Set to false when data is fully loaded
+      //     //console.log(this.employee.username);
+      //   },
+      //   (error: any) => {
+      //       this.loading = false;
+      //       console.error('Error fetching employee', error);
+      //   }
+      // );
       if (this.manager != undefined)
       {
-        this.dataService.getTeamLeaders(this.manager.employee_id).subscribe(
-          (data: Employee[]) =>
-          {
-            this.teamLeaders = data;
-            console.log('team leader 0: ', this.teamLeaders[0]);
-            this.setData();
-          }
-        );
-        for (let i = 0; i < this.teamLeaders.length; i++)
+        if (this.manager.levelRole < 4)
         {
-          this.teamRealOvertimes.set(this.teamLeaders[i].username, 0);
-          this.teamMinLimits.set(this.teamLeaders[i].username, 0);   
-          this.teamMaxLimits.set(this.teamLeaders[i].username, 0);  
+          this.teamLeaders = await this.dataService.getTeamLeaders(this.manager.employeeId).toPromise() || [];
+          //   (data: Employee[]) =>
+          //   {
+          //     this.teamLeaders = data;
+          //     console.log('team leader 0: ', this.teamLeaders[0]);
+          //     this.setData();
+          //   }
+          // );
+          for (let i = 0; i < this.teamLeaders.length; i++)
+          {
+            this.teamRealOvertimes.set(this.teamLeaders[i].username, 0);
+            this.teamMinLimits.set(this.teamLeaders[i].username, 0);   
+            this.teamMaxLimits.set(this.teamLeaders[i].username, 0);  
+          }
         }
       }
       this.dataService.selectedMonth$.subscribe(
@@ -145,12 +147,12 @@ export class OvertimeMngTeamsComponent implements OnInit {
       this.minOvertimeSum = 0;
       this.maxOvertimeSum = 0;
       this.teamLeaders.forEach(member => {
-        this.teamMinLimits.set(member.username, this.dataService.getMinLimitTeamSum(member.employee_id, this.selectedMonth));
-        this.teamMaxLimits.set(member.username, this.dataService.getMaxLimitTeamSum(member.employee_id, this.selectedMonth));
-        this.teamRealOvertimes.set(member.username, this.dataService.getSumOvertimeTeamSum(member.employee_id, this.selectedMonth));
-        let teamLeaderMinLimits = this.dataService.getMinLimitTeam(member.employee_id, this.selectedMonth);
-        let teamLeaderMaxLimits = this.dataService.getMaxLimitTeam(member.employee_id, this.selectedMonth);
-        let teamLeaderRealOvertimes = this.dataService.getSumOvertimeTeam(member.employee_id, this.selectedMonth);
+        this.teamMinLimits.set(member.username, this.dataService.getMinLimitTeamSum(member.employeeId, this.selectedMonth));
+        this.teamMaxLimits.set(member.username, this.dataService.getMaxLimitTeamSum(member.employeeId, this.selectedMonth));
+        this.teamRealOvertimes.set(member.username, this.dataService.getSumOvertimeTeamSum(member.employeeId, this.selectedMonth));
+        let teamLeaderMinLimits = this.dataService.getMinLimitTeam(member.employeeId, this.selectedMonth);
+        let teamLeaderMaxLimits = this.dataService.getMaxLimitTeam(member.employeeId, this.selectedMonth);
+        let teamLeaderRealOvertimes = this.dataService.getSumOvertimeTeam(member.employeeId, this.selectedMonth);
         
         teamLeaderRealOvertimes.forEach((value: number, key: string) => {
           this.realOvertimeSum += value;
