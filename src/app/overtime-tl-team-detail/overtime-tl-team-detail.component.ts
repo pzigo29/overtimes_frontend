@@ -69,15 +69,16 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     this.setData();
   }
 
-  setData(): void {
+  async setData()
+  {
     if (!this.selectedEmployee) {
       console.error('Employee is undefined');
       return;
     }
     console.log('Setting data for employee:', this.selectedEmployee);
-    this.minLimit = this.dataService.getMinLimit(this.selectedEmployee.employeeId, this.selectedMonth);
-    this.maxLimit = this.dataService.getMaxLimit(this.selectedEmployee.employeeId, this.selectedMonth);
-    this.realOvertime = this.dataService.getSumOvertime(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.minLimit = await this.dataService.getMinLimit(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.maxLimit = await this.dataService.getMaxLimit(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.realOvertime = await this.dataService.getSumOvertime(this.selectedEmployee.employeeId, this.selectedMonth);
   }
 
   getOvertimeStatus(employee: Employee): string {

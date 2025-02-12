@@ -161,13 +161,13 @@ export class OvertimeMngComponent {
     this.location.back();
   }
 
-  setData(): void
+  async setData()
   {
     if (this.manager !== undefined)
     {
-      this.teamMinLimits = this.dataService.getMinLimitTeam(this.manager.employeeId, this.selectedMonth);
-      this.teamMaxLimits = this.dataService.getMaxLimitTeam(this.manager.employeeId, this.selectedMonth);
-      this.teamRealOvertimes = this.dataService.getSumOvertimeTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamMinLimits = await this.dataService.getMinLimitTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamMaxLimits = await this.dataService.getMaxLimitTeam(this.manager.employeeId, this.selectedMonth);
+      this.teamRealOvertimes = await this.dataService.getSumOvertimeTeam(this.manager.employeeId, this.selectedMonth);
       this.realOvertimeSum = 0;
       this.minOvertimeSum = 0;
       this.maxOvertimeSum = 0;

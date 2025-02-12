@@ -49,7 +49,7 @@ export class OvertimeTLComponent implements OnInit {
       // Get the username from the service
       const username: string = await this.dataService.getTlUsername().toPromise() || '';
       if (username) {
-        console.log('Fetched username:', username);
+        console.log('Fetched username tl:', username);
   
         // Get the employee data
         this.leader = await this.dataService.getEmployee(username).toPromise();
@@ -154,10 +154,10 @@ export class OvertimeTLComponent implements OnInit {
     this.realOvertimeSum = 0;
     this.minOvertimeSum = 0;
     this.maxOvertimeSum = 0;
-    this.team.forEach(member => {
-      let overtimes = this.dataService.getSumOvertime(member.employeeId, this.selectedMonth);
-      let minLimit = this.dataService.getMinLimit(member.employeeId, this.selectedMonth);
-      let maxLimit = this.dataService.getMaxLimit(member.employeeId, this.selectedMonth);
+    this.team.forEach(async member => {
+      let overtimes = await this.dataService.getSumOvertime(member.employeeId, this.selectedMonth);
+      let minLimit = await this.dataService.getMinLimit(member.employeeId, this.selectedMonth);
+      let maxLimit = await this.dataService.getMaxLimit(member.employeeId, this.selectedMonth);
       this.realOvertimeSum += overtimes;
       this.minOvertimeSum += minLimit;
       this.maxOvertimeSum += maxLimit;

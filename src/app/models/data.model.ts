@@ -1,10 +1,10 @@
 export interface Employee
 {
-  employeeId: number;
+  employeeId: number; //PK
   personalNumber: string; //change
   username: string;
   levelRole: number;
-  managerId: number | null;
+  managerId: number | null; //FK Employee
   costCenter: string;
   firstName: string;
   lastName: string;
@@ -15,61 +15,61 @@ export interface Employee
 
 export interface Delegate
 {
-  employee_id: number;
-  main_approver_id: number;
+  employeeId: number; //FK Employee //PK
+  mainApproverId: number; //FK Employee
 }
 
 export interface OvertimeLimit
 {
-  limit_id: number;
-  employee_id: number;
-  min_hours: number;
-  max_hours: number;
-  start_date: Date;
-  end_date: Date;
-  status_id: string; //change
+  limitId: number; //PK
+  employeeId: number; //FK Employee
+  minHours: number;
+  maxHours: number;
+  startDate: Date;
+  endDate: Date;
+  statusId: string; //change // FK ApprovalStatus
 }
 
 export interface Approval
 {
-  approval_id: number;
-  limit_id: number; //change
-  approver_id: number;
-  approval_date: Date;
-  status_id: string | null;
+  approvalId: number; //PK
+  limitId: number; //change // FK OvertimeLimit
+  approverId: number; //FK Employee
+  approvalDate: Date;
+  statusId: string | null; // FK ApprovalStatus
   comment: string | null;
 }
 
 export interface Overtime
 {
-  overtime_id: number;
-  employee_id: number; //change
-  overtime_type_id: number;
-  creation_date: Date;
-  overtime_day: Date; //change
-  overtime_hours: number;
+  overtimeId: number; //PK
+  employeeId: number; //change //FK Employee
+  overtimeTypeId: number; //FK OvertimeType
+  creationDate: Date;
+  overtimeDay: Date; //change
+  overtimeHours: number;
   reason: string | null;
-  project_number: string | null; //change
+  projectNumber: string | null; //change
   //status_id: string; //change
 }
 
 export interface Notification
 {
-  notification_id: number;
-  employee_id: number;
-  limit_id: number; //change
+  notificationId: number; //PK
+  employeeId: number; //FK Employee
+  limitId: number; //change // FK OvertimeLimit
   message: string | null;
-  date_sent: Date;
+  dateSent: Date;
 }
 
 export interface OvertimeType
 {
-  overtime_type_id: number;
-  type_name: string;
+  overtimeTypeId: number; //PK
+  typeName: string;
 }
 
 export interface ApprovalStatus
 {
-  status_id: string;
+  statusId: string; //PK
   status: string | null;
 }

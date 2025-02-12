@@ -50,7 +50,7 @@ export class OvertimeAssistantComponent implements OnInit{
               this.loading = true;
               throw new Error('Employee undefined' + username);
             }
-            //console.log(this.employee.username);
+            console.log(this.assistant);
             // this.setData();
             this.loading = false;  // Set to false when data is fully loaded
             //console.log(this.employee.username);
@@ -114,11 +114,11 @@ export class OvertimeAssistantComponent implements OnInit{
   setData(): void
   {
     if (this.assistant == undefined)
-      throw new Error('Leader undefined');
-    this.employees.forEach(employee => {
-      let overtimes = this.dataService.getSumOvertime(employee.employeeId, this.selectedMonth);
-      let minLimit = this.dataService.getMinLimit(employee.employeeId, this.selectedMonth);
-      let maxLimit = this.dataService.getMaxLimit(employee.employeeId, this.selectedMonth);
+      throw new Error('Assistant undefined');
+    this.employees.forEach(async employee => {
+      let overtimes = await this.dataService.getSumOvertime(employee.employeeId, this.selectedMonth);
+      let minLimit = await this.dataService.getMinLimit(employee.employeeId, this.selectedMonth);
+      let maxLimit = await this.dataService.getMaxLimit(employee.employeeId, this.selectedMonth);
       this.employeesRealOvertimes.set(employee.username, overtimes);
       this.employeesMinLimits.set(employee.username, minLimit);
       this.employeesMaxLimits.set(employee.username, maxLimit);

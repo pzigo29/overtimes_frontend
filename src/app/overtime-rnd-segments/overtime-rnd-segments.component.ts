@@ -147,14 +147,14 @@ export class OvertimeRndSegmentsComponent implements OnInit {
       this.realOvertimeSum = 0;
       this.minOvertimeSum = 0;
       this.maxOvertimeSum = 0;
-      this.managers.forEach(manager => {
+      this.managers.forEach(async manager => {
         console.log(manager.username);
-        this.teamMinLimits.set(manager.username, this.dataService.getMinLimitTeamSum(manager.employeeId, this.selectedMonth));
-        this.teamMaxLimits.set(manager.username, this.dataService.getMaxLimitTeamSum(manager.employeeId, this.selectedMonth));
-        this.teamRealOvertimes.set(manager.username, this.dataService.getSumOvertimeTeamSum(manager.employeeId, this.selectedMonth));
-        let teamLeaderMinLimits = this.dataService.getMinLimitTeam(manager.employeeId, this.selectedMonth);
-        let teamLeaderMaxLimits = this.dataService.getMaxLimitTeam(manager.employeeId, this.selectedMonth);
-        let teamLeaderRealOvertimes = this.dataService.getSumOvertimeTeam(manager.employeeId, this.selectedMonth);
+        this.teamMinLimits.set(manager.username, await this.dataService.getMinLimitTeamSum(manager.employeeId, this.selectedMonth));
+        this.teamMaxLimits.set(manager.username, await this.dataService.getMaxLimitTeamSum(manager.employeeId, this.selectedMonth));
+        this.teamRealOvertimes.set(manager.username, await this.dataService.getSumOvertimeTeamSum(manager.employeeId, this.selectedMonth));
+        let teamLeaderMinLimits = await this.dataService.getMinLimitTeam(manager.employeeId, this.selectedMonth);
+        let teamLeaderMaxLimits = await this.dataService.getMaxLimitTeam(manager.employeeId, this.selectedMonth);
+        let teamLeaderRealOvertimes = await this.dataService.getSumOvertimeTeam(manager.employeeId, this.selectedMonth);
         
         teamLeaderRealOvertimes.forEach((value: number, key: string) => {
           this.realOvertimeSum += value;

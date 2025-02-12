@@ -6,6 +6,7 @@ import { MonthsTableComponent } from "../months-table/months-table.component";
 import { Employee, Overtime, OvertimeLimit } from '../models/data.model';
 import { DataService } from '../services/data.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-overtime-thp',
@@ -34,21 +35,11 @@ export class OvertimeThpComponent implements OnInit {
     this.loading = true; // Start loading state
     try {
       let username: string | null = null;
-      await this.dataService.getThpUsername().subscribe(
-        (data: string | null) =>
-        {
-          username = data;
-        }
-      ); // Wait for the username to be fetched
+      username = await firstValueFrom(this.dataService.getThpUsername());
       
       if (username) {
         console.log('Fetched username:', username);
-        await this.dataService.getEmployee(username).subscribe(
-          (data: Employee | undefined) =>
-          {
-            this.employee = data;
-          }
-        ); // Wait for employee data to be fetched
+        this.employee = await firstValueFrom(this.dataService.getEmployee(username));
         this.cd.detectChanges();
         console.log('Employee received from service:', this.employee);
         this.name = this.employee?.firstName || '';
@@ -87,27 +78,14 @@ export class OvertimeThpComponent implements OnInit {
     );
   }
 
-  setData() : void
+  async setData()
   {
     if (this.employee == undefined)
       throw new Error('Employee undefined');
     console.log('setData(): ' + JSON.stringify(this.employee) );
-    // this.employee = {
-    //   "employeeId": 1,
-    // "personalNumber": "12345678",
-    // "username": "zigopvo",
-    // "levelRole": 5,
-    // "managerId": null,
-    // "costCenter": "1234-5678",
-    // "firstName": "Pavol",
-    // "lastName": "Žigo",
-    // "email": "zigopvo@schaeffler.com",
-    // "employed": true,
-    // "approver": false
-    // }
-    this.realOvertime = this.dataService.getSumOvertime(this.employee.employeeId, this.selectedMonth);
-    this.minOvertime = this.dataService.getMinLimit(this.employee.employeeId, this.selectedMonth);
-    this.maxOvertime = this.dataService.getMaxLimit(this.employee.employeeId, this.selectedMonth);
+    this.realOvertime = await this.dataService.getSumOvertime(this.employee.employeeId, this.selectedMonth);
+    this.minOvertime = await this.dataService.getMinLimit(this.employee.employeeId, this.selectedMonth);
+    this.maxOvertime = await this.dataService.getMaxLimit(this.employee.employeeId, this.selectedMonth);
     this.approved = false;
     //console.log('data: ', this.realOvertime, this.minOvertime, this.maxOvertime, this.approved);
   }

@@ -140,13 +140,13 @@ export class OvertimeRndComponent implements OnInit {
     this.router.navigate([site]);
   }
 
-  setData(): void
+  async setData()
   {
     if (this.rndManager !== undefined)
       {
-        this.teamMinLimits = this.dataService.getMinLimitTeam(this.rndManager.employeeId, this.selectedMonth);
-        this.teamMaxLimits = this.dataService.getMaxLimitTeam(this.rndManager.employeeId, this.selectedMonth);
-        this.teamRealOvertimes = this.dataService.getSumOvertimeTeam(this.rndManager.employeeId, this.selectedMonth);
+        this.teamMinLimits = await this.dataService.getMinLimitTeam(this.rndManager.employeeId, this.selectedMonth);
+        this.teamMaxLimits = await this.dataService.getMaxLimitTeam(this.rndManager.employeeId, this.selectedMonth);
+        this.teamRealOvertimes = await this.dataService.getSumOvertimeTeam(this.rndManager.employeeId, this.selectedMonth);
         this.realOvertimeSum = 0;
         this.minOvertimeSum = 0;
         this.maxOvertimeSum = 0;

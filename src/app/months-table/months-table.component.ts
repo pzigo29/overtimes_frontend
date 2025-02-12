@@ -81,12 +81,21 @@ export class MonthsTableComponent implements OnInit {
     this.selectedMonth = month;
   }
 
-  compareYearAndMonth(date1: Date, date2: Date): boolean
+  compareYearAndMonth(date1: Date | string, date2: Date | string): boolean
   {
-    const year1 = date1.getFullYear();
-    const month1 = date1.getMonth();
-    const year2 = date2.getFullYear();
-    const month2 = date2.getMonth();
+    const parsedDate1 = typeof date1 === 'string' ? new Date(date1) : date1;
+    const parsedDate2 = typeof date2 === 'string' ? new Date(date2) : date2;
+
+    if (!(parsedDate1 instanceof Date) || !(parsedDate2 instanceof Date)) 
+    {
+      console.error('One of the inputs is not a valid Date object');
+      return false; // Handle appropriately
+    }
+
+    const year1 = parsedDate1.getFullYear();
+    const month1 = parsedDate1.getMonth();
+    const year2 = parsedDate2.getFullYear();
+    const month2 = parsedDate2.getMonth();
     //console.log((year1 === year2 && month1 === month2));
     return year1 === year2 && month1 === month2;
   }
