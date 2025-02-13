@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
 import { Employee } from '../models/data.model';
 import { UserFiltersComponent } from "../user-filters/user-filters.component";
@@ -12,14 +13,12 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-overtime-tl-team',
   standalone: true,
-  imports: [FormsModule, CommonModule, TitleBarComponent, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, TitleBarComponent, UserFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-tl-team.component.html',
   styleUrl: './overtime-tl-team.component.scss'
 })
-export class OvertimeTLTeamComponent {
-
-  title: string = 'TL';
-  // selectedEmployee?: Employee;
+export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
+title: string = 'TL';
   leader?: Employee;
   team: Employee[] = [];
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
@@ -28,79 +27,190 @@ export class OvertimeTLTeamComponent {
   realOvertimeSum: number = 0;
   minOvertimeSum: number = 0;
   maxOvertimeSum: number = 0;
-  loading: boolean = false;
   selectedMonth: Date = new Date();
+  loading: boolean = true;
+  private selectedMonthSubscription?: Subscription;
+  private overtimeSubscription?: Subscription;
+  private isSettingData: boolean = false;
+  overtimeForm: FormGroup;
 
-  constructor(private dataService: DataService, private router: Router, private location: Location) { }
+  constructor(private dataService: DataService, private fb: FormBuilder, private router: Router, private location: Location, private cd: ChangeDetectorRef) {
+    this.overtimeForm = this.fb.group({
+      minOvertimeSum: new FormControl({ value: 0, disabled: true }),
+      maxOvertimeSum: new FormControl({ value: 0, disabled: true })
+    });
+  }
 
   async ngOnInit() {
-    this.loading = true; // Start loading state
     try {
-  
-      // Get the username from the service
-      const username: string = await this.dataService.getTlUsername().toPromise() || '';
+      let username: string | null = await firstValueFrom(this.dataService.getTlUsername());
       if (username) {
-        console.log('Fetched username:', username);
-  
-        // Get the employee data
-        this.leader = await this.dataService.getEmployee(username).toPromise();
-        console.log('getEmployee: ', JSON.stringify(this.leader));
-  
-        if (!this.leader) {
-          throw new Error('Employee undefined for username: ' + username);
+        this.leader = await firstValueFrom(this.dataService.getEmployee(username));
+        if (this.leader) 
+        {
+          this.team = await firstValueFrom(this.dataService.getTeamMembers(this.leader.employeeId));
         }
-  
-        // Fetch team members
-        this.team = await this.dataService.getTeamMembers(this.leader.employeeId).toPromise() || [];
-        console.log('Team members: ', this.team);
-  
-        // Initialize limits for each team member
+        
+        // Initialize form controls for each team member
         this.team.forEach(member => {
+          this.overtimeForm.addControl(member.username + '_min', new FormControl(0));
+          this.overtimeForm.addControl(member.username + '_max', new FormControl(0));
           this.teamRealOvertimes.set(member.username, 0);
           this.teamMinLimits.set(member.username, 0);
           this.teamMaxLimits.set(member.username, 0);  
         });
-  
-        this.setData(); // Call the function to set whatever data is necessary
+
+        await this.setData(); // Call the function to set whatever data is necessary
       } else {
         console.error('No username found');
       }
-      
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       this.loading = false; // End loading state
     }
-  
+
     // Subscribe to selected month
-    this.dataService.selectedMonth$.subscribe(month => {
+    this.selectedMonthSubscription = this.dataService.selectedMonth$.subscribe(month => {
       if (this.leader) {
         this.selectedMonth = month;
         this.setData(); // Set data only if leader is defined
       }
     });
+
+    // Subscribe to form changes
+    this.overtimeForm.valueChanges.subscribe(values => {
+      this.team.forEach(member => {
+        const minLimit = values[member.username + '_min'] || 0;
+        const maxLimit = values[member.username + '_max'] || 0;
+        this.teamMinLimits.set(member.username, minLimit);
+        this.teamMaxLimits.set(member.username, maxLimit);
+      });
+      this.recalculateSums();
+    });
   }
 
-  showSite(site: string): void
-  {
-    this.router.navigate([`${site}`]);
+  ngOnDestroy() {
+    if (this.selectedMonthSubscription) {
+      this.selectedMonthSubscription.unsubscribe();
+    }
+    if (this.overtimeSubscription) {
+      this.overtimeSubscription.unsubscribe();
+    }
   }
 
-  goBack(): void
-  {
+  async setData(): Promise<void> {
+//         if (this.isSettingData) {
+//               console.log('Already setting data');
+//   //             return; // Prevent concurrent calls to setData
+//         }
+    this.isSettingData = true;
+
+    if (this.leader == undefined) {
+      this.isSettingData = false;
+      throw new Error('Leader undefined');
+    }
+    this.realOvertimeSum = 0;
+    this.minOvertimeSum = 0;
+    this.maxOvertimeSum = 0;
+    console.log('Team in setData:' + JSON.stringify(this.team));
+
+    const promises = this.team.map(async member => {
+      const overtimes = await this.dataService.getSumOvertime(member.employeeId, this.selectedMonth);
+      const minLimit = await this.dataService.getMinLimit(member.employeeId, this.selectedMonth);
+      const maxLimit = await this.dataService.getMaxLimit(member.employeeId, this.selectedMonth);
+
+      this.teamRealOvertimes.set(member.username, overtimes);
+      this.teamMinLimits.set(member.username, minLimit);
+      this.teamMaxLimits.set(member.username, maxLimit);
+
+      // Update form control values
+      this.overtimeForm.get(member.username + '_min')?.setValue(minLimit, { emitEvent: false });
+      this.overtimeForm.get(member.username + '_max')?.setValue(maxLimit, { emitEvent: false });
+
+      return { overtimes, minLimit, maxLimit };
+    });
+
+    const results = await Promise.all(promises);
+
+    results.forEach(result => {
+      this.realOvertimeSum += result.overtimes;
+      this.minOvertimeSum += result.minLimit;
+      this.maxOvertimeSum += result.maxLimit;
+    });
+
+    // Enable form controls, set values, and disable them again
+    this.overtimeForm.get('minOvertimeSum')?.enable({ emitEvent: false });
+    this.overtimeForm.get('maxOvertimeSum')?.enable({ emitEvent: false });
+    this.overtimeForm.get('minOvertimeSum')?.setValue(this.minOvertimeSum, { emitEvent: false });
+    this.overtimeForm.get('maxOvertimeSum')?.setValue(this.maxOvertimeSum, { emitEvent: false });
+    this.overtimeForm.get('minOvertimeSum')?.disable({ emitEvent: false });
+    this.overtimeForm.get('maxOvertimeSum')?.disable({ emitEvent: false });
+
+    console.log('maxOvertimeSum: ' + this.maxOvertimeSum);
+    console.log('real: ', this.realOvertimeSum);
+
+    this.isSettingData = false;
+    this.cd.detectChanges();
+  }
+
+  async saveLimits(): Promise<void> {
+    const savePromises = this.team.map(member => 
+      this.dataService.setLimit(member.employeeId, this.selectedMonth, this.teamMinLimits.get(member.username) || 0, this.teamMaxLimits.get(member.username) || 0)
+    );
+
+    await Promise.all(savePromises);
+    await this.setData();
+  }
+
+  recalculateSums(): void {
+    this.realOvertimeSum = 0;
+    this.minOvertimeSum = 0;
+    this.maxOvertimeSum = 0;
+
+    this.team.forEach(member => {
+      const overtimes = this.teamRealOvertimes.get(member.username) || 0;
+      const minLimit = this.teamMinLimits.get(member.username) || 0;
+      const maxLimit = this.teamMaxLimits.get(member.username) || 0;
+
+      this.realOvertimeSum += overtimes;
+      this.minOvertimeSum += minLimit;
+      this.maxOvertimeSum += maxLimit;
+    });
+
+    // Enable form controls, set values, and disable them again
+    this.overtimeForm.get('minOvertimeSum')?.enable({ emitEvent: false });
+    this.overtimeForm.get('maxOvertimeSum')?.enable({ emitEvent: false });
+    this.overtimeForm.get('minOvertimeSum')?.setValue(this.minOvertimeSum, { emitEvent: false });
+    this.overtimeForm.get('maxOvertimeSum')?.setValue(this.maxOvertimeSum, { emitEvent: false });
+    this.overtimeForm.get('minOvertimeSum')?.disable({ emitEvent: false });
+    this.overtimeForm.get('maxOvertimeSum')?.disable({ emitEvent: false });
+
+    console.log('Recalculated maxOvertimeSum: ' + this.maxOvertimeSum);
+    console.log('Recalculated real: ', this.realOvertimeSum);
+    this.cd.detectChanges();
+  }
+
+  showSite(site: string): void {
+    this.router.navigate([site]);
+  }
+
+  goBack(): void {
     this.location.back();
   }
 
-  selectEmployee(employee: Employee): void
+  async selectEmployee(employee: Employee): Promise<void> 
   {
-    // this.selectedEmployee = employee;
-    this.router.navigate(['tl/team/detail']);
-    this.dataService.setSelectedEmployee(employee.username);
+    try
+    {
+      await this.dataService.setSelectedEmployee(employee.username);
+      this.router.navigate(['tl/team/detail'], { queryParams: { source: this.router.url } });
+    } catch (error) {
+      console.error('Error fetching employee', error);
+    }
   }
 
-  getOvertimeStatusSum(): string 
-  {
-    //console.log('Overtime status: ', this.realOvertime);
+  getOvertimeStatusSum(): string {
     if (this.realOvertimeSum < this.minOvertimeSum) {
       return 'low-value';
     } else if (this.realOvertimeSum + (this.maxOvertimeSum * 0.1) > this.maxOvertimeSum) {
@@ -110,10 +220,7 @@ export class OvertimeTLTeamComponent {
     }
   }
 
-  getOvertimeStatus(teamMember: Employee): string 
-  {
-    //console.log('Overtime status: ', this.realOvertime);
-    
+  getOvertimeStatus(teamMember: Employee): string {
     if ((this.teamRealOvertimes.get(teamMember.username) || 0) < (this.teamMinLimits.get(teamMember.username) || 0)) {
       return 'low-value';
     } else if ((this.teamRealOvertimes.get(teamMember.username) || 0) + ((this.teamMaxLimits.get(teamMember.username) || 0) * 0.1) > (this.teamMaxLimits.get(teamMember.username) || 0)) {
@@ -121,26 +228,5 @@ export class OvertimeTLTeamComponent {
     } else {
       return 'medium-value';
     }
-  }
-
-  setData(): void
-  {
-    if (this.leader == undefined)
-      throw new Error('Leader undefined');
-    this.realOvertimeSum = 0;
-    this.minOvertimeSum = 0;
-    this.maxOvertimeSum = 0;
-    this.team.forEach(async member => {
-      let overtimes = await this.dataService.getSumOvertime(member.employeeId, this.selectedMonth);
-      let minLimit = await this.dataService.getMinLimit(member.employeeId, this.selectedMonth);
-      let maxLimit = await this.dataService.getMaxLimit(member.employeeId, this.selectedMonth);
-      this.realOvertimeSum += overtimes;
-      this.minOvertimeSum += minLimit;
-      this.maxOvertimeSum += maxLimit;
-      this.teamRealOvertimes.set(member.username, overtimes);
-      this.teamMinLimits.set(member.username, minLimit);
-      this.teamMaxLimits.set(member.username, maxLimit);
-    });
-    console.log('real: ', this.realOvertimeSum);
   }
 }

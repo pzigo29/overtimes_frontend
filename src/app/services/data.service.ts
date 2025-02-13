@@ -10,309 +10,15 @@ import * as os from 'os';
   providedIn: 'root'
 })
 export class DataService implements OnInit {
-  //private apiUrl = 'http://backend-url';
-  months: Date[] = [
-    new Date(2025, 1),
-    new Date(2025, 0),
-    new Date(2024, 11),
-    new Date(2024, 10),
-    new Date(2024, 9),
-    new Date(2024, 8),
-    new Date(2024, 7),
-    new Date(2024, 6),
-    new Date(2024, 5),
-    new Date(2024, 4),
-    new Date(2024, 3),
-    new Date(2024, 2),
-    new Date(2024, 1),
-    new Date(2024, 0),
-    new Date(2023, 11)
-  ];
 
+  private overtimeSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private selectedMonthSubject = new BehaviorSubject<Date>(new Date());
+  overtime$ = this.overtimeSubject.asObservable();
   selectedMonth$ = this.selectedMonthSubject.asObservable();
-
-  // employees: Employee[] = 
-  // [
-  //   {
-  //     employeeId: 1,
-  //     personalNumber: '12345678',
-  //     username: 'zigopvo',
-  //     levelRole: 5,
-  //     managerId: null,
-  //     costCenter: '1234-5678',
-  //     firstName: 'Pavol',
-  //     lastName: 'Žigo',
-  //     email: 'zigopvo@schaeffler.com',
-  //     employed: true,
-  //     approver: false
-  //   },
-  //   {
-  //     employeeId: 2,
-  //     personalNumber: '31211308',
-  //     username: 'kralmln',
-  //     levelRole: 5,
-  //     managerId: 5,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Milan',
-  //     lastName: 'Kráľ',
-  //     email: 'zigopvo@schaeffler.com',
-  //     employed: true,
-  //     approver: false
-  //   },
-  //   {
-  //     employeeId: 3,
-  //     personalNumber: '36511308',
-  //     username: 'rechjoz',
-  //     levelRole: 4,
-  //     managerId: 4,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Jozef',
-  //     lastName: 'Rechtorík',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: true
-  //   },
-  //   {
-  //     employeeId: 4,
-  //     personalNumber: '36841308',
-  //     username: 'roskmln',
-  //     levelRole: 2,
-  //     managerId: 7,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Milan',
-  //     lastName: 'Roško',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: true
-  //   },
-  //   {
-  //     employeeId: 5,
-  //     personalNumber: '36841708',
-  //     username: 'vrabarn',
-  //     levelRole: 4,
-  //     managerId: 4,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Arnold',
-  //     lastName: 'Vrabko',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: true
-  //   },
-  //   {
-  //     employeeId: 6,
-  //     personalNumber: '87841708',
-  //     username: 'biromchl',
-  //     levelRole: 5,
-  //     managerId: 4,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Michal',
-  //     lastName: 'Bíroš',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: true
-  //   },
-  //   {
-  //     employeeId: 7,
-  //     personalNumber: '87895708',
-  //     username: 'klmkjn',
-  //     levelRole: 1,
-  //     managerId: null,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Ján',
-  //     lastName: 'Klimko',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: true
-  //   },
-  //   {
-  //     employeeId: 8,
-  //     personalNumber: '87895638',
-  //     username: 'lacojan',
-  //     levelRole: 3,
-  //     managerId: 7,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Ján',
-  //     lastName: 'Laco',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: true
-  //   },
-  //   {
-  //     employeeId: 9,
-  //     personalNumber: '87896521',
-  //     username: 'trmpdnl',
-  //     levelRole: 5,
-  //     managerId: 8,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Donald',
-  //     lastName: 'Trump',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: false
-  //   },
-  //   {
-  //     employeeId: 10,
-  //     personalNumber: '87896861',
-  //     username: 'mikimaja',
-  //     levelRole: 0,
-  //     managerId: 7,
-  //     costCenter: '1234-5679',
-  //     firstName: 'Maja',
-  //     lastName: 'Mikitiuková',
-  //     email: 'zigopivo@schaeffler.com',
-  //     employed: true,
-  //     approver: false
-  //   }
-  // ];
-
-  // overtimes: Overtime[] = 
-  // [
-  //   {
-  //     overtime_id: 1,
-  //     employee_id: 1,
-  //     overtime_type_id: 1,
-  //     creation_date: new Date(2024, 10, 1),
-  //     overtime_day: new Date(2024, 11, 20),
-  //     overtime_hours: 1.42,
-  //     reason: 'Bakalárka',
-  //     project_number: null
-  //   },
-  //   {
-  //     overtime_id: 2,
-  //     employee_id: 1,
-  //     overtime_type_id: 1,
-  //     creation_date: new Date(2024, 10, 1),
-  //     overtime_day: new Date(2024, 11, 10),
-  //     overtime_hours: 2.54,
-  //     reason: 'Bakalárka zas',
-  //     project_number: null
-  //   },
-  //   {
-  //     overtime_id: 3,
-  //     employee_id: 1,
-  //     overtime_type_id: 1,
-  //     creation_date: new Date(2024, 10, 1),
-  //     overtime_day: new Date(2025, 0, 31),
-  //     overtime_hours: 2.54,
-  //     reason: 'Bakalárka zas',
-  //     project_number: null
-  //   },
-  //   {
-  //     overtime_id: 4,
-  //     employee_id: 2,
-  //     overtime_type_id: 1,
-  //     creation_date: new Date(2024, 10, 1),
-  //     overtime_day: new Date(2025, 0, 31),
-  //     overtime_hours: 0.66,
-  //     reason: 'Bakalárka zas',
-  //     project_number: null
-  //   },
-  //   {
-  //     overtime_id: 5,
-  //     employee_id: 1,
-  //     overtime_type_id: 2,
-  //     creation_date: new Date(2024, 10, 1),
-  //     overtime_day: new Date(2025, 0, 3),
-  //     overtime_hours: 4.00,
-  //     reason: 'Bakalárka zas',
-  //     project_number: null
-  //   },
-  //   {
-  //     overtime_id: 6,
-  //     employee_id: 1,
-  //     overtime_type_id: 3,
-  //     creation_date: new Date(2024, 10, 1),
-  //     overtime_day: new Date(2025, 1, 3),
-  //     overtime_hours: 4.00,
-  //     reason: 'Bakalárka zas',
-  //     project_number: null
-  //   }
-  // ];
-
-  // limits: OvertimeLimit[] =
-  // [
-  //   {
-  //     limit_id: 1,
-  //     employee_id: 1,
-  //     min_hours: 1.5,
-  //     max_hours: 5,
-  //     start_date: new Date(2025, 0),
-  //     end_date: new Date(2025, 1),
-  //     status_id: 'A'
-  //   },
-  //   {
-  //     limit_id: 2,
-  //     employee_id: 2,
-  //     min_hours: 0.6,
-  //     max_hours: 3,
-  //     start_date: new Date(2025, 0),
-  //     end_date: new Date(2025, 1),
-  //     status_id: 'W'
-  //   },
-  //   {
-  //     limit_id: 3,
-  //     employee_id: 1,
-  //     min_hours: 0.5,
-  //     max_hours: 3,
-  //     start_date: new Date(2024, 11),
-  //     end_date: new Date(2025, 0),
-  //     status_id: 'W'
-  //   },
-  //   {
-  //     limit_id: 4,
-  //     employee_id: 1,
-  //     min_hours: 0,
-  //     max_hours: 10,
-  //     start_date: new Date(2025, 1),
-  //     end_date: new Date(2025, 2),
-  //     status_id: 'W'
-  //   },
-  //   {
-  //     limit_id: 5,
-  //     employee_id: 3,
-  //     min_hours: 0.5,
-  //     max_hours: 3,
-  //     start_date: new Date(2025, 1),
-  //     end_date: new Date(2025, 2),
-  //     status_id: 'A'
-  //   },
-  //   {
-  //     limit_id: 6,
-  //     employee_id: 9,
-  //     min_hours: 0.23,
-  //     max_hours: 65,
-  //     start_date: new Date(2025, 1),
-  //     end_date: new Date(2025, 2),
-  //     status_id: 'A'
-  //   },
-  //   {
-  //     limit_id: 7,
-  //     employee_id: 4,
-  //     min_hours: 0.54,
-  //     max_hours: 16,
-  //     start_date: new Date(2025, 1),
-  //     end_date: new Date(2025, 2),
-  //     status_id: 'A'
-  //   }
-    
-  // ];
-
-  // approvals: Approval[] =
-  // [
-  //   {
-  //     approval_id: 1,
-  //     limit_id: 1,
-  //     approver_id: 2,
-  //     approval_date: new Date(),
-  //     status_id: 'A',
-  //     comment: null
-  //   }
-  // ];
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'mikimaja';
+  username: string = 'niekto';
   rndUsername: string = this.username;
   mngUsername: string | null = this.username; // toto sa bude načítavať z windowsu
   tlUsername: string | null = this.username;
@@ -371,16 +77,41 @@ export class DataService implements OnInit {
     this.selectedMonthSubject.next(month);
   }
 
-  setSelectedEmployee(username: string): void
+  // setSelectedEmployee(username: string): void
+  // {
+  //   // this.selectedEmployee = this.employees.find(x => x.username === username);
+  //   this.getEmployee(username).subscribe(
+  //     (data: Employee | undefined) =>
+  //     {
+  //       this.selectedEmployee = data;
+  //     }
+  //   );
+  //   console.log('Selected employee: ', this.selectedEmployee?.username);
+  // }
+
+  setSelectedEmployee(username: string): Promise<void>
   {
+    return new Promise((resolve, reject) => {
+      this.getEmployee(username).subscribe(
+        (data: Employee | undefined) => {
+          this.selectedEmployee = data;
+          console.log('Selected employee: ', this.selectedEmployee?.username);
+          resolve();
+        },
+        (error: any) => {
+          console.error('Error fetching employee', error);
+          reject(error);
+        }
+      );
+    });
     // this.selectedEmployee = this.employees.find(x => x.username === username);
-    this.getEmployee(username).subscribe(
-      (data: Employee | undefined) =>
-      {
-        this.selectedEmployee = data;
-      }
-    );
-    console.log('Selected employee: ', this.selectedEmployee?.username);
+    // this.getEmployee(username).subscribe(
+    //   (data: Employee | undefined) =>
+    //   {
+    //     this.selectedEmployee = data;
+    //   }
+    // );
+    // console.log('Selected employee: ', this.selectedEmployee?.username);
   }
 
   getSelectedEmployee(): Observable<Employee | undefined>
@@ -463,6 +194,29 @@ export class DataService implements OnInit {
       return 0;
     }
     return limit.minHours;
+  }
+
+  async setLimit(employee_id: number, month: Date, min_hours: number, max_hours: number): Promise<void> {
+    try {
+      const limit: OvertimeLimit = await firstValueFrom(this.http.get<OvertimeLimit>(`${this.apiUrl}/OvertimeLimit/employee_id?employeeId=${employee_id}&month=${typeof month === 'string' ? month : month.toDateString()}`));
+      
+      if (!limit) {
+        throw new Error('Limit not found');
+      }
+  
+      limit.minHours = min_hours;
+      limit.maxHours = max_hours;
+  
+      await firstValueFrom(this.http.put(`${this.apiUrl}/OvertimeLimit/limit`, limit));
+
+      // Update the overtime values and emit the new values
+      const currentOvertimes = this.overtimeSubject.value;
+      currentOvertimes.set(employee_id.toString(), max_hours);
+      this.overtimeSubject.next(currentOvertimes);
+    } catch (error) {
+      console.error('Error setting limit:', error);
+      throw error;
+    }
   }
 
   async getMinLimitTeam(manager_id: number, month: Date): Promise<Map<string, number>>
@@ -593,5 +347,9 @@ export class DataService implements OnInit {
   getAssistantUsername(): Observable<string | null>
   {
     return of(this.assistantUsername);
+  }
+
+  getOvertimeChanges(): Observable<Map<string, number>> {
+    return this.overtimeSubject.asObservable();
   }
 }
