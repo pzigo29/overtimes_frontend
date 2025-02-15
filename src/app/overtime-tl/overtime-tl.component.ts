@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
 import { Employee } from '../models/data.model';
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
 import { Router, ActivatedRoute } from '@angular/router';

@@ -9,7 +9,7 @@ import * as os from 'os';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService implements OnInit {
+export class DataService {
 
   private overtimeSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private selectedMonthSubject = new BehaviorSubject<Date>(new Date());
@@ -18,12 +18,13 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'niekto';
+  username: string = 'klmkjn';
   rndUsername: string = this.username;
   mngUsername: string | null = this.username; // toto sa bude načítavať z windowsu
   tlUsername: string | null = this.username;
   thpUsername: string | null = this.username;
   assistantUsername: string | null = this.username;
+  // assistantUsername: string | null = 'mikimaja';
   selectedEmployee?: Employee;
 
   // private apiUrl = 'https://localhost:7198/api';
@@ -34,18 +35,18 @@ export class DataService implements OnInit {
     // this.username = os.userInfo().username;
   } 
 
-  ngOnInit()
-  {
-    console.log('hereeeeeeee');
-    try
-    {
-      this.username = os.userInfo().username;
-    }
-    catch (error)
-    {
-      console.error('Error fetching username in dataService: ', error);
-    }
-  }
+  // ngOnInit()
+  // {
+  //   console.log('hereeeeeeee');
+  //   try
+  //   {
+  //     this.username = os.userInfo().username;
+  //   }
+  //   catch (error)
+  //   {
+  //     console.error('Error fetching username in dataService: ', error);
+  //   }
+  // }
 
   getMessage(username: string): Observable<string>
   {
@@ -66,8 +67,8 @@ export class DataService implements OnInit {
   getMonths(): Observable<Date[]>
   {
     const months: Observable<Date[]> = this.http.get<Date[]>(`${this.apiUrl}/OvertimeLimit/months`);
-    console.log(months);
-    console.log(new Date());
+    // console.log(months);
+    // console.log(new Date());
     return months;
     // return of(this.months);
   }
@@ -95,7 +96,7 @@ export class DataService implements OnInit {
       this.getEmployee(username).subscribe(
         (data: Employee | undefined) => {
           this.selectedEmployee = data;
-          console.log('Selected employee: ', this.selectedEmployee?.username);
+          // console.log('Selected employee: ', this.selectedEmployee?.username);
           resolve();
         },
         (error: any) => {
@@ -221,68 +222,131 @@ export class DataService implements OnInit {
 
   async getMinLimitTeam(manager_id: number, month: Date): Promise<Map<string, number>>
   {
-    // let team: Employee[] = this.employees.filter(x => x.managerId === manager_id);
     let team: Employee[] = await firstValueFrom(this.getTeamMembers(manager_id));
+    // console.log('Team: ', team);
     let teamMinLimits: Map<string, number> = new Map();
-    team.forEach(async member => {
-
-      let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
-      if (subordinates.length > 0)
+    for (const member of team) {
+      // console.log('Member: ', member.username, member.levelRole);
+      if (member.levelRole !== 5 && member.levelRole !== 0)
       {
-        let subMinLimits: Map<string, number> = await this.getMinLimitTeam(member.employeeId, month);
-        subMinLimits.forEach((value, key) => {
-          teamMinLimits.set(key, value);
-        });
+        // console.log('Member could have subordinates: ', member.username);
+        let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
+        if (subordinates.length > 0)
+        {
+          let subMinLimits: Map<string, number> = await this.getMinLimitTeam(member.employeeId, month);
+          subMinLimits.forEach((value, key) => {
+            teamMinLimits.set(key, value);
+          });
+        }
+        // else
+        // {
+        //   teamMinLimits.set(member.username, await this.getMinLimit(member.employeeId, month));
+        // }
       }
-      else
-      {
+      // else
+      // {
         teamMinLimits.set(member.username, await this.getMinLimit(member.employeeId, month));
-      }      
-    });
+      // }
+    }
+    // team.forEach(async member => {
+
+    //   let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
+    //   if (subordinates.length > 0)
+    //   {
+    //     let subMinLimits: Map<string, number> = await this.getMinLimitTeam(member.employeeId, month);
+    //     subMinLimits.forEach((value, key) => {
+    //       teamMinLimits.set(key, value);
+    //     });
+    //   }
+    //   else
+    //   {
+    //     teamMinLimits.set(member.username, await this.getMinLimit(member.employeeId, month));
+    //   }      
+    // });
     return teamMinLimits;
   }
 
   async getMaxLimitTeam(manager_id: number, month: Date): Promise<Map<string, number>>
   {
-    // let team: Employee[] = this.employees.filter(x => x.managerId === manager_id);
     let team: Employee[] = await firstValueFrom(this.getTeamMembers(manager_id));
     let teamMaxLimits: Map<string, number> = new Map();
-    team.forEach(async member => {
-      let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
-      if (subordinates.length > 0)
+    for (const member of team) {
+      if (member.levelRole !== 5 && member.levelRole !== 0)
       {
-        let subMaxLimits: Map<string, number> = await this.getMaxLimitTeam(member.employeeId, month);
-        subMaxLimits.forEach((value, key) => {
-          teamMaxLimits.set(key, value);
-        });
+        let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
+        if (subordinates.length > 0)
+        {
+          let subMaxLimits: Map<string, number> = await this.getMaxLimitTeam(member.employeeId, month);
+          subMaxLimits.forEach((value, key) => {
+            teamMaxLimits.set(key, value);
+          });
+        }
+        // else
+        // {
+        //   teamMaxLimits.set(member.username, await this.getMaxLimit(member.employeeId, month));
+        // }
       }
-      else
-      {
+      // else
+      // {
         teamMaxLimits.set(member.username, await this.getMaxLimit(member.employeeId, month));
-      }
-    });
+      // }
+    }
+    // team.forEach(async member => {
+    //   let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
+    //   if (subordinates.length > 0)
+    //   {
+    //     let subMaxLimits: Map<string, number> = await this.getMaxLimitTeam(member.employeeId, month);
+    //     subMaxLimits.forEach((value, key) => {
+    //       teamMaxLimits.set(key, value);
+    //     });
+    //   }
+    //   else
+    //   {
+    //     teamMaxLimits.set(member.username, await this.getMaxLimit(member.employeeId, month));
+    //   }
+    // });
     return teamMaxLimits;
   }
 
   async getSumOvertimeTeam(manager_id: number, month: Date): Promise<Map<string, number>>
   {
-    // let team: Employee[] = this.employees.filter(x => x.managerId === manager_id);
     let team: Employee[] = await firstValueFrom(this.getTeamMembers(manager_id));
     let teamRealOvertimes: Map<string, number> = new Map();
-    team.forEach(async member => {
-      let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
-      if (subordinates.length > 0)
+    for (const member of team) {
+      if (member.levelRole !== 5 && member.levelRole !== 0)
       {
-        let subRealOvertimes: Map<string, number> = await this.getSumOvertimeTeam(member.employeeId, month);
-        subRealOvertimes.forEach((value, key) => {
-          teamRealOvertimes.set(key, value);
-        });
+        let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
+        if (subordinates.length > 0)
+        {
+          let subRealOvertimes: Map<string, number> = await this.getSumOvertimeTeam(member.employeeId, month);
+          subRealOvertimes.forEach((value, key) => {
+            teamRealOvertimes.set(key, value);
+          });
+        }
+        // else
+        // {
+        //   teamRealOvertimes.set(member.username, await this.getSumOvertime(member.employeeId, month));
+        // }
       }
-      else
-      {
-        teamRealOvertimes.set(member.username, await this.getSumOvertime(member.employeeId, month)); // ak sa má zaratávať aj TL, len to dať preč z else
-      }
-    });
+      // else
+      // {
+        teamRealOvertimes.set(member.username, await this.getSumOvertime(member.employeeId, month));
+      // }
+    }
+    // team.forEach(async member => {
+    //   let subordinates: Employee[] = await firstValueFrom(this.getTeamMembers(member.employeeId));
+    //   if (subordinates.length > 0)
+    //   {
+    //     let subRealOvertimes: Map<string, number> = await this.getSumOvertimeTeam(member.employeeId, month);
+    //     subRealOvertimes.forEach((value, key) => {
+    //       teamRealOvertimes.set(key, value);
+    //     });
+    //   }
+    //   else
+    //   {
+    //     teamRealOvertimes.set(member.username, await this.getSumOvertime(member.employeeId, month)); // ak sa má zaratávať aj TL, len to dať preč z else
+    //   }
+    // });
     // console.log('Team real overtimes: ', teamRealOvertimes);
     return teamRealOvertimes;
   }

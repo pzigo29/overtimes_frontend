@@ -1,7 +1,13 @@
 <div class="container">
     <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
     <div class="top-right-div">
-        <app-user-filters></app-user-filters>
+        <app-user-filters 
+            [minLimits]="teamMinLimits" 
+            [maxLimits]="teamMaxLimits" 
+            [realOvertimes]="teamRealOvertimes" 
+            [employees]="wholeTeam" 
+            (filteredEmployees)="onFilteredEmployees($event)">
+        </app-user-filters>
         <!-- <button class="submit-btn" (click)="showSite('tl')">{{'BUTTON.BACK' | translate}}</button> -->
         <button class="submit-btn" (click)="goBack()">{{'BUTTON.BACK' | translate}}</button>
     </div>
@@ -22,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody [formGroup]="overtimeForm">
-                    <tr *ngFor="let member of team">
+                    <tr *ngFor="let member of filteredTeam">
                         <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.firstName}} {{member?.lastName}}</td>
                         <td><input type="number" [formControlName]="member.username + '_min'" min="0" step="0.5"></td>
                         <td><input type="number" [formControlName]="member.username + '_max'" min="0" step="0.5"></td>

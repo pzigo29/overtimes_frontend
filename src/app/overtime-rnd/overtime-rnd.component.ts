@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { Employee } from "../models/data.model"
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 import { DataService } from '../services/data.service';
@@ -12,7 +11,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-overtime-rnd',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  imports: [TitleBarComponent, CommonModule, FormsModule, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-rnd.component.html',
   styleUrl: './overtime-rnd.component.scss'
 })
@@ -144,12 +143,23 @@ export class OvertimeRndComponent implements OnInit {
   {
     if (this.rndManager !== undefined)
       {
-        this.teamMinLimits = await this.dataService.getMinLimitTeam(this.rndManager.employeeId, this.selectedMonth);
-        this.teamMaxLimits = await this.dataService.getMaxLimitTeam(this.rndManager.employeeId, this.selectedMonth);
-        this.teamRealOvertimes = await this.dataService.getSumOvertimeTeam(this.rndManager.employeeId, this.selectedMonth);
+        // this.teamMinLimits = await this.dataService.getMinLimitTeam(this.rndManager.employeeId, this.selectedMonth);
+        // this.teamMaxLimits = await this.dataService.getMaxLimitTeam(this.rndManager.employeeId, this.selectedMonth);
+        // this.teamRealOvertimes = await this.dataService.getSumOvertimeTeam(this.rndManager.employeeId, this.selectedMonth);
         this.realOvertimeSum = 0;
         this.minOvertimeSum = 0;
         this.maxOvertimeSum = 0;
+
+        const [teamMinLimits, teamMaxLimits, teamRealOvertimes] = await Promise.all([
+          this.dataService.getMinLimitTeam(this.rndManager.employeeId, this.selectedMonth),
+          this.dataService.getMaxLimitTeam(this.rndManager.employeeId, this.selectedMonth),
+          this.dataService.getSumOvertimeTeam(this.rndManager.employeeId, this.selectedMonth)
+        ]);
+
+        this.teamMinLimits = teamMinLimits;
+        this.teamMaxLimits = teamMaxLimits;
+        this.teamRealOvertimes = teamRealOvertimes;
+
         this.teamRealOvertimes.forEach((value: number, key: string) => {
           this.realOvertimeSum += value;
         });

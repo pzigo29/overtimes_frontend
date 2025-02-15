@@ -1,7 +1,13 @@
 <div class="container">
     <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
     <div class="top-right-div">
-        <app-user-filters></app-user-filters>
+        <app-user-filters
+            [minLimits]="teamMinLimits"
+            [maxLimits]="teamMaxLimits"
+            [realOvertimes]="teamRealOvertimes"
+            [employees]="allTeamLeaders"
+            (filteredEmployees)="onFilteredEmployees($event)">
+        </app-user-filters>
         <!-- <button class="submit-btn" (click)="showSite('mng')">{{'BUTTON.BACK' | translate}}</button> -->
         <button class="submit-btn" (click)="goBack()">{{'BUTTON.BACK' | translate}}</button>
     </div>
@@ -21,10 +27,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let leader of teamLeaders">
+                <tr *ngFor="let leader of filteredTeamLeaders">
                     <td (dblclick)="selectEmployee(leader)" title="Detail" class="cursor-pointer">{{'TEAM' | translate}} {{leader?.firstName}} {{leader?.lastName}}</td>
-                    <td><input type="number" [ngModel]="teamMinLimits.get(leader.username)" (ngModelChange)="teamMinLimits.set(leader.username, $event)" min="0" step="0.5"></td>
-                    <td><input type="number" [ngModel]="teamMaxLimits.get(leader.username)" (ngModelChange)="teamMaxLimits.set(leader.username, $event)" min="0" step="0.5"></td>
+                    <td><input type="number" [ngModel]="teamMinLimits.get(leader.username)" (ngModelChange)="teamMinLimits.set(leader.username, $event)" min="0" step="0.5" disabled=""></td>
+                    <td><input type="number" [ngModel]="teamMaxLimits.get(leader.username)" (ngModelChange)="teamMaxLimits.set(leader.username, $event)" min="0" step="0.5" disabled=""></td>
                     <td [ngClass]="getOvertimeStatus(leader)">{{teamRealOvertimes.get(leader.username)}}</td>
                     <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
                     <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
@@ -41,7 +47,7 @@
             </tbody>
         </table>
     </div>
-    <div class="bottom-right-div">
+    <!-- <div class="bottom-right-div">
         <button class="submit-btn">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
-    </div> 
+    </div>  -->
 </div>

@@ -9,7 +9,7 @@
             <div class="overtime-form">
                 <div class="filter">
                   <!-- <label for="filter-select">Limity: </label> -->
-                  <select class="filter-select" name="filter-select" id="filter-select" [(ngModel)]="filter">
+                  <select class="filter-select" name="filter-select" id="filter-select" [(ngModel)]="filter" (ngModelChange)="filterEmployees()">
                     <option value="all" selected>{{'LIMITS.ALL' | translate}}</option>
                     <option value="overtime-in-limit">{{'LIMITS.FULFILLED' | translate}}</option>
                     <option value="overtime-off-limit">{{'LIMITS.NOT-FULFILLED' | translate}}</option>
@@ -19,19 +19,19 @@
             <div class="input-filters overtime-form">
                 <div class="filter">
                   <label for="personalNumber">{{'PERSONAL-NUMBER' | translate}}: </label>
-                  <input type="text" id="personalNumber" [(ngModel)]="personalNumber">
+                  <input type="text" id="personalNumber" [(ngModel)]="personalNumber" (ngModelChange)="filterEmployees()">
                 </div>
-                <div class="filter">
+                <!-- <div class="filter">
                   <label for="manager">{{'SUPERIOR' | translate}}: </label>
-                  <input type="text" id="manager" [(ngModel)]="manager">
-                </div>
-                <div class="filter">
+                  <input type="text" id="manager" [(ngModel)]="managerUsername" (ngModelChange)="filterEmployees()">
+                </div> -->
+                <!-- <div class="filter">
                   <label for="dSegment">{{'D-SEGMENT' | translate}}: </label>
-                  <input type="text" id="dSegment" [(ngModel)]="dSegment">
-                </div>
+                  <input type="text" id="dSegment" [(ngModel)]="dSegment" (ngModelChange)="filterEmployees()">
+                </div> -->
                 <div class="filter">
                   <label for="username">{{'USERNAME' | translate}}: </label>
-                  <input type="text" id="username" [(ngModel)]="username">
+                  <input type="text" id="username" [(ngModel)]="username" (ngModelChange)="filterEmployees()">
                 </div>
             </div>
         </div>
@@ -55,14 +55,14 @@
             <label for="personalNumber">{{'PERSONAL-NUMBER' | translate}}: </label>
             <input type="text" id="personalNumber" [(ngModel)]="personalNumber">
           </div>
-          <div class="filter">
+          <!-- <div class="filter">
             <label for="manager">{{'SUPERIOR' | translate}}: </label>
             <input type="text" id="manager" [(ngModel)]="manager">
           </div>
           <div class="filter">
             <label for="dSegment">{{'D-SEGMENT' | translate}}: </label>
             <input type="text" id="dSegment" [(ngModel)]="dSegment">
-          </div>
+          </div> -->
           <div class="filter">
             <label for="username">{{'USERNAME' | translate}}: </label>
             <input type="text" id="username" [(ngModel)]="username">

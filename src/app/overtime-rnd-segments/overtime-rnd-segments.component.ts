@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
 import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';
 import { Employee } from '../models/data.model';
@@ -12,7 +12,7 @@ import { Employee } from '../models/data.model';
 @Component({
   selector: 'app-overtime-rnd-segments',
   standalone: true,
-  imports: [TitleBarComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule, UserFiltersComponent],
+  imports: [TitleBarComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule, EmployeeFiltersComponent],
   templateUrl: './overtime-rnd-segments.component.html',
   styleUrl: './overtime-rnd-segments.component.scss'
 })
@@ -26,7 +26,8 @@ export class OvertimeRndSegmentsComponent implements OnInit {
   maxOvertimeSum: number = 0;
   realOvertimeSum: number = 0;
   rndManager?: Employee;
-  managers: Employee[] = [];
+  allManagers: Employee[] = [];
+  filteredManagers: Employee[] = []; 
 
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
   teamMinLimits: Map<string, number> = new Map<string, number>();
@@ -46,13 +47,14 @@ export class OvertimeRndSegmentsComponent implements OnInit {
           {
             if (this.rndManager?.levelRole == 1)
             {
-              this.managers = await this.dataService.getSegmentManagers(this.rndManager.employeeId).toPromise() || [];
+              this.filteredManagers = await this.dataService.getSegmentManagers(this.rndManager.employeeId).toPromise() || [];
+              this.allManagers = this.filteredManagers;
                   // console.log('team member 0: ', this.managers[0]);
-              for (let i = 0; i < this.managers.length; i++)
+              for (let i = 0; i < this.filteredManagers.length; i++)
               {
-                this.teamRealOvertimes.set(this.managers[i].username, 0);
-                this.teamMinLimits.set(this.managers[i].username, 0);
-                this.teamMaxLimits.set(this.managers[i].username, 0);
+                this.teamRealOvertimes.set(this.filteredManagers[i].username, 0);
+                this.teamMinLimits.set(this.filteredManagers[i].username, 0);
+                this.teamMaxLimits.set(this.filteredManagers[i].username, 0);
               }
             
               this.dataService.selectedMonth$.subscribe(
@@ -147,14 +149,23 @@ export class OvertimeRndSegmentsComponent implements OnInit {
       this.realOvertimeSum = 0;
       this.minOvertimeSum = 0;
       this.maxOvertimeSum = 0;
-      this.managers.forEach(async manager => {
-        console.log(manager.username);
-        this.teamMinLimits.set(manager.username, await this.dataService.getMinLimitTeamSum(manager.employeeId, this.selectedMonth));
-        this.teamMaxLimits.set(manager.username, await this.dataService.getMaxLimitTeamSum(manager.employeeId, this.selectedMonth));
-        this.teamRealOvertimes.set(manager.username, await this.dataService.getSumOvertimeTeamSum(manager.employeeId, this.selectedMonth));
-        let teamLeaderMinLimits = await this.dataService.getMinLimitTeam(manager.employeeId, this.selectedMonth);
-        let teamLeaderMaxLimits = await this.dataService.getMaxLimitTeam(manager.employeeId, this.selectedMonth);
-        let teamLeaderRealOvertimes = await this.dataService.getSumOvertimeTeam(manager.employeeId, this.selectedMonth);
+      const promises = this.filteredManagers.map(async manager => {
+        // console.log(manager.username);
+        const [teamMinLimits, teamMaxLimits, teamRealOvertimes, 
+               teamLeaderMinLimits, teamLeaderMaxLimits, teamLeaderRealOvertimes] = await Promise.all([
+          this.dataService.getMinLimitTeamSum(manager.employeeId, this.selectedMonth),
+          this.dataService.getMaxLimitTeamSum(manager.employeeId, this.selectedMonth),
+          this.dataService.getSumOvertimeTeamSum(manager.employeeId, this.selectedMonth),
+          this.dataService.getMinLimitTeam(manager.employeeId, this.selectedMonth),
+          this.dataService.getMaxLimitTeam(manager.employeeId, this.selectedMonth),
+          this.dataService.getSumOvertimeTeam(manager.employeeId, this.selectedMonth)
+        ]);
+        this.teamMinLimits.set(manager.username,teamMinLimits);
+        this.teamMaxLimits.set(manager.username, teamMaxLimits);
+        this.teamRealOvertimes.set(manager.username, teamRealOvertimes);
+        // let teamLeaderMinLimits = await this.dataService.getMinLimitTeam(manager.employeeId, this.selectedMonth);
+        // let teamLeaderMaxLimits = await this.dataService.getMaxLimitTeam(manager.employeeId, this.selectedMonth);
+        // let teamLeaderRealOvertimes = await this.dataService.getSumOvertimeTeam(manager.employeeId, this.selectedMonth);
         
         teamLeaderRealOvertimes.forEach((value: number, key: string) => {
           this.realOvertimeSum += value;
@@ -166,8 +177,19 @@ export class OvertimeRndSegmentsComponent implements OnInit {
           this.maxOvertimeSum += value;
         });
       });
-      console.log('real: ', this.realOvertimeSum);
+
+      Promise.all(promises).then(() => {});
     }
     
+  }
+
+  saveChanges(): void
+  {
+
+  }
+
+  onFilteredEmployees(filteredEmployees: Employee[]): void {
+    this.filteredManagers = filteredEmployees;
+    // this.recalculateSums();
   }
 }

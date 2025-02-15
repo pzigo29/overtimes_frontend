@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
 import { Employee } from "../models/data.model"
-import { UserFilterService } from "../services/user-filter.service";
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { EmployeeFilterService } from "../services/employee-filter.service";
+import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 import { DataService } from '../services/data.service';
@@ -12,7 +12,7 @@ import { DataService } from '../services/data.service';
 @Component({
   selector: 'app-overtime-assistant',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  imports: [TitleBarComponent, CommonModule, FormsModule, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-assistant.component.html',
   styleUrl: './overtime-assistant.component.scss'
 })
@@ -20,7 +20,8 @@ export class OvertimeAssistantComponent implements OnInit{
   title: string = 'RND';
   loading: boolean = true;
   isTableVisible: boolean = true;
-  employees: Employee[] = [];
+  allEmployees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
   employeesRealOvertimes: Map<string, number> = new Map<string, number>();
   employeesMinLimits: Map<string, number> = new Map<string, number>();
   employeesMaxLimits: Map<string, number> = new Map<string, number>();
@@ -30,7 +31,7 @@ export class OvertimeAssistantComponent implements OnInit{
   // minOvertimeSum: number = 0;
   // maxOvertimeSum: number = 0;
 
-  constructor(private userFilterService: UserFilterService, private dataService: DataService) { }
+  constructor(private userFilterService: EmployeeFilterService, private dataService: DataService) { }
 
   ngOnInit(): void 
     {
@@ -65,16 +66,17 @@ export class OvertimeAssistantComponent implements OnInit{
           this.dataService.getEmployees().subscribe(
             (data: Employee[]) =>
             {
-              this.employees = data;
-              console.log('team member 0: ', this.employees[0]);
+              this.filteredEmployees = data;
+              this.allEmployees = this.filteredEmployees;
+              console.log('team member 0: ', this.filteredEmployees[0]);
               this.setData();
             }
           );
-          for (let i = 0; i < this.employees.length; i++)
+          for (let i = 0; i < this.filteredEmployees.length; i++)
           {
-            this.employeesRealOvertimes.set(this.employees[i].username, 0);
-            this.employeesMinLimits.set(this.employees[i].username, 0);   
-            this.employeesMaxLimits.set(this.employees[i].username, 0);  
+            this.employeesRealOvertimes.set(this.filteredEmployees[i].username, 0);
+            this.employeesMinLimits.set(this.filteredEmployees[i].username, 0);   
+            this.employeesMaxLimits.set(this.filteredEmployees[i].username, 0);  
           }
         }
         this.dataService.selectedMonth$.subscribe(
@@ -115,7 +117,7 @@ export class OvertimeAssistantComponent implements OnInit{
   {
     if (this.assistant == undefined)
       throw new Error('Assistant undefined');
-    this.employees.forEach(async employee => {
+    this.filteredEmployees.forEach(async employee => {
       let overtimes = await this.dataService.getSumOvertime(employee.employeeId, this.selectedMonth);
       let minLimit = await this.dataService.getMinLimit(employee.employeeId, this.selectedMonth);
       let maxLimit = await this.dataService.getMaxLimit(employee.employeeId, this.selectedMonth);
@@ -124,86 +126,6 @@ export class OvertimeAssistantComponent implements OnInit{
       this.employeesMaxLimits.set(employee.username, maxLimit);
     });
   }
-  
-  // userFilterComponent: UserFiltersComponent;
-  // users: User[];
-
-  // newUser: User = {
-  //   personUserName: 'janono',
-  //   firstName: '',
-  //   lastName: '',
-  //   personalNumber: '312165489',
-  //   costCenter: '0045-1709',
-  //   overtimeMaxLimit: 40,
-  //   overtimeMinLimit: 5,
-  //   realOvertime: 10.46,
-  //   manager: null,
-  //   dSegment: '3'
-  // };
-
-  
-  // constructor() {
-  //   this.userFilterComponent = new UserFiltersComponent(new UserFilterService);
-  //   this.users = this.userFilterComponent.users;
-    
-  //   this.users.push(this.newUser);
-  // }
-
-  
-
-  // filter: string = 'all';
-  // personalNumber: string | null = null;
-  // manager: User | null = null;
-  // dSegment: string | null = null;
-  // username: string | null = null;
-  // showFilters: boolean = false;
-
-  // toggleFilters(): void {
-  //   this.showFilters = !this.showFilters;
-  // }
-
-  // resetFilters(): void {
-  //   this.filter = 'all';
-  //   this.personalNumber = null;
-  //   this.manager = null;
-  //   this.dSegment = null;
-  //   this.username = null;
-  // }
-
-  
-
-  // filterUsers(): User[] {
-  //   let filteredUsers = this.users;
-
-  //   if (this.filter === 'overtime-off-limit') {
-  //     filteredUsers = this.userFilterService.filterUsersByOvertimeOffLimit(filteredUsers);
-  //   } else if (this.filter === 'overtime-in-limit') {
-  //     filteredUsers = this.userFilterService.filterUsersByOvertimeInLimit(filteredUsers);
-  //   }
-
-  //   if (this.personalNumber) {
-  //     filteredUsers = this.userFilterService.filterUsersByPersonalNumber(filteredUsers, this.personalNumber);
-  //   }
-
-  //   if (this.manager) {
-  //     filteredUsers = this.userFilterService.filterUsersByManager(filteredUsers, this.manager);
-  //   }
-
-  //   if (this.dSegment) {
-  //     filteredUsers = this.userFilterService.filterUsersByDSegment(filteredUsers, this.dSegment);
-  //   }
-
-  //   if (this.username) {
-  //     filteredUsers = this.userFilterService.filterUsersByUserName(filteredUsers, this.username);
-  //   }
-
-  //   return filteredUsers;
-  //   // this.users = this.userFilterComponent.filterUsers();
-  //   // this.userFilterComponent.filter = this.filter;
-  //   // return this.userFilterComponent.filterUsers();
-  // }
-
-  
 
   isSidebarActive(): boolean {
     return TitleBarComponent.isSidebarActive;
@@ -211,6 +133,11 @@ export class OvertimeAssistantComponent implements OnInit{
 
   isSidebarVisible(): boolean {
     return TitleBarComponent.isSidebarVisible;
+  }
+
+  onFilteredEmployees(filteredEmployees: Employee[]): void {
+    this.filteredEmployees = filteredEmployees;
+    // this.recalculateSums();
   }
 
 }

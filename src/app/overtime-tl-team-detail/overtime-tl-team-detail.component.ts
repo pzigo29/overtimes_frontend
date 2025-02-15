@@ -27,18 +27,25 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
   constructor(private dataService: DataService, private router: Router, private location: Location) {}
 
   ngOnInit(): void {
-    const savedEmployee = localStorage.getItem('selectedEmployee');
-    if (savedEmployee) {
-      this.selectedEmployee = JSON.parse(savedEmployee);
-      console.log('Loaded employee from local storage:', this.selectedEmployee);
-      this.setData();
+    if (typeof sessionStorage !== 'undefined') 
+    {
+      const savedEmployee = sessionStorage.getItem('selectedEmployee');
+      if (savedEmployee) {
+        this.selectedEmployee = JSON.parse(savedEmployee);
+        console.log('Loaded employee from session storage:', this.selectedEmployee);
+        this.setData();
+      }
+    }
+    else 
+    {
+      console.warn('Session storage is not available');
     }
 
     this.dataService.getSelectedEmployee().subscribe(
       (data: Employee | undefined) => {
         this.selectedEmployee = data;
         if (data) {
-          localStorage.setItem('selectedEmployee', JSON.stringify(data));
+          sessionStorage.setItem('selectedEmployee', JSON.stringify(data));
           console.log('Saved employee to local storage:', data);
           this.setData();
         } else {
@@ -64,7 +71,14 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
 
   selectEmployee(employee: Employee): void {
     this.selectedEmployee = employee;
-    localStorage.setItem('selectedEmployee', JSON.stringify(employee));
+    if (typeof sessionStorage !== 'undefined')
+    {
+      sessionStorage.setItem('selectedEmployee', JSON.stringify(employee));
+    }
+    else
+    {
+      console.warn('Session storage is not available');
+    }
     console.log('Selected employee:', employee);
     this.setData();
   }
@@ -79,6 +93,11 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     this.minLimit = await this.dataService.getMinLimit(this.selectedEmployee.employeeId, this.selectedMonth);
     this.maxLimit = await this.dataService.getMaxLimit(this.selectedEmployee.employeeId, this.selectedMonth);
     this.realOvertime = await this.dataService.getSumOvertime(this.selectedEmployee.employeeId, this.selectedMonth);
+  }
+
+  saveLimits(): void
+  {
+    this.dataService.setLimit(this.selectedEmployee?.employeeId || 0, this.selectedMonth, this.minLimit, this.maxLimit);
   }
 
   getOvertimeStatus(employee: Employee): string {

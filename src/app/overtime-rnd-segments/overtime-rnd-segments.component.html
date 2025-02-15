@@ -1,8 +1,13 @@
 <div class="container">
     <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar> 
     <div class="top-right-div">
-        <app-user-filters></app-user-filters>
-        <!-- <button class="submit-btn" (click)="showSite('tl')">{{'BUTTON.BACK' | translate}}</button> -->
+        <app-user-filters
+            [minLimits]="teamMinLimits"
+            [maxLimits]="teamMaxLimits"
+            [realOvertimes]="teamRealOvertimes"
+            [employees]="allManagers"
+            (filteredEmployees)="onFilteredEmployees($event)">
+        </app-user-filters>
         <button class="submit-btn" (click)="goBack()">{{'BUTTON.BACK' | translate}}</button>
     </div>
     <div class="row-aligned">
@@ -20,10 +25,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let manager of managers">
+                    <tr *ngFor="let manager of filteredManagers">
                         <td (dblclick)="showTeamsSite(manager)" title="Detail" class="cursor-pointer">{{manager.firstName}} {{manager.lastName}}</td>
-                        <td><input type="number" [ngModel]="teamMinLimits.get(manager.username)" (ngModelChange)="teamMinLimits.set(manager.username, $event)" min="0" step="0.5"></td>
-                        <td><input type="number" [ngModel]="teamMaxLimits.get(manager.username)" (ngModelChange)="teamMaxLimits.set(manager.username, $event)" min="0" step="0.5"></td>
+                        <td><input type="number" [ngModel]="teamMinLimits.get(manager.username)" (ngModelChange)="teamMinLimits.set(manager.username, $event)" min="0" step="0.5" disabled=""></td>
+                        <td><input type="number" [ngModel]="teamMaxLimits.get(manager.username)" (ngModelChange)="teamMaxLimits.set(manager.username, $event)" min="0" step="0.5" disabled=""></td>
                         <td [ngClass]="getOvertimeStatus(manager)">{{teamRealOvertimes.get(manager.username)}}</td>
                         <td><input type="checkbox" name="approved" id="approved" [disabled]="approvedDisabled"></td>
                         <td><input type="text"></td>
@@ -33,6 +38,9 @@
             <!-- <div class="centered-div">
                 <button class="submit-btn" (click)="showTeamsSite()">{{'BUTTON.SHOW-TEAMS' | translate}}</button>
             </div> -->
+            <div class="bottom-right-div">
+                <button class="submit-btn" (click)="saveChanges()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+            </div>
         </div>
         <div *ngIf="loading" class="overtime-form-row">Loading...</div> 
 </div>

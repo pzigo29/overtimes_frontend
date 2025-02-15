@@ -4,7 +4,7 @@ import { CommonModule, Location } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { TitleBarComponent } from '../title-bar/title-bar.component';
 import { Employee } from '../models/data.model';
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';
@@ -13,14 +13,15 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-overtime-tl-team',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, TitleBarComponent, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule, TitleBarComponent, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-tl-team.component.html',
   styleUrl: './overtime-tl-team.component.scss'
 })
 export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
 title: string = 'TL';
   leader?: Employee;
-  team: Employee[] = [];
+  wholeTeam: Employee[] = [];
+  filteredTeam: Employee[] = [];
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
   teamMinLimits: Map<string, number> = new Map<string, number>();
   teamMaxLimits: Map<string, number> = new Map<string, number>();
@@ -48,11 +49,12 @@ title: string = 'TL';
         this.leader = await firstValueFrom(this.dataService.getEmployee(username));
         if (this.leader) 
         {
-          this.team = await firstValueFrom(this.dataService.getTeamMembers(this.leader.employeeId));
+          this.filteredTeam = await firstValueFrom(this.dataService.getTeamMembers(this.leader.employeeId));
+          this.wholeTeam = this.filteredTeam; // Save the whole team in case we want to reset the filters
         }
         
         // Initialize form controls for each team member
-        this.team.forEach(member => {
+        this.filteredTeam.forEach(member => {
           this.overtimeForm.addControl(member.username + '_min', new FormControl(0));
           this.overtimeForm.addControl(member.username + '_max', new FormControl(0));
           this.teamRealOvertimes.set(member.username, 0);
@@ -80,7 +82,7 @@ title: string = 'TL';
 
     // Subscribe to form changes
     this.overtimeForm.valueChanges.subscribe(values => {
-      this.team.forEach(member => {
+      this.filteredTeam.forEach(member => {
         const minLimit = values[member.username + '_min'] || 0;
         const maxLimit = values[member.username + '_max'] || 0;
         this.teamMinLimits.set(member.username, minLimit);
@@ -113,9 +115,9 @@ title: string = 'TL';
     this.realOvertimeSum = 0;
     this.minOvertimeSum = 0;
     this.maxOvertimeSum = 0;
-    console.log('Team in setData:' + JSON.stringify(this.team));
+    console.log('Team in setData:' + JSON.stringify(this.filteredTeam));
 
-    const promises = this.team.map(async member => {
+    const promises = this.filteredTeam.map(async member => {
       const overtimes = await this.dataService.getSumOvertime(member.employeeId, this.selectedMonth);
       const minLimit = await this.dataService.getMinLimit(member.employeeId, this.selectedMonth);
       const maxLimit = await this.dataService.getMaxLimit(member.employeeId, this.selectedMonth);
@@ -151,11 +153,12 @@ title: string = 'TL';
     console.log('real: ', this.realOvertimeSum);
 
     this.isSettingData = false;
+    
     this.cd.detectChanges();
   }
 
   async saveLimits(): Promise<void> {
-    const savePromises = this.team.map(member => 
+    const savePromises = this.filteredTeam.map(member => 
       this.dataService.setLimit(member.employeeId, this.selectedMonth, this.teamMinLimits.get(member.username) || 0, this.teamMaxLimits.get(member.username) || 0)
     );
 
@@ -168,7 +171,7 @@ title: string = 'TL';
     this.minOvertimeSum = 0;
     this.maxOvertimeSum = 0;
 
-    this.team.forEach(member => {
+    this.filteredTeam.forEach(member => {
       const overtimes = this.teamRealOvertimes.get(member.username) || 0;
       const minLimit = this.teamMinLimits.get(member.username) || 0;
       const maxLimit = this.teamMaxLimits.get(member.username) || 0;
@@ -228,5 +231,10 @@ title: string = 'TL';
     } else {
       return 'medium-value';
     }
+  }
+
+  onFilteredEmployees(filteredEmployees: Employee[]): void {
+    this.filteredTeam = filteredEmployees;
+    this.recalculateSums();
   }
 }

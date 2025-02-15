@@ -2,17 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
+import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Employee } from '../models/data.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-overtime-mng-teams',
   standalone: true,
-  imports: [TitleBarComponent, UserFiltersComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule],
+  imports: [TitleBarComponent, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule],
   templateUrl: './overtime-mng-teams.component.html',
   styleUrl: './overtime-mng-teams.component.scss'
 })
@@ -28,8 +29,8 @@ export class OvertimeMngTeamsComponent implements OnInit {
   realOvertimeSum: number = 0;
   selectedMonth: Date = new Date();
   // teams: Employee[][] = [];
-  employees: Employee[] = [];
-  teamLeaders: Employee[] = [];
+  allTeamLeaders: Employee[] = [];
+  filteredTeamLeaders: Employee[] = [];
   manager?: Employee;
   selectedEmployee?: Employee;
 
@@ -37,48 +38,21 @@ export class OvertimeMngTeamsComponent implements OnInit {
 
   async ngOnInit() 
   {
-    const username: string = await this.dataService.getMngUsername().toPromise() || '';
-    //   (data: string | null) => {
-    //     if (data !== null)
-    //       username = data;
-    //   }
-    // );
+    const username: string = await firstValueFrom(this.dataService.getMngUsername()) || '';
     if (username !== '')
     {
-      this.manager = await this.dataService.getEmployee(username).toPromise();
-      //   (data: Employee | undefined) => {
-      //     this.manager = data;
-      //     if (this.manager === undefined) {
-      //       this.loading = false;
-      //       throw new Error('Employee undefined' + username);
-      //     }
-      //     //console.log(this.employee.username);
-      //     // this.setData();
-      //     this.loading = false;  // Set to false when data is fully loaded
-      //     //console.log(this.employee.username);
-      //   },
-      //   (error: any) => {
-      //       this.loading = false;
-      //       console.error('Error fetching employee', error);
-      //   }
-      // );
+      this.manager = await firstValueFrom(this.dataService.getEmployee(username));
       if (this.manager != undefined)
       {
         if (this.manager.levelRole < 4)
         {
-          this.teamLeaders = await this.dataService.getTeamLeaders(this.manager.employeeId).toPromise() || [];
-          //   (data: Employee[]) =>
-          //   {
-          //     this.teamLeaders = data;
-          //     console.log('team leader 0: ', this.teamLeaders[0]);
-          //     this.setData();
-          //   }
-          // );
-          for (let i = 0; i < this.teamLeaders.length; i++)
+          this.filteredTeamLeaders = await firstValueFrom(this.dataService.getTeamLeaders(this.manager.employeeId)) || [];
+          this.allTeamLeaders = this.filteredTeamLeaders;
+          for (let i = 0; i < this.filteredTeamLeaders.length; i++)
           {
-            this.teamRealOvertimes.set(this.teamLeaders[i].username, 0);
-            this.teamMinLimits.set(this.teamLeaders[i].username, 0);   
-            this.teamMaxLimits.set(this.teamLeaders[i].username, 0);  
+            this.teamRealOvertimes.set(this.filteredTeamLeaders[i].username, 0);
+            this.teamMinLimits.set(this.filteredTeamLeaders[i].username, 0);   
+            this.teamMaxLimits.set(this.filteredTeamLeaders[i].username, 0);  
           }
         }
       }
@@ -139,34 +113,66 @@ export class OvertimeMngTeamsComponent implements OnInit {
     }
   }
 
-  setData(): void
-  {
-    if (this.manager !== undefined)
-    {
-      this.realOvertimeSum = 0;
-      this.minOvertimeSum = 0;
-      this.maxOvertimeSum = 0;
-      this.teamLeaders.forEach(async member => {
-        this.teamMinLimits.set(member.username, await this.dataService.getMinLimitTeamSum(member.employeeId, this.selectedMonth));
-        this.teamMaxLimits.set(member.username, await this.dataService.getMaxLimitTeamSum(member.employeeId, this.selectedMonth));
-        this.teamRealOvertimes.set(member.username, await this.dataService.getSumOvertimeTeamSum(member.employeeId, this.selectedMonth));
-        let teamLeaderMinLimits = await this.dataService.getMinLimitTeam(member.employeeId, this.selectedMonth);
-        let teamLeaderMaxLimits = await this.dataService.getMaxLimitTeam(member.employeeId, this.selectedMonth);
-        let teamLeaderRealOvertimes = await this.dataService.getSumOvertimeTeam(member.employeeId, this.selectedMonth);
-        
-        teamLeaderRealOvertimes.forEach((value: number, key: string) => {
-          this.realOvertimeSum += value;
-        });
-        teamLeaderMinLimits.forEach((value: number, key: string) => {
-          this.minOvertimeSum += value;
-        });
-        teamLeaderMaxLimits.forEach((value: number, key: string) => {
-          this.maxOvertimeSum += value;
-        });
-      });
-      console.log('real: ', this.realOvertimeSum);
+  async setData(): Promise<void> {
+    if (this.manager === undefined) {
+      throw new Error('Leader undefined');
     }
-    
+  
+    this.realOvertimeSum = 0;
+    this.minOvertimeSum = 0;
+    this.maxOvertimeSum = 0;
+    console.log('Team leaders in setData:', JSON.stringify(this.filteredTeamLeaders));
+  
+    try {
+      const results = await Promise.all(this.filteredTeamLeaders.map(async member => {
+        const overtimes = await this.dataService.getSumOvertimeTeam(member.employeeId, this.selectedMonth);
+        const minLimit = await this.dataService.getMinLimitTeam(member.employeeId, this.selectedMonth);
+        const maxLimit = await this.dataService.getMaxLimitTeam(member.employeeId, this.selectedMonth);
+  
+        console.log(`Fetched data for ${member.username}:`, { overtimes, minLimit, maxLimit });
+  
+        let overtimesSum = 0;
+        let minLimitSum = 0;
+        let maxLimitSum = 0;
+  
+        overtimes.forEach((value: number) => {
+          overtimesSum += value;
+        });
+        minLimit.forEach((value: number) => {
+          minLimitSum += value;
+        });
+        maxLimit.forEach((value: number) => {
+          maxLimitSum += value;
+        });
+  
+        console.log(`Summed data for ${member.username}:`, { overtimesSum, minLimitSum, maxLimitSum });
+  
+        this.teamRealOvertimes.set(member.username, overtimesSum);
+        this.teamMinLimits.set(member.username, minLimitSum);
+        this.teamMaxLimits.set(member.username, maxLimitSum);
+  
+        return { overtimesSum, minLimitSum, maxLimitSum };
+      }));
+  
+      results.forEach(result => {
+        this.realOvertimeSum += result.overtimesSum;
+        this.minOvertimeSum += result.minLimitSum;
+        this.maxOvertimeSum += result.maxLimitSum;
+      });
+  
+      console.log('Final sums:', {
+        realOvertimeSum: this.realOvertimeSum,
+        minOvertimeSum: this.minOvertimeSum,
+        maxOvertimeSum: this.maxOvertimeSum
+      });
+    } catch (error) {
+      console.error('Error in setData:', error);
+    }
+  }
+
+  onFilteredEmployees(filteredEmployees: Employee[]): void {
+    this.filteredTeamLeaders = filteredEmployees;
+    // this.recalculateSums();
   }
 
 }

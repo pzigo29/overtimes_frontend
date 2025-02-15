@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { UserFiltersComponent } from "../user-filters/user-filters.component";
-import { UserFilterService } from '../services/user-filter.service';
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 import { Employee } from '../models/data.model';
@@ -14,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-overtime-mng',
   standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, UserFiltersComponent, MonthsTableComponent, TranslateModule],
+  imports: [TitleBarComponent, CommonModule, FormsModule, MonthsTableComponent, TranslateModule],
   templateUrl: './overtime-mng.component.html',
   styleUrl: './overtime-mng.component.scss'
 })
