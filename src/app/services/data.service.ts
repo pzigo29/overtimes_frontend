@@ -19,7 +19,7 @@ export class DataService {
   // const os = require('os');
   // username: string = os.userInfo().username;
   username: string = 'klmkjn';
-  rndUsername: string = this.username;
+  rndUsername: string = this.username == 'klmkjn' ? this.username : '';
   mngUsername: string | null = this.username; // toto sa bude načítavať z windowsu
   tlUsername: string | null = this.username;
   thpUsername: string | null = this.username;
@@ -154,6 +154,20 @@ export class DataService {
     return this.http.get<Employee[]>(`${this.apiUrl}/Employee`);
   }
 
+  async getOvertimeLimit(employee_id: number, month: Date | string): Promise<OvertimeLimit>
+  {
+    try
+    {
+      const limits: OvertimeLimit = await firstValueFrom(this.http.get<OvertimeLimit>(`${this.apiUrl}/OvertimeLimit/employee_id?employeeId=${employee_id}&month=${typeof month === 'string' ? month : month.toDateString()}`));
+      return limits;
+    }
+    catch (error)
+    {
+      console.error('Error fetching limits: ', error);
+      throw new Error('Failed to retrieve limits');
+    }
+  }
+
   async getSumOvertime(employee_id: number, month: Date | string): Promise<number>
   {
     try
@@ -195,6 +209,37 @@ export class DataService {
       return 0;
     }
     return limit.minHours;
+  }
+
+  async getApprovedStatus(employee_id: number, month: Date): Promise<boolean>
+  {
+    const limit: OvertimeLimit = await firstValueFrom(this.http.get<OvertimeLimit>(`${this.apiUrl}/OvertimeLimit/employee_id?employeeId=${employee_id}&month=${typeof month === 'string' ? month : month.toDateString()}`));
+    if (limit == undefined)
+    {
+      //throw new Error('Limit was not found! ' + employee_id);
+      return false;
+    }
+    return limit.statusId === 'A';
+  }
+
+  async setApprovedStatus(employee_id: number, approverId: number, month: Date, status: string, comment: string): Promise<void>
+  {
+    try
+    {
+      
+      const limit: OvertimeLimit = await firstValueFrom(this.http.get<OvertimeLimit>(`${this.apiUrl}/OvertimeLimit/employee_id?employeeId=${employee_id}&month=${typeof month === 'string' ? month : month.toDateString()}`));
+      if (limit == undefined)
+      {
+        throw new Error('Limit was not found! ' + employee_id);
+      }
+      console.log('Setting approved status, limit: ', limit);
+      await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalByLimit?limitId=${limit.limitId}&approverId=${approverId}&comment=${comment}&approvalStatus=${status}`, null));
+    }
+    catch (error)
+    {
+      console.error('Error setting approved status: ', error);
+      throw error;
+    }
   }
 
   async setLimit(employee_id: number, month: Date, min_hours: number, max_hours: number): Promise<void> {

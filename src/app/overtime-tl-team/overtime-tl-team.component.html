@@ -33,15 +33,15 @@
                         <td><input type="number" [formControlName]="member.username + '_min'" min="0" step="0.5"></td>
                         <td><input type="number" [formControlName]="member.username + '_max'" min="0" step="0.5"></td>
                         <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
-                        <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
-                        <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
+                        <td><input type="text" [formControlName]="getOvertimeReason(member, selectedMonth)" (ngModelChange)="teamReason.set(member.username, $event)"></td> <!-- PRIDAT DO DB overtime_limit reason-->
+                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)"></td>
                     </tr>
                     <tr>
                         <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>
                         <td class="light-green"><input type="number" [formControlName]="'minOvertimeSum'" min="0"></td>
                         <td class="light-green"><input type="number" [formControlName]="'maxOvertimeSum'" min="0"></td>
                         <td class="light-green" [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
-                        <td class="light-green"><!--{{commentMng}}--></td>
+                        <td class="light-green"></td>
                         <td class="light-green"></td>
                     </tr>
                 </tbody>

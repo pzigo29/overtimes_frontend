@@ -28,6 +28,7 @@ export interface OvertimeLimit
   startDate: Date;
   endDate: Date;
   statusId: string; //change // FK ApprovalStatus
+  reason: string | null;
 }
 
 export interface Approval
