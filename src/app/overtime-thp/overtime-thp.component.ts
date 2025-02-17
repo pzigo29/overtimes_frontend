@@ -90,9 +90,9 @@ export class OvertimeThpComponent implements OnInit {
     //console.log('data: ', this.realOvertime, this.minOvertime, this.maxOvertime, this.approved);
   }
 
-  saveLimits(): void
+  async saveLimits(): Promise<void>
   {
-    this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime);
+    await this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime);
   }
 
   isSidebarActive(): boolean 

@@ -67,28 +67,13 @@ export class DataService {
   getMonths(): Observable<Date[]>
   {
     const months: Observable<Date[]> = this.http.get<Date[]>(`${this.apiUrl}/OvertimeLimit/months`);
-    // console.log(months);
-    // console.log(new Date());
     return months;
-    // return of(this.months);
   }
 
   setSelectedMonth(month: Date): void
   {
     this.selectedMonthSubject.next(month);
   }
-
-  // setSelectedEmployee(username: string): void
-  // {
-  //   // this.selectedEmployee = this.employees.find(x => x.username === username);
-  //   this.getEmployee(username).subscribe(
-  //     (data: Employee | undefined) =>
-  //     {
-  //       this.selectedEmployee = data;
-  //     }
-  //   );
-  //   console.log('Selected employee: ', this.selectedEmployee?.username);
-  // }
 
   setSelectedEmployee(username: string): Promise<void>
   {
@@ -105,14 +90,6 @@ export class DataService {
         }
       );
     });
-    // this.selectedEmployee = this.employees.find(x => x.username === username);
-    // this.getEmployee(username).subscribe(
-    //   (data: Employee | undefined) =>
-    //   {
-    //     this.selectedEmployee = data;
-    //   }
-    // );
-    // console.log('Selected employee: ', this.selectedEmployee?.username);
   }
 
   getSelectedEmployee(): Observable<Employee | undefined>
@@ -242,7 +219,7 @@ export class DataService {
     }
   }
 
-  async setLimit(employee_id: number, month: Date, min_hours: number, max_hours: number): Promise<void> {
+  async setLimit(employee_id: number, month: Date, min_hours: number, max_hours: number, reason?: string | null): Promise<void> {
     try {
       const limit: OvertimeLimit = await firstValueFrom(this.http.get<OvertimeLimit>(`${this.apiUrl}/OvertimeLimit/employee_id?employeeId=${employee_id}&month=${typeof month === 'string' ? month : month.toDateString()}`));
       
@@ -252,6 +229,12 @@ export class DataService {
   
       limit.minHours = min_hours;
       limit.maxHours = max_hours;
+      // limit.reason = reason;
+      if (reason !== undefined)
+      {
+        // console.log('Reason: ', reason);
+        limit.reason = reason;
+      }
   
       await firstValueFrom(this.http.put(`${this.apiUrl}/OvertimeLimit/limit`, limit));
 

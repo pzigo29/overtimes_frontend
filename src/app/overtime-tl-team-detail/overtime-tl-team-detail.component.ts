@@ -95,9 +95,9 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     this.realOvertime = await this.dataService.getSumOvertime(this.selectedEmployee.employeeId, this.selectedMonth);
   }
 
-  saveLimits(): void
+  async saveLimits(): Promise<void>
   {
-    this.dataService.setLimit(this.selectedEmployee?.employeeId || 0, this.selectedMonth, this.minLimit, this.maxLimit);
+    await this.dataService.setLimit(this.selectedEmployee?.employeeId || 0, this.selectedMonth, this.minLimit, this.maxLimit);
   }
 
   getOvertimeStatus(employee: Employee): string {

@@ -22,7 +22,7 @@
                     <th>{{'MIN-LIMIT' | translate}}</th>
                     <th>{{'MAX-LIMIT' | translate}}</th>
                     <th>{{'REAL-OVERTIMES' | translate}}</th>
-                    <th>{{'REASON' | translate}}</th>
+                    <!-- <th>{{'REASON' | translate}}</th> -->
                     <th>{{'APPROVED' | translate}}</th>
                 </tr>
             </thead>
@@ -32,7 +32,7 @@
                     <td><input type="number" [ngModel]="teamMinLimits.get(leader.username)" (ngModelChange)="teamMinLimits.set(leader.username, $event)" min="0" step="0.5" disabled=""></td>
                     <td><input type="number" [ngModel]="teamMaxLimits.get(leader.username)" (ngModelChange)="teamMaxLimits.set(leader.username, $event)" min="0" step="0.5" disabled=""></td>
                     <td [ngClass]="getOvertimeStatus(leader)">{{teamRealOvertimes.get(leader.username)}}</td>
-                    <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
+                    <!-- <td><input type="text" [(ngModel)]="overtimeReason">Nič zatiaľ</td> PRIDAT DO DB overtime_limit reason -->
                     <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
                 </tr>
                 <tr >
@@ -41,7 +41,7 @@
                     <td class="light-green"><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
                     <!-- <td></td> -->
                     <td class="light-green" [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
-                    <td class="light-green"><!--{{commentMng}}--></td>
+                    <!-- <td class="light-green">{{commentMng}}</td> -->
                     <td class="light-green"></td>
                 </tr>
             </tbody>

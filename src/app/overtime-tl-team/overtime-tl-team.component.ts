@@ -63,7 +63,7 @@ title: string = 'TL';
           this.overtimeForm.addControl(member.username + '_min', new FormControl(0));
           this.overtimeForm.addControl(member.username + '_max', new FormControl(0));
           this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.leader?.levelRole === 1) }));
-          this.overtimeForm.addControl(member.username + '_reason', new FormControl(''));
+          this.overtimeForm.addControl(member.username + '_reason', new FormControl({ value: '', disabled: false }));
           this.teamRealOvertimes.set(member.username, 0);
           this.teamMinLimits.set(member.username, 0);
           this.teamMaxLimits.set(member.username, 0);
@@ -92,8 +92,8 @@ title: string = 'TL';
       this.filteredTeam.forEach(member => {
         const minLimit = values[member.username + '_min'] || 0;
         const maxLimit = values[member.username + '_max'] || 0;
-        const approved = values[member.username + '_approved'] || true;
-        const reason = values[member.username + '_reason'] || '';
+        const approved = values[member.username + '_approved'] === true;
+        const reason = values[member.username + '_reason'];
         this.teamMinLimits.set(member.username, minLimit);
         this.teamMaxLimits.set(member.username, maxLimit);
         this.teamApproved.set(member.username, approved);
@@ -113,10 +113,10 @@ title: string = 'TL';
   }
 
   async setData(): Promise<void> {
-//         if (this.isSettingData) {
-//               console.log('Already setting data');
-//   //             return; // Prevent concurrent calls to setData
-//         }
+        if (this.isSettingData) {
+              console.log('Already setting data');
+              return; // Prevent concurrent calls to setData
+        }
     this.isSettingData = true;
 
     if (this.leader == undefined) {
@@ -134,21 +134,24 @@ title: string = 'TL';
       // const maxLimit = await this.dataService.getMaxLimit(member.employeeId, this.selectedMonth);
       // const approved = await this.dataService.getApprovedStatus(member.employeeId, this.selectedMonth);
       const limit = await this.dataService.getOvertimeLimit(member.employeeId, this.selectedMonth);
-      const minLimit = limit?.minHours || 0;
-      const maxLimit = limit?.maxHours || 0;
+      const minLimit = (limit?.minHours || 0) < 0 ? 0 : limit?.minHours || 0;
+      const maxLimit = (limit?.maxHours || 0) < 0 ? 0 : limit?.maxHours || 0;
       const approved = limit?.statusId === 'A' ? true : false;
+      const reason = limit?.reason || '';
 
       this.teamRealOvertimes.set(member.username, overtimes);
       this.teamMinLimits.set(member.username, minLimit);
       this.teamMaxLimits.set(member.username, maxLimit);
       this.teamApproved.set(member.username, approved);
+      this.teamReason.set(member.username, reason);
 
       // Update form control values
       this.overtimeForm.get(member.username + '_min')?.setValue(minLimit, { emitEvent: false });
       this.overtimeForm.get(member.username + '_max')?.setValue(maxLimit, { emitEvent: false });
       this.overtimeForm.get(member.username + '_approved')?.setValue(approved, { emitEvent: false });
+      this.overtimeForm.get(member.username + '_reason')?.setValue(reason, { emitEvent: false });
 
-      return { overtimes, minLimit, maxLimit };
+      return { overtimes, minLimit, maxLimit, approved, reason };
     });
 
     const results = await Promise.all(promises);
@@ -177,12 +180,12 @@ title: string = 'TL';
 
   async saveLimits(): Promise<void> {
     const savePromises = this.filteredTeam.map(member => {
-      this.dataService.setLimit(member.employeeId, this.selectedMonth, this.teamMinLimits.get(member.username) || 0, this.teamMaxLimits.get(member.username) || 0);
+      this.dataService.setLimit(member.employeeId, this.selectedMonth, this.teamMinLimits.get(member.username) || 0, this.teamMaxLimits.get(member.username) || 0, this.teamReason.get(member.username) || '');
       this.dataService.setApprovedStatus(member.employeeId, this.leader?.employeeId || 0, this.selectedMonth, (this.teamApproved.get(member.username) || false) ? 'A' : 'W', '');
     });
 
     await Promise.all(savePromises);
-    await this.setData();
+    // await this.setData();
   }
 
   recalculateSums(): void {
@@ -258,8 +261,17 @@ title: string = 'TL';
 
   setApproved(member: Employee, event: Event): void {
     const approved: boolean = (event.target as HTMLInputElement).checked;
+    console.log(`Setting approved for ${member.username}: ${approved}`);
     this.teamApproved.set(member.username, approved);
+    console.log(this.teamApproved);
+    // this.setData();
     // this.recalculateSums();
+  }
+
+  setReason(member: Employee, event: Event): void {
+    const reason: string = (event.target as HTMLInputElement).value;
+    this.teamReason.set(member.username, reason);
+    // this.setData();
   }
 
   onFilteredEmployees(filteredEmployees: Employee[]): void {
