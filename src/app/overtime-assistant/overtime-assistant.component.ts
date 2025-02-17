@@ -8,6 +8,8 @@ import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.c
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 import { DataService } from '../services/data.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-overtime-assistant',
@@ -133,6 +135,34 @@ export class OvertimeAssistantComponent implements OnInit{
 
   isSidebarVisible(): boolean {
     return TitleBarComponent.isSidebarVisible;
+  }
+
+  exportToXLSX(): void {
+    try
+    {
+      const table = document.getElementById('limits-table') as HTMLTableElement;
+      let data: any[] = [];
+      for (let row of Array.from(table.rows)) {
+        let rowData: any[] = [];
+        for (let cell of Array.from(row.cells)) {
+          let input = cell.querySelector('input');
+          rowData.push(input ? input.value : cell.innerText.trim());
+        }
+        data.push(rowData);
+      }
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  
+      const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  
+      saveAs(dataBlob, 'overtimes.xlsx');
+    }
+    catch (error)
+    {
+      console.error('Error exporting data', error);
+    }
   }
 
   onFilteredEmployees(filteredEmployees: Employee[]): void {

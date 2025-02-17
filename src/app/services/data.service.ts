@@ -18,7 +18,7 @@ export class DataService {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'klmkjn';
+  username: string = 'mikimaja';
   rndUsername: string = this.username == 'klmkjn' ? this.username : '';
   mngUsername: string | null = this.username; // toto sa bude načítavať z windowsu
   tlUsername: string | null = this.username;
