@@ -57,9 +57,11 @@ export interface Overtime
 export interface Notification
 {
   notificationId: number; //PK
-  employeeId: number; //FK Employee
+  // employeeId: number; //FK Employee
   limitId: number; //change // FK OvertimeLimit
+  subject: string | null;
   message: string | null;
+  plannedSendWorkDay: number;
   dateSent: Date;
 }
 

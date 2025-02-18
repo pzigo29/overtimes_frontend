@@ -152,12 +152,13 @@ export class OvertimeAssistantComponent implements OnInit{
       }
       const worksheet = XLSX.utils.aoa_to_sheet(data);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      // console.log(this.selectedMonth);
+      XLSX.utils.book_append_sheet(workbook, worksheet, this.selectedMonth instanceof Date ? `${this.selectedMonth.getFullYear()}_${this.selectedMonth.getMonth() + 1}` : 'Sheet1');
   
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
   
-      saveAs(dataBlob, 'overtimes.xlsx');
+      saveAs(dataBlob, this.selectedMonth instanceof Date ? `overtimes_${this.selectedMonth.getFullYear()}_${this.selectedMonth.getMonth() + 1}.xlsx` : 'overtimes.xlsx');
     }
     catch (error)
     {
