@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
+import { EmployeeFiltersComponent } from '../employee-filters/employee-filters.component';
 import { MonthsTableComponent } from "../months-table/months-table.component";
 import { DataService } from '../services/data.service';
 import { Router } from '@angular/router';

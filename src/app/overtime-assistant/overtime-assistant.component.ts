@@ -63,7 +63,7 @@ export class OvertimeAssistantComponent implements OnInit{
               console.error('Error fetching employee', error);
           }
         );
-        if (this.assistant != undefined && this.assistant.levelRole === 0)
+        if (this.assistant != undefined && (this.assistant.levelRole === 0 || this.assistant.levelRole === 1))
         {
           this.dataService.getEmployees().subscribe(
             (data: Employee[]) =>

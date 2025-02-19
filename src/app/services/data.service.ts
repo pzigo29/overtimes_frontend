@@ -9,7 +9,7 @@ import * as os from 'os';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class DataService implements OnInit {
 
   private overtimeSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private selectedMonthSubject = new BehaviorSubject<Date>(new Date());
@@ -18,14 +18,15 @@ export class DataService {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'mikimaja';
-  rndUsername: string = this.username == 'klmkjn' ? this.username : '';
-  mngUsername: string | null = this.username; // toto sa bude načítavať z windowsu
+  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
+  rndUsername: string = '';
+  mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
   thpUsername: string | null = this.username;
   assistantUsername: string | null = this.username;
   // assistantUsername: string | null = 'mikimaja';
   selectedEmployee?: Employee;
+  userEmployee?: Employee;
 
   // private apiUrl = 'https://localhost:7198/api';
   private apiUrl = 'http://localhost:5001/api';
@@ -33,20 +34,44 @@ export class DataService {
   constructor(private http: HttpClient) 
   {
     // this.username = os.userInfo().username;
+    this.initUserEmployee();
   } 
 
-  // ngOnInit()
-  // {
-  //   console.log('hereeeeeeee');
-  //   try
-  //   {
-  //     this.username = os.userInfo().username;
-  //   }
-  //   catch (error)
-  //   {
-  //     console.error('Error fetching username in dataService: ', error);
-  //   }
-  // }
+  private initUserEmployee(): void
+  {
+    this.getEmployee(this.username).subscribe(
+      (data: Employee | undefined) => {
+        this.userEmployee = data;
+        console.log('userEmployee: ' + this.userEmployee?.username);
+      },
+      (error: any) => {
+        console.error('Error fetching userEmployee', error);
+      }
+    );
+    this.rndUsername = this.username == 'klmkjn' ? this.username : '';
+  }
+
+  ngOnInit()
+  {
+    // console.log('hereeeeeeee');
+    // try
+    // {
+    //   this.username = os.userInfo().username;
+    // }
+    // catch (error)
+    // {
+    //   console.error('Error fetching username in dataService: ', error);
+    // }
+    // this.getEmployee(this.username).subscribe(
+    //   (data: Employee | undefined) => {
+    //     this.userEmployee = data;
+    //     console.log('userEmployee: ' + this.userEmployee?.username);
+    //   },
+    //   (error: any) => {
+    //     console.error('Error fetching userEmployee', error);
+    //   }
+    // );
+  }
 
   getMessage(username: string): Observable<string>
   {

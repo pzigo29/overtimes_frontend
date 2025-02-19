@@ -62,7 +62,7 @@ title: string = 'TL';
         this.filteredTeam.forEach(member => {
           this.overtimeForm.addControl(member.username + '_min', new FormControl(0));
           this.overtimeForm.addControl(member.username + '_max', new FormControl(0));
-          this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.leader?.levelRole === 1) }));
+          this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.dataService.userEmployee?.levelRole === 1) }));
           this.overtimeForm.addControl(member.username + '_reason', new FormControl({ value: '', disabled: false }));
           this.teamRealOvertimes.set(member.username, 0);
           this.teamMinLimits.set(member.username, 0);

@@ -24,22 +24,28 @@
     <i class="fas fa-flag-ge"></i> DE
   </button>
 </div> -->
-<div class="dropdown">
-  <button class="drop-btn">
-    <i class="fas fa-language"></i>
-  </button>
-  <div class="dropdown-content">
-    <a href="#" (click)="changeLanguage($event, 'en')">
-      English
-    </a>
-    <a href="#" (click)="changeLanguage($event, 'sk')">
-      Slovenčina
-    </a>
-    <a href="#" (click)="changeLanguage($event, 'de')">
-      Deutsch
-    </a>
+<div class="top-right-div">
+  <div class="dropdown">
+    <button class="drop-btn">
+      <i class="fas fa-language"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="#" (click)="changeLanguage($event, 'en')">
+        English
+      </a>
+      <a href="#" (click)="changeLanguage($event, 'sk')">
+        Slovenčina
+      </a>
+      <a href="#" (click)="changeLanguage($event, 'de')">
+        Deutsch
+      </a>
+    </div>
+  </div>
+  <div>
+    <button class="submit-btn">Nastavenie zástupcov</button>
   </div>
 </div>
+
 <!-- <button (click)="toggleDarkMode()">Toggle Theme</button> -->
 
 
