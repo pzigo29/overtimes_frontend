@@ -9,7 +9,8 @@
         "FILTERS": "filtre",
         "DELETE": "Zmaž",
         "EMPLOYEE-ESTIMATE": "Odhad zamestnanca",
-        "SHOW-SEGMENTS": "Zobraz segmenty"
+        "SHOW-SEGMENTS": "Zobraz segmenty",
+        "SHOW-ALL-EMPLOYEES": "Zobraz všetkých zamestnancov"
     },
 
     "SUMMARY": "Sumár",

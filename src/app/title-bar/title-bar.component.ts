@@ -42,4 +42,9 @@ export class TitleBarComponent {
       TitleBarComponent.isSidebarVisible = window.innerWidth < 470;
     }
   }
+
+  showOvertimeRules(): void
+  {
+    alert('Not implemented yet!');
+  }
 }

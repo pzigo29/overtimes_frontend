@@ -138,6 +138,11 @@ export class OvertimeThpComponent implements OnInit {
     //console.log('Toggle table: ', this.realOvertime);
   }
 
+  showWF(): void
+  {
+    alert('Not implemented yet!');
+  }
+
   // calculateHoursToLimit(): void {
   //   this.hoursToLimit = this.overtimeMaxLimit - this.realOvertime;
   // }

@@ -66,4 +66,9 @@ export class AppComponent {
       document.body.classList.remove('dark-mode');
     }
   }
+
+  showDelegateSite(): void
+  {
+    alert('Not implemented yet!');
+  }
 }

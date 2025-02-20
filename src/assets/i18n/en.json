@@ -9,7 +9,8 @@
         "FILTERS": "filters",
         "DELETE": "Delete",
         "EMPLOYEE-ESTIMATE": "Employee estimate",
-        "SHOW-SEGMENTS": "Show segments"
+        "SHOW-SEGMENTS": "Show segments",
+        "SHOW-ALL-EMPLOYEES": "Show all employees"
     },
 
     "SUMMARY": "Summary",
