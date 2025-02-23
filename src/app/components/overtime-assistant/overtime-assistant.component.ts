@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { Employee } from "../models/data.model";
-import { EmployeeFilterService } from "../services/employee-filter.service";
-import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
-import { MonthsTableComponent } from "../months-table/months-table.component";
+import { TitleBarComponent } from "../shared-components/title-bar/title-bar.component";
+import { Employee } from "../../models/data.model";
+import { EmployeeFilterService } from "../../services/employee-filter.service";
+import { EmployeeFiltersComponent } from "../shared-components/employee-filters/employee-filters.component";
+import { MonthsTableComponent } from "../shared-components/months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
-import { DataService } from '../services/data.service';
+import { DataService } from '../../services/data.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 

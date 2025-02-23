@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 import { of, Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { Approval, Employee, Overtime, OvertimeLimit } from '../models/data.model';
+import { Approval, Employee, Overtime, OvertimeLimit, WorkflowActionSchedule } from '../models/data.model';
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
@@ -439,6 +439,17 @@ export class DataService implements OnInit {
     // return this.approvals.find(x => x.limit_id == limit_id)?.status_id === 'A';
     const limit: Approval = await firstValueFrom(this.http.get<Approval>(`${this.apiUrl}/Approval/limit_id?limit_id=${limit_id}`));
     return limit.statusId === 'A'
+  }
+
+  async getWorkflowActionsSchedules(): Promise<WorkflowActionSchedule[]>
+  {
+    return await firstValueFrom(this.http.get<WorkflowActionSchedule[]>(`${this.apiUrl}/WorkflowActionsSchedule`));
+  }
+
+  async setWfActionSchedule(action: WorkflowActionSchedule): Promise<void>
+  {
+    console.log('Setting action: ', action);
+    await firstValueFrom(this.http.put(`${this.apiUrl}/WorkflowActionsSchedule`, action));
   }
 
   getRndUsername(): Observable<string | null>

@@ -2,11 +2,11 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { TitleBarComponent } from '../title-bar/title-bar.component';
-import { Employee } from '../models/data.model';
-import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
-import { MonthsTableComponent } from "../months-table/months-table.component";
-import { DataService } from '../services/data.service';
+import { TitleBarComponent } from '../../shared-components/title-bar/title-bar.component';
+import { Employee } from '../../../models/data.model';
+import { EmployeeFiltersComponent } from "../../shared-components/employee-filters/employee-filters.component";
+import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
+import { DataService } from '../../../services/data.service';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 

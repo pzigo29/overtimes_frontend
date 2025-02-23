@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { Employee } from '../models/data.model';
-import { DataService } from '../services/data.service';
+import { TitleBarComponent } from "../../shared-components/title-bar/title-bar.component";
+import { Employee } from '../../../models/data.model';
+import { DataService } from '../../../services/data.service';
 import { Router } from '@angular/router';
 import { NgModel } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
-import { MonthsTableComponent } from "../months-table/months-table.component";
+import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({

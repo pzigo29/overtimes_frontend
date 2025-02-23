@@ -59,8 +59,10 @@ export interface Notification
   notificationId: number; //PK
   // employeeId: number; //FK Employee
   limitId: number; //change // FK OvertimeLimit
-  subject: string | null;
-  message: string | null;
+  // subject: string | null;
+  // message: string | null;
+  emailId: number; //FK Email
+  actionId: number; //FK WorkflowActionSchedule
   plannedSendWorkDay: number;
   dateSent: Date;
 }
@@ -75,4 +77,18 @@ export interface ApprovalStatus
 {
   statusId: string; //PK
   status: string | null;
+}
+
+export interface Email
+{
+  emailId: number; //PK
+  subject: string | null;
+  message: string | null;
+}
+
+export interface WorkflowActionSchedule
+{
+  actionId: number; //PK
+  action: string;
+  plannedWorkDay: number;
 }

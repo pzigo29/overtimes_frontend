@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TitleBarComponent } from '../title-bar/title-bar.component';
-import { Employee } from '../models/data.model';
-import { EmployeeFiltersComponent } from "../employee-filters/employee-filters.component";
-import { MonthsTableComponent } from "../months-table/months-table.component";
-import { DataService } from '../services/data.service';
+import { TitleBarComponent } from '../../shared-components/title-bar/title-bar.component';
+import { Employee } from '../../../models/data.model';
+import { EmployeeFiltersComponent } from "../../shared-components/employee-filters/employee-filters.component";
+import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
+import { DataService } from '../../../services/data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 

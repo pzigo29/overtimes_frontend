@@ -1,14 +1,15 @@
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { OvertimeThpComponent } from './overtime-thp/overtime-thp.component';
-import { OvertimeTLComponent } from './overtime-tl/overtime-tl.component';
-import { OvertimeMngComponent } from './overtime-mng/overtime-mng.component';
-import { OvertimeMngTeamsComponent } from './overtime-mng-teams/overtime-mng-teams.component';
-import { OvertimeRndComponent } from './overtime-rnd/overtime-rnd.component';
-import { OvertimeAssistantComponent } from './overtime-assistant/overtime-assistant.component';
-import { OvertimeTLTeamComponent } from './overtime-tl-team/overtime-tl-team.component';
-import { OvertimeTLTeamDetailComponent } from './overtime-tl-team-detail/overtime-tl-team-detail.component';
-import { OvertimeRndSegmentsComponent } from './overtime-rnd-segments/overtime-rnd-segments.component';
+import { OvertimeThpComponent } from './components/overtime-thp/overtime-thp.component';
+import { OvertimeTLComponent } from './components/tl/overtime-tl/overtime-tl.component';
+import { OvertimeMngComponent } from './components/mng/overtime-mng/overtime-mng.component';
+import { OvertimeMngTeamsComponent } from './components/mng/overtime-mng-teams/overtime-mng-teams.component';
+import { OvertimeRndComponent } from './components/rnd/overtime-rnd/overtime-rnd.component';
+import { OvertimeAssistantComponent } from './components/overtime-assistant/overtime-assistant.component';
+import { OvertimeTLTeamComponent } from './components/tl/overtime-tl-team/overtime-tl-team.component';
+import { OvertimeTLTeamDetailComponent } from './components/tl/overtime-tl-team-detail/overtime-tl-team-detail.component';
+import { OvertimeRndSegmentsComponent } from './components/rnd/overtime-rnd-segments/overtime-rnd-segments.component';
+import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/thp', pathMatch: 'full' },
@@ -20,7 +21,8 @@ export const routes: Routes = [
   { path: 'mng/teams', component: OvertimeMngTeamsComponent },
   { path: 'rnd', component: OvertimeRndComponent },
   { path: 'rnd/segments', component: OvertimeRndSegmentsComponent},
-  { path: 'assistant', component: OvertimeAssistantComponent }
+  { path: 'assistant', component: OvertimeAssistantComponent },
+  { path: 'admin', component: AdminPanelComponent}
 ];
 
 @NgModule({

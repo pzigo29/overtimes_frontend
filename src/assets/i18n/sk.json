@@ -40,7 +40,8 @@
         "TL-TEAM-DETAIL": "Detail zamestnanca",
         "TL": "Môj tím",
         "SEGMENT": "Segment D",
-        "RND": "Nadčasy RnD"
+        "RND": "Nadčasy RnD",
+        "ADMIN": "Administrácia"
     },
 
     "OVERTIME-RULES": "Pravidlá pre nadčasy",

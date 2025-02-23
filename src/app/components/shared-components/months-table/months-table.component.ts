@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DataService } from '../services/data.service';
+import { DataService } from '../../../services/data.service';
 import { Observable } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 

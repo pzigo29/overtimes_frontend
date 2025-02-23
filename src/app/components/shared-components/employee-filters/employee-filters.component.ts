@@ -1,10 +1,10 @@
 import { TitleBarComponent } from '../title-bar/title-bar.component';
-import { EmployeeFilterService } from '../services/employee-filter.service';
+import { EmployeeFilterService } from '../../../services/employee-filter.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Component, Input, numberAttribute, booleanAttribute, Output, EventEmitter } from '@angular/core'; 
 import { TranslateModule } from '@ngx-translate/core';
-import { Employee } from '../models/data.model';
+import { Employee } from '../../../models/data.model';
 
 @Component({
   selector: 'app-user-filters',

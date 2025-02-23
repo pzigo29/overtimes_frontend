@@ -1,0 +1,24 @@
+<div class="container">
+    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
+    <div class="admin-panel-table-div">
+        <h4>{{'WORKFLOW' | translate}}</h4>
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>{{'ACTION' | translate}}</th>
+                    <th>{{'WORK-DAY' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let action of wfActions">
+                    <td>{{action.action}}</td>
+                    <td><input type="number" [(ngModel)]="action.plannedWorkDay"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="bottom-right-div">
+            <button class="submit-btn" (click)="saveChanges()">{{'BUTTON.SAVE-CHANGES' | translate}}</button>
+        </div>
+    </div>
+    
+</div>

@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { TitleBarComponent } from "../title-bar/title-bar.component";
-import { MonthsTableComponent } from "../months-table/months-table.component";
-import { Employee, Overtime, OvertimeLimit } from '../models/data.model';
-import { DataService } from '../services/data.service';
+import { TitleBarComponent } from "../shared-components/title-bar/title-bar.component";
+import { MonthsTableComponent } from "../shared-components/months-table/months-table.component";
+import { Employee, Overtime, OvertimeLimit } from '../../models/data.model';
+import { DataService } from '../../services/data.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 
