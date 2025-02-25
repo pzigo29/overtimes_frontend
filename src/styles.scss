@@ -271,6 +271,10 @@ table.excel-table td {
   text-align: center;            /* Center-align the text */
 }
 
+table.excel-table tr.selected td {
+  background-color: #c0c9be !important;
+}
+
 table.excel-table tr:nth-child(even) {
   background-color: #f2f2f2;   /* Alternate row color */
 }
@@ -405,6 +409,12 @@ table.excel-table td:hover {
   &:hover .drop-btn {
     background-color: #0a8d46;
   }
+}
+
+.icon-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 body.dark-mode .container-dark-mode {

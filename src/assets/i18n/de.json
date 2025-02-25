@@ -7,7 +7,11 @@
         "SHOW": "Zeigen",
         "FILTERS": "Filter",
         "DELETE": "Löschen",
-        "EMPLOYEE-ESTIMATE": "Mitarbeiterbewertung"
+        "EMPLOYEE-ESTIMATE": "Mitarbeiterbewertung",
+        "SHOW-TEAMS": "Teams anzeigen",
+        "SHOW-SEGMENTS": "Segmente anzeigen",
+        "SHOW-ALL-EMPLOYEES": "Alle Mitarbeiter anzeigen",
+        "ADD": "Hinzufügen"
     },
 
     "SUMMARY": "Zusammenfassung",
@@ -30,12 +34,35 @@
     "SUPERIOR": "Vorgesetzter",
     "D-SEGMENT": "D-Segment",
     "USERNAME": "Benutzername",
+    "COST-CENTER": "Kostenstelle",
 
     "TITLE": {
         "TL-TEAM-DETAIL": "Mitarbeiterdetail",
-        "TL": "Mein team"
+        "TL": "Mein team",
+        "SEGMENT": "Segment D",
+        "RND": "Überstunden RnD",
+        "ADMIN": "Verwaltung"
     },
 
     "OVERTIME-RULES": "Überstundenregeln",
-    "SEGMENT": "Segment"
+    "SEGMENT": "Segment",
+
+    "WORKFLOW": "Arbeitsablauf",
+    "EMAILS": "E-Mails",
+    "SCHEDULED-JOBS": "Geplante Aufgaben",
+    "OVERTIME-TYPES": "Überstundenarten",
+
+    "ACTION": "Aktion",
+    "WORK-DAY": "Arbeitstag",
+    "EMAIL-ID": "E-Mail-ID",
+
+    "SUBJECT": "Betreff",
+    "MESSAGE": "Nachricht",
+
+    "JOB-ID": "Job-ID",
+    "JOB-NAME": "Jobname",
+    "LAST-EXECUTION-DATE": "Letztes Ausführungsdatum",
+
+    "TYPE-ID": "Typ-ID",
+    "TYPE-NAME": "Typname"
 }

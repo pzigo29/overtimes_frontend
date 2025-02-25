@@ -91,4 +91,12 @@ export interface WorkflowActionSchedule
   actionId: number; //PK
   action: string;
   plannedWorkDay: number;
+  emailId: number; //FK Email
+}
+
+export interface ScheduledJobs
+{
+  jobId: number; //PK
+  jobName: string;
+  lastExecutionDate?: Date;
 }

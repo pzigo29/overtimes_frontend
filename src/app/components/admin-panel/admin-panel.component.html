@@ -1,24 +1,132 @@
 <div class="container">
     <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
-    <div class="admin-panel-table-div">
-        <h4>{{'WORKFLOW' | translate}}</h4>
-        <table class="excel-table">
-            <thead>
-                <tr>
-                    <th>{{'ACTION' | translate}}</th>
-                    <th>{{'WORK-DAY' | translate}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let action of wfActions">
-                    <td>{{action.action}}</td>
-                    <td><input type="number" [(ngModel)]="action.plannedWorkDay"></td>
-                </tr>
-            </tbody>
-        </table>
+    <div *ngIf="loading">
+        Loading...
+    </div>
+    <div *ngIf="!loading">
+        <div class="rolling-menu">
+            <div class="icon-text" (click)="toggleWfActions()">
+                <i class="cursor-pointer" [ngClass]="shownWfActions ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+                <h4 class="cursor-pointer">{{'WORKFLOW' | translate}}</h4>
+            </div>
+        </div>
+        <div class="admin-panel-table-div" *ngIf="shownWfActions">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>{{'ACTION' | translate}}</th>
+                        <th>{{'WORK-DAY' | translate}}</th>
+                        <th>{{'EMAIL-ID' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let action of wfActions" (click)="selectWfAction(action)" [ngClass]="selectedWfAction === action ? 'selected' : ''">
+                        <td>{{action.action}}</td>
+                        <td><input type="number" [(ngModel)]="action.plannedWorkDay"></td>
+                        <td><input type="number" [(ngModel)]="action.emailId"></td>
+                    </tr>
+                    <tr *ngIf="addNewWfAction" (click)="selectWfAction(null)" [ngClass]="selectedWfAction === null ? 'selected' : ''">
+                        <td><input type="text" #newWfActionName></td>
+                        <td><input type="number" #newWfActionWorkDay></td>
+                        <td><input type="number" #newWfActionEmailId></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="submit-btn" (click)="addWfAction()" *ngIf="!addNewWfAction">{{'BUTTON.ADD' | translate}}</button>
+            <button class="submit-btn" (click)="deleteWfAction(selectedWfAction)">{{'BUTTON.DELETE' | translate}}</button>
+        </div>
+        <div class="rolling-menu">
+            <div class="icon-text" (click)="toggleEmails()">
+                <i class="cursor-pointer" [ngClass]="shownEmails ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+                <h4 class="cursor-pointer">{{'EMAILS' | translate}}</h4>
+            </div>
+        </div>
+        <div class="admin-panel-table-div" *ngIf="shownEmails">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>{{'EMAIL-ID' | translate}}</th>
+                        <th>{{'SUBJECT' | translate}}</th>
+                        <th>{{'MESSAGE' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let email of emails" (click)="selectEmail(email)" [ngClass]="selectedEmail === email ? 'selected' : ''">
+                        <td>{{email.emailId}}</td>
+                        <td><input type="text" [(ngModel)]="email.subject"></td>
+                        <td><input type="text" [(ngModel)]="email.message"></td>
+                    </tr>
+                    <tr *ngIf="addNewEmail" (click)="selectEmail(null)" [ngClass]="selectedEmail === null ? 'selected' : ''">
+                        <td></td>
+                        <td><input type="text" #newEmailSubject></td>
+                        <td><input type="text" #newEmailMessage></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="submit-btn" (click)="addEmail()" *ngIf="!addNewEmail">{{'BUTTON.ADD' | translate}}</button>
+            <button class="submit-btn" (click)="deleteEmail(selectedEmail)">{{'BUTTON.DELETE' | translate}}</button>
+        </div>
+        <div class="rolling-menu">
+            <div class="icon-text" (click)="toggleScheduledJobs()">
+                <i class="cursor-pointer" [ngClass]="shownScheduledJobs ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+                <h4 class="cursor-pointer">{{'SCHEDULED-JOBS' | translate}}</h4>
+            </div>
+        </div>
+        <div class="admin-panel-table-div" *ngIf="shownScheduledJobs">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>{{'JOB-ID' | translate}}</th>
+                        <th>{{'JOB-NAME' | translate}}</th>
+                        <th>{{'LAST-EXECUTION-DATE' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let job of jobs" (click)="selectScheduledJob(job)" [ngClass]="selectedScheduledJob === job ? 'selected' : ''">
+                        <td>{{job.jobId}}</td>
+                        <td><input type="text" [(ngModel)]="job.jobName"></td>
+                        <td><input type="datetime-local" [(ngModel)]="job.lastExecutionDate"></td>
+                    </tr>
+                    <tr *ngIf="addNewScheduledJob" (click)="selectScheduledJob(null)" [ngClass]="selectedScheduledJob === null ? 'selected' : ''">
+                        <td></td>
+                        <td><input type="text" #newScheduledJobName></td>
+                        <td><input type="datetime-local" #newScheduledJobLastExecutionDate></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="submit-btn" (click)="addScheduledJob()" *ngIf="!addNewScheduledJob">{{'BUTTON.ADD' | translate}}</button>
+            <button class="submit-btn" (click)="deleteScheduledJob(selectedScheduledJob)">{{'BUTTON.DELETE' | translate}}</button>
+        </div>
+        <div class="rolling-menu">
+            <div class="icon-text" (click)="toggleOvertimeTypes()">
+                <i class="cursor-pointer" [ngClass]="shownOvertimeTypes ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+                <h4 class="cursor-pointer">{{'OVERTIME-TYPES' | translate}}</h4>
+            </div>
+        </div>
+        <div class="admin-panel-table-div" *ngIf="shownOvertimeTypes">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>{{'TYPE-ID' | translate}}</th>
+                        <th>{{'TYPE-NAME' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let type of overtimeTypes" (click)="selectOvertimeType(type)" [ngClass]="selectedOvertimeType === type ? 'selected' : ''">
+                        <td>{{type.overtimeTypeId}}</td>
+                        <td><input type="text" [(ngModel)]="type.typeName"></td>
+                    </tr>
+                    <tr *ngIf="addNewOvertimeType" (click)="selectOvertimeType(null)" [ngClass]="selectedOvertimeType === null ? 'selected' : ''">
+                        <td></td>
+                        <td><input type="text" #newOvertimeTypeName></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="submit-btn" (click)="addOvertimeType()" *ngIf="!addNewOvertimeType">{{'BUTTON.ADD' | translate}}</button>
+            <button class="submit-btn" (click)="deleteOvertimeType(selectedOvertimeType)">{{'BUTTON.DELETE' | translate}}</button>
+        </div>
         <div class="bottom-right-div">
             <button class="submit-btn" (click)="saveChanges()">{{'BUTTON.SAVE-CHANGES' | translate}}</button>
         </div>
     </div>
-    
 </div>

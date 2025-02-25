@@ -10,7 +10,8 @@
         "DELETE": "Zmaž",
         "EMPLOYEE-ESTIMATE": "Odhad zamestnanca",
         "SHOW-SEGMENTS": "Zobraz segmenty",
-        "SHOW-ALL-EMPLOYEES": "Zobraz všetkých zamestnancov"
+        "SHOW-ALL-EMPLOYEES": "Zobraz všetkých zamestnancov",
+        "ADD": "Pridaj"
     },
 
     "SUMMARY": "Sumár",
@@ -45,6 +46,25 @@
     },
 
     "OVERTIME-RULES": "Pravidlá pre nadčasy",
-    "SEGMENT": "Segment"
-        
+    "SEGMENT": "Segment",
+
+    "WORKFLOW": "Workflow",
+    "EMAILS": "Emaily",
+    "SCHEDULED-JOBS": "Naplánované úlohy",
+    "OVERTIME-TYPES": "Typy nadčasov",
+
+    "ACTION": "Akcia",
+    "WORK-DAY": "Pracovný deň",
+    "EMAIL-ID": "Email ID",
+
+    "SUBJECT": "Predmet",
+    "MESSAGE": "Správa",
+
+    "JOB-ID": "Job ID",
+    "JOB-NAME": "Názov úlohy",
+    "LAST-EXECUTION-DATE": "Dátum posledného spustenia",
+
+    "TYPE-ID": "Typ ID",
+    "TYPE-NAME": "Názov typu"
+
 }

@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 import { of, Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { Approval, Employee, Overtime, OvertimeLimit, WorkflowActionSchedule } from '../models/data.model';
+import { Approval, Email, Employee, Overtime, OvertimeLimit, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
@@ -18,7 +18,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'mikimaja'; // toto sa bude načítavať z windowsu
+  username: string = 'admin'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -446,10 +446,131 @@ export class DataService implements OnInit {
     return await firstValueFrom(this.http.get<WorkflowActionSchedule[]>(`${this.apiUrl}/WorkflowActionsSchedule`));
   }
 
+  async getEmails(): Promise<Email[]>
+  {
+    return await firstValueFrom(this.http.get<Email[]>(`${this.apiUrl}/Email`));
+  }
+
+  async getScheduledJobs(): Promise<ScheduledJobs[]>
+  {
+    return await firstValueFrom(this.http.get<ScheduledJobs[]>(`${this.apiUrl}/ScheduledJobs`));
+  }
+
+  async getOvertimeTypes(): Promise<OvertimeType[]>
+  {
+    return await firstValueFrom(this.http.get<OvertimeType[]>(`${this.apiUrl}/OvertimeType`));
+  }
+
   async setWfActionSchedule(action: WorkflowActionSchedule): Promise<void>
   {
     console.log('Setting action: ', action);
     await firstValueFrom(this.http.put(`${this.apiUrl}/WorkflowActionsSchedule`, action));
+  }
+
+  async setEmail(email: Email): Promise<void>
+  {
+    await firstValueFrom(this.http.put(`${this.apiUrl}/Email`, email));
+  }
+
+  async setScheduledJob(job: ScheduledJobs): Promise<void>
+  {
+    await firstValueFrom(this.http.put(`${this.apiUrl}/ScheduledJobs`, job));
+  }
+
+  async setOvertimeType(overtimeType: OvertimeType): Promise<void>
+  {
+    await firstValueFrom(this.http.put(`${this.apiUrl}/OvertimeType`, overtimeType));
+  }
+
+  async deleteWfActionSchedule(id: number): Promise<void>
+  {
+    try
+    {
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/WorkflowActionsSchedule?id=${id}`));
+    }
+    catch (error)
+    {
+      const errorMessage = (error as any).message || 'Unknown error';
+      alert('Error deleting WF action: ' + errorMessage);
+      // throw error; 
+    }
+  }
+
+  async deleteEmail(id: number): Promise<void>
+  {
+    try
+    {
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/Email?id=${id}`));
+    }
+    catch (error)
+    {
+      const errorMessage = (error as any).message || 'Unknown error';
+      alert('Error deleting email: ' + errorMessage);
+      // throw error;
+    }
+  }
+
+  async deleteScheduledJob(id: number): Promise<void>
+  {
+    console.log('Deleting job: ', id);
+    try
+    {
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/ScheduledJobs?id=${id}`));
+    }
+    catch (error)
+    {
+      const errorMessage = (error as any).message || 'Unknown error';
+      alert('Error deleting scheduled job: ' + errorMessage);
+      // throw error;
+    }
+  }
+
+  async deleteOvertimeType(id: number): Promise<void>
+  {
+    try
+    {
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/OvertimeType?id=${id}`));
+    }
+    catch (error)
+    {
+      const errorMessage = (error as any).message || 'Unknown error';
+      alert('Error deleting overtime type: ' + errorMessage);
+      // throw error;
+    }
+  }
+
+  async postWfActionSchedule(action: WorkflowActionSchedule): Promise<void>
+  {
+    await firstValueFrom(this.http.post(`${this.apiUrl}/WorkflowActionsSchedule`, action));
+  }
+
+  async postEmail(email: Email): Promise<void>
+  {
+    await firstValueFrom(this.http.post(`${this.apiUrl}/Email`, email));
+  }
+
+  async postScheduledJob(job: ScheduledJobs): Promise<void>
+  {
+    console.log('Posting job: ', job);
+    if (!(job.lastExecutionDate instanceof Date))
+    {
+      if (job.lastExecutionDate) 
+      {
+        job.lastExecutionDate = new Date(job.lastExecutionDate);
+      }
+
+      if (job.lastExecutionDate?.toString() == '')
+      {
+        job.lastExecutionDate = undefined;
+      }
+    }
+    console.log('Posting job: ', job);
+    await firstValueFrom(this.http.post(`${this.apiUrl}/ScheduledJobs`, job));
+  }
+
+  async postOvertimeType(overtimeType: OvertimeType): Promise<void>
+  {
+    await firstValueFrom(this.http.post(`${this.apiUrl}/OvertimeType`, overtimeType));
   }
 
   getRndUsername(): Observable<string | null>

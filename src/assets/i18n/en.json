@@ -6,11 +6,12 @@
         "SHOW-TEAMS": "Show teams",
         "HIDE": "Hide",
         "SHOW": "Show",
-        "FILTERS": "filters",
+        "FILTERS": "Filters",
         "DELETE": "Delete",
         "EMPLOYEE-ESTIMATE": "Employee estimate",
         "SHOW-SEGMENTS": "Show segments",
-        "SHOW-ALL-EMPLOYEES": "Show all employees"
+        "SHOW-ALL-EMPLOYEES": "Show all employees",
+        "ADD": "Add"
     },
 
     "SUMMARY": "Summary",
@@ -36,13 +37,34 @@
     "D-SEGMENT": "D-segment",
     "USERNAME": "Username",
     "COST-CENTER": "Cost center",
+
     "TITLE": {
         "TL-TEAM-DETAIL": "Employee detail",
         "TL": "My team",
         "SEGMENT": "Segment D",
-        "RND": "Overtimes RnD"
+        "RND": "Overtimes RnD",
+        "ADMIN": "Administration"
     },
 
     "OVERTIME-RULES": "Overtime rules",
-    "SEGMENT": "Segment"
+    "SEGMENT": "Segment",
+
+    "WORKFLOW": "Workflow",
+    "EMAILS": "Emails",
+    "SCHEDULED-JOBS": "Scheduled jobs",
+    "OVERTIME-TYPES": "Overtime types",
+
+    "ACTION": "Action",
+    "WORK-DAY": "Work day",
+    "EMAIL-ID": "Email ID",
+
+    "SUBJECT": "Subject",
+    "MESSAGE": "Message",
+
+    "JOB-ID": "Job ID",
+    "JOB-NAME": "Job name",
+    "LAST-EXECUTION-DATE": "Last execution date",
+
+    "TYPE-ID": "Type ID",
+    "TYPE-NAME": "Type name"
 }
