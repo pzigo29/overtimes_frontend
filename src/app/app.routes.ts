@@ -10,6 +10,7 @@ import { OvertimeTLTeamComponent } from './components/tl/overtime-tl-team/overti
 import { OvertimeTLTeamDetailComponent } from './components/tl/overtime-tl-team-detail/overtime-tl-team-detail.component';
 import { OvertimeRndSegmentsComponent } from './components/rnd/overtime-rnd-segments/overtime-rnd-segments.component';
 import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
+import { StatsPanelComponent } from './components/stats-panel/stats-panel.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/thp', pathMatch: 'full' },
@@ -22,7 +23,8 @@ export const routes: Routes = [
   { path: 'rnd', component: OvertimeRndComponent },
   { path: 'rnd/segments', component: OvertimeRndSegmentsComponent},
   { path: 'assistant', component: OvertimeAssistantComponent },
-  { path: 'admin', component: AdminPanelComponent}
+  { path: 'admin', component: AdminPanelComponent},
+  { path: 'stats', component: StatsPanelComponent}
 ];
 
 @NgModule({

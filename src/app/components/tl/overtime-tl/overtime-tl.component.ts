@@ -146,9 +146,8 @@ export class OvertimeTLComponent implements OnInit {
     this.selectedEmployee = employee;
   }
 
-  setData(): void
+  async setData(): Promise<void>
   {
-    
     if (this.leader == undefined)
       throw new Error('Leader undefined');
     this.realOvertimeSum = 0;
@@ -165,6 +164,15 @@ export class OvertimeTLComponent implements OnInit {
       this.teamMinLimits.set(member.username, minLimit);
       this.teamMaxLimits.set(member.username, maxLimit);
     });
+      let overtimes = await this.dataService.getSumOvertime(this.leader.employeeId, this.selectedMonth);
+      let minLimit = await this.dataService.getMinLimit(this.leader.employeeId, this.selectedMonth);
+      let maxLimit = await this.dataService.getMaxLimit(this.leader.employeeId, this.selectedMonth);
+      this.realOvertimeSum += overtimes;
+      this.minOvertimeSum += minLimit;
+      this.maxOvertimeSum += maxLimit;
+      this.teamRealOvertimes.set(this.leader.username, overtimes);
+      this.teamMinLimits.set(this.leader.username, minLimit);
+      this.teamMaxLimits.set(this.leader.username, maxLimit);
     console.log('real: ', this.realOvertimeSum);
   }
 }

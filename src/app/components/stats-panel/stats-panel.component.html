@@ -1,0 +1,19 @@
+<div class="container">
+    <app-title-bar [title]="('STATS' | translate)"></app-title-bar>
+    <p>Prehľad počtu nadčasov za vybraté časové obdobia</p>
+    <p>Prehľad podielu nadčasov HO, Office, Office>18, Weekend</p>
+    <p>Mesiac s najviac nadčasmi</p>
+    <p>Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
+    <p>Zamestnanci, ktorí dlhodobo robia nadčasy</p>
+    <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
+    <p>Zamestnanci (podiel zamestnancov), ktorí prekročili 150/350/400 hodín</p>
+    <p>Exporty do PDF, XLS</p>
+
+    <!-- <h2>Sample Graph</h2> -->
+    <ngx-apexcharts 
+        [series]="chartOptions.series" 
+        [chart]="chartOptions.chart" 
+        [xaxis]="chartOptions.xaxis" 
+        [title]="chartOptions.title">
+    </ngx-apexcharts>
+</div>
