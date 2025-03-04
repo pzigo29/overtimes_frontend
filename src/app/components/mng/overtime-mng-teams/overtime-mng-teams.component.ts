@@ -11,11 +11,11 @@ import { Employee } from '../../../models/data.model';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
-  selector: 'app-overtime-mng-teams',
-  standalone: true,
-  imports: [TitleBarComponent, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule],
-  templateUrl: './overtime-mng-teams.component.html',
-  styleUrl: './overtime-mng-teams.component.scss'
+    selector: 'app-overtime-mng-teams',
+    standalone: true,
+    imports: [TitleBarComponent, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule],
+    templateUrl: './overtime-mng-teams.component.html',
+    styleUrl: './overtime-mng-teams.component.scss'
 })
 export class OvertimeMngTeamsComponent implements OnInit {
 

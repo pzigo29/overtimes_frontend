@@ -10,11 +10,11 @@ import { MonthsTableComponent } from "../../shared-components/months-table/month
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-overtime-tl-team-detail',
-  standalone: true,
-  imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-tl-team-detail.component.html',
-  styleUrl: './overtime-tl-team-detail.component.scss'
+    selector: 'app-overtime-tl-team-detail',
+    standalone: true,
+    imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-tl-team-detail.component.html',
+    styleUrl: './overtime-tl-team-detail.component.scss'
 })
 export class OvertimeTLTeamDetailComponent implements OnInit {
   title: string = 'TL-TEAM-DETAIL';

@@ -8,11 +8,11 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-admin-panel',
-  standalone: true,
-  imports: [TitleBarComponent, TranslateModule, CommonModule, FormsModule],
-  templateUrl: './admin-panel.component.html',
-  styleUrl: './admin-panel.component.scss'
+    selector: 'app-admin-panel',
+    standalone: true,
+    imports: [TitleBarComponent, TranslateModule, CommonModule, FormsModule],
+    templateUrl: './admin-panel.component.html',
+    styleUrl: './admin-panel.component.scss'
 })
 export class AdminPanelComponent implements OnInit {
   @ViewChild('newWfActionName') newWfActionName!: ElementRef;

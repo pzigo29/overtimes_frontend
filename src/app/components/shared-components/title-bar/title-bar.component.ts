@@ -6,11 +6,11 @@ import { TranslateModule } from '@ngx-translate/core';
 // import { SidebarService } from '../sidebar/sidebar.service';
 
 @Component({
-  selector: 'app-title-bar',
-  standalone: true,
-  imports: [TranslateModule],
-  templateUrl: './title-bar.component.html',
-  styleUrl: './title-bar.component.scss'
+    selector: 'app-title-bar',
+    standalone: true,
+    imports: [TranslateModule],
+    templateUrl: './title-bar.component.html',
+    styleUrl: './title-bar.component.scss'
 })
 export class TitleBarComponent {
   static isSidebarActive: boolean = false;

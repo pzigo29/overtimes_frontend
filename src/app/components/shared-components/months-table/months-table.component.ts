@@ -5,11 +5,11 @@ import { Observable } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-months-table',
-  standalone: true,
-  imports: [CommonModule, TranslateModule],
-  templateUrl: './months-table.component.html',
-  styleUrl: './months-table.component.scss'
+    selector: 'app-months-table',
+    standalone: true,
+    imports: [CommonModule, TranslateModule],
+    templateUrl: './months-table.component.html',
+    styleUrl: './months-table.component.scss'
 })
 export class MonthsTableComponent implements OnInit {
   months: Date[] = [];

@@ -7,11 +7,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Employee } from '../../../models/data.model';
 
 @Component({
-  selector: 'app-user-filters',
-  standalone: true,
-  imports: [FormsModule, CommonModule, TranslateModule],
-  templateUrl: './employee-filters.component.html',
-  styleUrl: './employee-filters.component.scss'
+    selector: 'app-user-filters',
+    standalone: true,
+    imports: [FormsModule, CommonModule, TranslateModule],
+    templateUrl: './employee-filters.component.html',
+    styleUrl: './employee-filters.component.scss'
 })
 export class EmployeeFiltersComponent {
   @Output() filteredEmployees = new EventEmitter<Employee[]>();

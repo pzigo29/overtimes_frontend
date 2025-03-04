@@ -291,6 +291,13 @@ table.excel-table td:hover {
   display: flex;
 }
 
+.col-aligned {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+}
+
 .wf-btn {
   padding: 20px;
   padding-left: 0;

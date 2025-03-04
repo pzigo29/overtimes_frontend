@@ -10,11 +10,11 @@ import { Router } from '@angular/router';
 import { Employee } from '../../../models/data.model';
 
 @Component({
-  selector: 'app-overtime-rnd-segments',
-  standalone: true,
-  imports: [TitleBarComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule, EmployeeFiltersComponent],
-  templateUrl: './overtime-rnd-segments.component.html',
-  styleUrl: './overtime-rnd-segments.component.scss'
+    selector: 'app-overtime-rnd-segments',
+    standalone: true,
+    imports: [TitleBarComponent, MonthsTableComponent, TranslateModule, CommonModule, FormsModule, EmployeeFiltersComponent],
+    templateUrl: './overtime-rnd-segments.component.html',
+    styleUrl: './overtime-rnd-segments.component.scss'
 })
 export class OvertimeRndSegmentsComponent implements OnInit {
 

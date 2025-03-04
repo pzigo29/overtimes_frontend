@@ -12,11 +12,11 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 @Component({
-  selector: 'app-overtime-assistant',
-  standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-assistant.component.html',
-  styleUrl: './overtime-assistant.component.scss'
+    selector: 'app-overtime-assistant',
+    standalone: true,
+    imports: [TitleBarComponent, CommonModule, FormsModule, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-assistant.component.html',
+    styleUrl: './overtime-assistant.component.scss'
 })
 export class OvertimeAssistantComponent implements OnInit {
   title: string = 'RND';

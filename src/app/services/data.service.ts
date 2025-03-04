@@ -18,7 +18,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
+  username: string = 'mikimaja'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -133,6 +133,11 @@ export class DataService implements OnInit {
     return this.http.get<Employee>(`${this.apiUrl}/Employee/${username}`);
   }
 
+  async getEmployeeByPersonalNumber(personalNumber: string): Promise<Employee | undefined>
+  {
+    return await firstValueFrom(this.http.get<Employee>(`${this.apiUrl}/Employee/pn/${personalNumber}`));
+  }
+
   getEmployeeById(employeeId: number): Observable<Employee | undefined>
   {
     return this.http.get<Employee>(`${this.apiUrl}/Employee/Id?employeeId=${employeeId}`);
@@ -159,6 +164,20 @@ export class DataService implements OnInit {
   {
     // return of(this.employees);
     return this.http.get<Employee[]>(`${this.apiUrl}/Employee`);
+  }
+
+  async getEmployeeAverage(personalNumbers: string, filter: string, date: string): Promise<number>
+  {
+    // let numbersApiString: string = '';
+    // for (const persNumber of personalNumbers)
+    // {
+    //   numbersApiString += 'personalNumbers=' + persNumber + '&';
+    // }
+    // personalNumbers.forEach(number => {
+    //   numbersApiString += 'personalNumbers=' + number + '&';
+    // });
+    // console.log('NumbersApiString: ', numbersApiString);
+    return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/GetAverageOvertime?personalNumbers=${personalNumbers}&filter=${filter}&date=${date}`));
   }
 
   async getOvertimeLimit(employee_id: number, month: Date | string): Promise<OvertimeLimit>

@@ -11,11 +11,11 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-overtime-tl-team',
-  standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, TitleBarComponent, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-tl-team.component.html',
-  styleUrl: './overtime-tl-team.component.scss'
+    selector: 'app-overtime-tl-team',
+    standalone: true,
+    imports: [FormsModule, ReactiveFormsModule, CommonModule, TitleBarComponent, EmployeeFiltersComponent, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-tl-team.component.html',
+    styleUrl: './overtime-tl-team.component.scss'
 })
 export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
 title: string = 'TL';

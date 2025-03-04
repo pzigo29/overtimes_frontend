@@ -1,59 +1,65 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { TitleBarComponent } from "../shared-components/title-bar/title-bar.component";
+import { Component, OnInit } from '@angular/core';
+import { TitleBarComponent } from '../shared-components/title-bar/title-bar.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgApexchartsModule, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle } from 'ng-apexcharts';
 import { CommonModule } from '@angular/common';
-
-export type ChartOptions = {
-  series: ApexAxisChartSeries;
-  chart: ApexChart;
-  xaxis: ApexXAxis;
-  title: ApexTitleSubtitle;
-};
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { FormsModule } from '@angular/forms';
+import { DataService } from '../../services/data.service';
+import { Employee } from '../../models/data.model';
 
 @Component({
-  selector: 'app-stats-panel',
-  standalone: true,
-  imports: [TitleBarComponent, TranslateModule, NgApexchartsModule, CommonModule],
-  templateUrl: './stats-panel.component.html',
-  styleUrls: ['./stats-panel.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    selector: 'app-stats-panel',
+    standalone: true,
+    imports: [TitleBarComponent, TranslateModule, CommonModule, NgxChartsModule, FormsModule],
+    templateUrl: './stats-panel.component.html',
+    styleUrls: ['./stats-panel.component.scss']
 })
 export class StatsPanelComponent implements OnInit {
-  public chartOptions: Partial<ChartOptions>;
+  months: Date[] = [];
+  selectedMonth: Date = new Date();
+  dateFilter: string = 'year';
+  personalNumbers: string = '';
+  selectedDate: Date = new Date();
+  employeeAvg: number = 0;
+  selectedEmployee?: Employee;
+  shownEmployeeAvg: boolean = false;
 
-  constructor() {
-    this.chartOptions = {
-      series: [
-        {
-          name: "Desktops",
-          data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
-        }
-      ],
-      chart: {
-        height: 350,
-        type: "line"
-      },
-      title: {
-        text: "Product Trends by Month"
-      },
-      xaxis: {
-        categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep"
-        ]
-      }
-    };
+  constructor(private dataService: DataService) {}
 
-    console.log(this.chartOptions);
+  ngOnInit(): void 
+  {
+    this.dataService.getMonths().subscribe(
+      (months) => {
+        this.months = months;
+    });
   }
 
-  ngOnInit(): void {}
+  filterMonth(month: Date) 
+  {
+    this.selectedMonth = month;  
+  }
+
+  async getEmployeeAverage(personalNumbers: string, filter: string, date: Date): Promise<void>
+  {
+    console.log(date);
+    if (!(date instanceof Date) && date == '')
+    {
+      date = new Date();
+    }
+    let stringDate: string = date.toString();
+    if (date instanceof Date)
+      stringDate = date.toISOString().split('T')[0];
+    let avg: number = 0;
+    avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, stringDate);
+    this.dateFilter = filter;
+    this.selectedEmployee = await this.dataService.getEmployeeByPersonalNumber(personalNumbers);
+    console.log(avg);
+    this.employeeAvg = avg;
+    // return avg;
+  }
+
+  toggleEmployeeAvg(): void
+  {
+    this.shownEmployeeAvg = !this.shownEmployeeAvg;
+  }
 }

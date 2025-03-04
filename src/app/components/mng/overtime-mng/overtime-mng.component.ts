@@ -10,11 +10,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
-  selector: 'app-overtime-mng',
-  standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-mng.component.html',
-  styleUrl: './overtime-mng.component.scss'
+    selector: 'app-overtime-mng',
+    standalone: true,
+    imports: [TitleBarComponent, CommonModule, FormsModule, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-mng.component.html',
+    styleUrl: './overtime-mng.component.scss'
 })
 export class OvertimeMngComponent {
 

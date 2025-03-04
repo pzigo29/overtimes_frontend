@@ -3,17 +3,82 @@
     <p>Prehľad počtu nadčasov za vybraté časové obdobia</p>
     <p>Prehľad podielu nadčasov HO, Office, Office>18, Weekend</p>
     <p>Mesiac s najviac nadčasmi</p>
-    <p>Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
+    <p>//Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
     <p>Zamestnanci, ktorí dlhodobo robia nadčasy</p>
     <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
     <p>Zamestnanci (podiel zamestnancov), ktorí prekročili 150/350/400 hodín</p>
     <p>Exporty do PDF, XLS</p>
 
-    <!-- <h2>Sample Graph</h2> -->
-    <ngx-apexcharts 
-        [series]="chartOptions.series" 
-        [chart]="chartOptions.chart" 
-        [xaxis]="chartOptions.xaxis" 
-        [title]="chartOptions.title">
-    </ngx-apexcharts>
+    <!-- <ngx-charts-bar-horizontal
+    [view]="[700, 400]"
+    [scheme]="'cool'"
+    [results]="chartData"
+    [gradient]="false"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="true">
+    </ngx-charts-bar-horizontal> -->
+
+    <!-- <button (click)="toggleEmployeeAvg()">show sumting</button> -->
+    <div class="rolling-menu">
+        <div class="icon-text" (click)="toggleEmployeeAvg()">
+            <i class="cursor-pointer" [ngClass]="shownEmployeeAvg ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+            <h4 class="cursor-pointer">{{'EMPLOYEE-AVG' | translate}}</h4>
+        </div>
+    </div>
+    <div>
+        <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
+        
+    </div>
+    <div class="" *ngIf="shownEmployeeAvg">
+        <p>Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
+        <label for="timePeriod">Filter:</label>
+        <select class="filter-select" id="timePeriod" name="timePeriod" [(ngModel)]="dateFilter">
+            <option value="year" selected>{{'YEAR' | translate}}</option>
+            <option value="month">{{'MONTH' | translate}}</option>
+            <option value="week">{{'WEEK' | translate}}</option>
+        </select>
+        <!-- <div>
+            <h5>{{'FIND-EMPLOYEE' | translate}}</h5>
+            <div class="col-aligned">
+                <div class="filter">
+                    <label for="firstName">{{'FIRST-NAME' | translate}}: </label>
+                    <input type="text" id="firstName">
+                </div>
+                <div class="filter">
+                    <label for="lastName">{{'LAST-NAME' | translate}}: </label>
+                    <input type="text" id="lastName">
+                </div>
+                <div class="filter">
+                    <label for="name">{{'NAME' | translate}}: </label>
+                    <input type="text" id="name">
+                </div>
+            </div>
+        </div> -->
+        <div class="input-filters overtime-form">
+            <div class="filter">
+              <label for="personalNumbers">{{'PERSONAL-NUMBER' | translate}}: </label>
+              <input type="text" id="personalNumbers" [(ngModel)]="personalNumbers">
+            </div>
+            <div class="filter">
+              <label for="selectedDate">{{'DATE' | translate}}: </label>
+              <input type="date" id="selectedDate" [(ngModel)]="selectedDate" [value]="selectedDate | date:'yyyy-MM-dd'">
+            </div>
+            <button class="submit-btn" (click)="getEmployeeAverage(personalNumbers, dateFilter, selectedDate)">{{'CONFIRM' | translate}}</button>
+        </div>
+        <table class="excel-table" *ngIf="selectedEmployee">
+            <thead>
+                <tr>
+                    <th>{{'EMPLOYEE' | translate}}</th>
+                    <th>{{'AVERAGE' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{selectedEmployee.firstName + ' ' + selectedEmployee.lastName}}</td>
+                    <td>{{employeeAvg | number:'1.2-2'}} h</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

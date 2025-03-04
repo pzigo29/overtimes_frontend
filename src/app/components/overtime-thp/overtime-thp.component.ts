@@ -9,11 +9,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
-  selector: 'app-overtime-thp',
-  standalone: true,
-  imports: [FormsModule, CommonModule, TitleBarComponent, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-thp.component.html',
-  styleUrl: './overtime-thp.component.scss'
+    selector: 'app-overtime-thp',
+    standalone: true,
+    imports: [FormsModule, CommonModule, TitleBarComponent, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-thp.component.html',
+    styleUrl: './overtime-thp.component.scss'
 })
 
 export class OvertimeThpComponent implements OnInit {

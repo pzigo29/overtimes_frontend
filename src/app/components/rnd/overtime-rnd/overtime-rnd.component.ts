@@ -9,11 +9,11 @@ import { DataService } from '../../../services/data.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-overtime-rnd',
-  standalone: true,
-  imports: [TitleBarComponent, CommonModule, FormsModule, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-rnd.component.html',
-  styleUrl: './overtime-rnd.component.scss'
+    selector: 'app-overtime-rnd',
+    standalone: true,
+    imports: [TitleBarComponent, CommonModule, FormsModule, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-rnd.component.html',
+    styleUrl: './overtime-rnd.component.scss'
 })
 export class OvertimeRndComponent implements OnInit {
   title: string = 'RND';

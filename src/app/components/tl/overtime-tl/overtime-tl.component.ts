@@ -10,11 +10,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-overtime-tl',
-  standalone: true,
-  imports: [CommonModule, TitleBarComponent, FormsModule, MonthsTableComponent, TranslateModule],
-  templateUrl: './overtime-tl.component.html',
-  styleUrl: './overtime-tl.component.scss'
+    selector: 'app-overtime-tl',
+    standalone: true,
+    imports: [CommonModule, TitleBarComponent, FormsModule, MonthsTableComponent, TranslateModule],
+    templateUrl: './overtime-tl.component.html',
+    styleUrl: './overtime-tl.component.scss'
 })
 export class OvertimeTLComponent implements OnInit {
 
