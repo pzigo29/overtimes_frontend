@@ -65,6 +65,9 @@
     "LAST-EXECUTION-DATE": "Dátum posledného spustenia",
 
     "TYPE-ID": "Typ ID",
-    "TYPE-NAME": "Názov typu"
+    "TYPE-NAME": "Názov typu",
+
+    "FULFILLED":"Splnené limity",
+    "NON-FULFILLED": "Nesplnené limity"
 
 }

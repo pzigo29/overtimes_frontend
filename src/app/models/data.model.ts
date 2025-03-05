@@ -100,3 +100,9 @@ export interface ScheduledJobs
   jobName: string;
   lastExecutionDate?: Date;
 }
+
+export interface NonFulfilledOvertimes
+{
+  employeeIds: number[];
+  percentage: number;
+}

@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 import { of, Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { Approval, Email, Employee, Overtime, OvertimeLimit, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
+import { Approval, Email, Employee, NonFulfilledOvertimes, Overtime, OvertimeLimit, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
@@ -160,6 +160,11 @@ export class DataService implements OnInit {
     return this.http.get<Employee[]>(`${this.apiUrl}/Employee/mng/${rnd_id}`);
   }
 
+  getRndMng(): Observable<Employee>
+  {
+    return this.http.get<Employee>(`${this.apiUrl}/Employee/RndMng`);
+  }
+
   getEmployees(): Observable<Employee[]>
   {
     // return of(this.employees);
@@ -178,6 +183,16 @@ export class DataService implements OnInit {
     // });
     // console.log('NumbersApiString: ', numbersApiString);
     return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/GetAverageOvertime?personalNumbers=${personalNumbers}&filter=${filter}&date=${date}`));
+  }
+
+  async getNonFulfilledLimits(date: string, managerId?: number): Promise<NonFulfilledOvertimes>
+  {
+    if (managerId != null)
+    {
+      console.log('mngId:', managerId);
+      return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}&managerId=${managerId}`));
+    }
+    return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}`));
   }
 
   async getOvertimeLimit(employee_id: number, month: Date | string): Promise<OvertimeLimit>

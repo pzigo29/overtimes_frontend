@@ -26,10 +26,6 @@
             <h4 class="cursor-pointer">{{'EMPLOYEE-AVG' | translate}}</h4>
         </div>
     </div>
-    <div>
-        <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
-        
-    </div>
     <div class="" *ngIf="shownEmployeeAvg">
         <p>Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
         <label for="timePeriod">Filter:</label>
@@ -80,5 +76,37 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="rolling-menu">
+        <div class="icon-text" (click)="toggleNonFulfilledLimits()">
+            <i class="cursor-pointer" [ngClass]="shownNonFulfilledLimits ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+            <h4 class="cursor-pointer">{{'NON-FULFILLED-LIMITS' | translate}}</h4>
+        </div>
+    </div>
+    <div *ngIf="shownNonFulfilledLimits">
+        <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
+        <label for="segmentsSelect">filter Dx</label>
+        <select class="filter-select" name="segmentsSelect" id="segmentsSelect" [(ngModel)]="selectedSegmentManager" (change)="selectSegmentManager($event)">
+            <option *ngFor="let manager of segmentManagers; trackBy: trackByManagerId" [ngValue]="manager">{{ manager.firstName }} {{manager.lastName}}</option>
+        </select>
+        <button class="submit-btn" (click)="getNonFulfilledLimits(selectedDate)">{{'SHOW-NON-FULFILLED' | translate}}</button>
+        <ngx-charts-pie-chart
+        [view]="[700, 400]"
+        [scheme]="'cool'"
+        [results]="nonFulfilledLimitsData"
+        [legend]="true"
+        [explodeSlices]="false"
+        [labels]="true"
+        [doughnut]="false"
+        [gradient]="false"
+        [tooltipDisabled]="false"
+        [tooltipText]="customTooltipTemplate">
+    </ngx-charts-pie-chart>
+
+    <!-- <ng-template #customTooltipTemplate let-model="model">
+        <div style="padding: 5px;">
+          <strong>{{ model.name }}</strong>: {{ model.value }} units
+        </div>
+      </ng-template> -->
     </div>
 </div>
