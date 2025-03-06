@@ -5,21 +5,10 @@
     <p>Mesiac s najviac nadčasmi</p>
     <p>//Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
     <p>Zamestnanci, ktorí dlhodobo robia nadčasy</p>
-    <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
+    <p>//Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
     <p>Zamestnanci (podiel zamestnancov), ktorí prekročili 150/350/400 hodín</p>
     <p>Exporty do PDF, XLS</p>
 
-    <!-- <ngx-charts-bar-horizontal
-    [view]="[700, 400]"
-    [scheme]="'cool'"
-    [results]="chartData"
-    [gradient]="false"
-    [xAxis]="true"
-    [yAxis]="true"
-    [legend]="true">
-    </ngx-charts-bar-horizontal> -->
-
-    <!-- <button (click)="toggleEmployeeAvg()">show sumting</button> -->
     <div class="rolling-menu">
         <div class="icon-text" (click)="toggleEmployeeAvg()">
             <i class="cursor-pointer" [ngClass]="shownEmployeeAvg ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
@@ -34,23 +23,6 @@
             <option value="month">{{'MONTH' | translate}}</option>
             <option value="week">{{'WEEK' | translate}}</option>
         </select>
-        <!-- <div>
-            <h5>{{'FIND-EMPLOYEE' | translate}}</h5>
-            <div class="col-aligned">
-                <div class="filter">
-                    <label for="firstName">{{'FIRST-NAME' | translate}}: </label>
-                    <input type="text" id="firstName">
-                </div>
-                <div class="filter">
-                    <label for="lastName">{{'LAST-NAME' | translate}}: </label>
-                    <input type="text" id="lastName">
-                </div>
-                <div class="filter">
-                    <label for="name">{{'NAME' | translate}}: </label>
-                    <input type="text" id="name">
-                </div>
-            </div>
-        </div> -->
         <div class="input-filters overtime-form">
             <div class="filter">
               <label for="personalNumbers">{{'PERSONAL-NUMBER' | translate}}: </label>
@@ -58,7 +30,7 @@
             </div>
             <div class="filter">
               <label for="selectedDate">{{'DATE' | translate}}: </label>
-              <input type="date" id="selectedDate" [(ngModel)]="selectedDate" [value]="selectedDate | date:'yyyy-MM-dd'">
+              <input type="date" id="selectedDate" [(ngModel)]="selectedDate" [value]="getCurrentDate()">
             </div>
             <button class="submit-btn" (click)="getEmployeeAverage(personalNumbers, dateFilter, selectedDate)">{{'CONFIRM' | translate}}</button>
         </div>
@@ -85,12 +57,40 @@
     </div>
     <div *ngIf="shownNonFulfilledLimits">
         <p>Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
-        <label for="segmentsSelect">filter Dx</label>
-        <select class="filter-select" name="segmentsSelect" id="segmentsSelect" [(ngModel)]="selectedSegmentManager" (change)="selectSegmentManager($event)">
-            <option *ngFor="let manager of segmentManagers; trackBy: trackByManagerId" [ngValue]="manager">{{ manager.firstName }} {{manager.lastName}}</option>
-        </select>
-        <button class="submit-btn" (click)="getNonFulfilledLimits(selectedDate)">{{'SHOW-NON-FULFILLED' | translate}}</button>
+        <p>Zamestnanci (podiel zamestnancov), ktorí prekročili 150/350/400 hodín</p>
+        <p>Zamestnanci, ktorí dlhodobo robia nadčasy (zatiaľ neviem že ako toto spraviť)</p>
+        <div class="input-filters overtime-form">
+            <div class="filter">
+                <label for="statType">{{'STAT-TYPE' | translate}}</label>
+                <select class="filter-select" name="statType" id="statType" (change)="selectStatType($event)">
+                    <option *ngFor="let type of statTypes; trackBy: trackByStatType" [ngValue]="type">{{type | translate}}</option>
+                </select>
+            </div>
+            <div class="filter" *ngIf="selectedStatType === ('EXCEEDED-RULE' | translate)">
+                <label for="exceededRuleType">{{'EXCEEDED-RULE-TYPE' | translate}}</label>
+                <select class="filter-select" id="exceededRuleType" name="exceededRuleType">
+                    <option value="1">{{'1' | translate}}</option>
+                    <option value="150">{{'150' | translate}}</option>
+                    <option value="350">{{'350' | translate}}</option>
+                    <option value="400">{{'400' | translate}}</option>
+                </select>
+            </div>
+            <div class="filter">
+                <label for="departmentsSelect">{{'SEGMENT' | translate}}</label>
+                <select class="filter-select" name="departmentsSelect" id="departmentsSelect" (change)="selectDepartment($event)">
+                    <option value="ALL">{{'ALL' | translate}}</option>
+                    <option *ngFor="let department of departments; trackBy: trackByDepartment" [ngValue]="department">{{department}}</option>
+                </select>
+            </div>
+            <div class="filter">
+                <label for="selectedDateNonFulfilled">{{'DATE' | translate}}: </label>
+                <input type="date" id="selectedDateNonFulfilled" [value]="getCurrentDate()">
+            </div>
+            <button class="submit-btn" (click)="getNonFulfilledLimits()">{{'SHOW-NON-FULFILLED' | translate}}</button>
+        </div>
+        
         <ngx-charts-pie-chart
+        *ngIf="selectedStatType === ('NON-FULFILLED' | translate) && nonFulfilledLimitsData"
         [view]="[700, 400]"
         [scheme]="'cool'"
         [results]="nonFulfilledLimitsData"
@@ -101,12 +101,72 @@
         [gradient]="false"
         [tooltipDisabled]="false"
         [tooltipText]="customTooltipTemplate">
-    </ngx-charts-pie-chart>
+        </ngx-charts-pie-chart>
 
-    <!-- <ng-template #customTooltipTemplate let-model="model">
-        <div style="padding: 5px;">
-          <strong>{{ model.name }}</strong>: {{ model.value }} units
+        <ngx-charts-pie-chart
+        *ngIf="selectedStatType === ('EXCEEDED-RULE' | translate) && exceededRuleLimitsData"
+        [view]="[700, 400]"
+        [scheme]="'cool'"
+        [results]="exceededRuleLimitsData"
+        [legend]="true"
+        [explodeSlices]="false"
+        [labels]="true"
+        [doughnut]="false"
+        [gradient]="false"
+        [tooltipDisabled]="false"
+        [tooltipText]="customTooltipTemplate">
+        </ngx-charts-pie-chart>
+    </div>
+    <div class="rolling-menu">
+        <div class="icon-text" (click)="toggleCustomTimeSelection()">
+            <i class="cursor-pointer" [ngClass]="shownCustomTimeSelection ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+            <h4 class="cursor-pointer">{{'CUSTOM-TIME-SELECTION' | translate}}</h4>
         </div>
-      </ng-template> -->
+    </div>
+    <div *ngIf="shownCustomTimeSelection">
+        <p>Prehľad počtu nadčasov za vybraté časové obdobia</p>
+        <div class="input-filters overtime-form">
+            <div class="filter">
+                <label for="selectedCustomStartDate">{{'START-DATE' | translate}}: </label>
+                <input type="date" id="selectedCustomStartDate" [value]="getCurrentDate()">
+            </div>
+            <div class="filter">
+                <label for="selectedCustomEndDate">{{'END-DATE' | translate}}: </label>
+                <input type="date" id="selectedCustomEndDate" [value]="getCurrentDate()">
+            </div>
+            <div class="filter">
+                <label for="departmentOrEmployeeSelect">{{'TYPE' | translate}}</label>
+                <select class="filter-select" name="departmentOrEmployeeSelect" id="departmentOrEmployeeSelect" (change)="selectDepartmentOrEmployee($event)">
+                    <option selected>{{'EMPLOYEE' | translate}}</option>
+                    <option>{{'DEPARTMENT' | translate}}</option>
+                </select>
+            </div>
+            <div class="filter" *ngIf="departmentOrEmployee === ('DEPARTMENT' | translate)">
+                <label for="departmentsSelectCustomTime">{{'SEGMENT' | translate}}</label>
+                <select class="filter-select" name="departmentsSelectCustomTime" id="departmentsSelectCustomTime">
+                    <option value="ALL">{{'ALL' | translate}}</option>
+                    <option *ngFor="let department of departments; trackBy: trackByDepartment" [ngValue]="department">{{department}}</option>
+                </select>
+            </div>
+            <div class="filter" *ngIf="departmentOrEmployee === ('EMPLOYEE' | translate)">
+                <label for="personalNumbersCustomTime">{{'PERSONAL-NUMBER' | translate}}: </label>
+                <input type="text" id="personalNumbersCustomTime">
+            </div>
+            <button class="submit-btn" (click)="getCustomTimeOvertimes()">{{'APPLY' | translate}}</button>
+        </div>
+        <ngx-charts-line-chart
+        [view]="[700, 400]"
+        [scheme]="'cool'"
+        [results]="customTimeOvertimesData"
+        [legend]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisLabel]="('DATE' | translate)"
+        [yAxisLabel]="('OVERTIMES' | translate)"
+        [timeline]="true"
+        [autoScale]="true">
+        </ngx-charts-line-chart>
     </div>
 </div>

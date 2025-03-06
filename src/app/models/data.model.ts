@@ -5,6 +5,7 @@ export interface Employee
   username: string;
   levelRole: number;
   managerId: number | null; //FK Employee
+  department: string; //change
   costCenter: string;
   firstName: string;
   lastName: string;

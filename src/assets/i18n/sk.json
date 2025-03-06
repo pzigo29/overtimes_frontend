@@ -68,6 +68,7 @@
     "TYPE-NAME": "Názov typu",
 
     "FULFILLED":"Splnené limity",
-    "NON-FULFILLED": "Nesplnené limity"
+    "NON-FULFILLED": "Nesplnené limity",
+    "EXCEEDED-RULE": "Prekročené zákonné limity"
 
 }

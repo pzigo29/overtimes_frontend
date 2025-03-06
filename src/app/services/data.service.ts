@@ -18,7 +18,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'mikimaja'; // toto sa bude načítavať z windowsu
+  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -171,6 +171,11 @@ export class DataService implements OnInit {
     return this.http.get<Employee[]>(`${this.apiUrl}/Employee`);
   }
 
+  getDepartments(): Observable<string[]>
+  {
+    return this.http.get<string[]>(`${this.apiUrl}/Employee/Departments`);
+  }
+
   async getEmployeeAverage(personalNumbers: string, filter: string, date: string): Promise<number>
   {
     // let numbersApiString: string = '';
@@ -185,14 +190,49 @@ export class DataService implements OnInit {
     return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/GetAverageOvertime?personalNumbers=${personalNumbers}&filter=${filter}&date=${date}`));
   }
 
-  async getNonFulfilledLimits(date: string, managerId?: number): Promise<NonFulfilledOvertimes>
+  // async getNonFulfilledLimits(date: string, managerId?: number): Promise<NonFulfilledOvertimes>
+  // {
+  //   if (managerId != null)
+  //   {
+  //     console.log('mngId:', managerId);
+  //     return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}&managerId=${managerId}`));
+  //   }
+  //   return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}`));
+  // }
+
+  async getNonFulfilledLimits(date: string, department?: string): Promise<NonFulfilledOvertimes>
   {
-    if (managerId != null)
+    if (department != null)
     {
-      console.log('mngId:', managerId);
-      return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}&managerId=${managerId}`));
+      console.log('department:', department);
+      return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}&department=${department}`));
     }
     return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/NonFulfilledOvertimes?month=${date}`));
+  }
+
+  async getExceededLawLimits(date: string, limit: number, department?: string): Promise<NonFulfilledOvertimes>
+  {
+    if (department != null)
+    {
+      console.log('department:', department);
+      return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/ExceededRuleLimits?year=${date}&department=${department}&ruleLimit=${limit}`));
+    }
+    return await firstValueFrom(this.http.get<NonFulfilledOvertimes>(`${this.apiUrl}/Employee/ExceededRuleLimits?year=${date}&ruleLimit=${limit}`));
+  }
+
+  async getCustomTimeOvertimes(startDate: string, endDate: string, personalNumber?: string, department?: string): Promise<Overtime[]>
+  {
+    if (personalNumber != undefined)
+    {
+      console.log('personalNumber:', personalNumber);
+      return await firstValueFrom(this.http.get<Overtime[]>(`${this.apiUrl}/Overtime/CustomRangeOvertimes?startDate=${startDate}&endDate=${endDate}&personalNumber=${personalNumber}`));
+    }
+    if (department != undefined)
+    {
+      console.log('department:', department);
+      return await firstValueFrom(this.http.get<Overtime[]>(`${this.apiUrl}/Overtime/CustomRangeOvertimes?startDate=${startDate}&endDate=${endDate}&department=${department}`));
+    }
+    return await firstValueFrom(this.http.get<Overtime[]>(`${this.apiUrl}/Overtime/CustomRangeOvertimes?startDate=${startDate}&endDate=${endDate}`));
   }
 
   async getOvertimeLimit(employee_id: number, month: Date | string): Promise<OvertimeLimit>
