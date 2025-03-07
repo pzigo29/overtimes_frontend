@@ -165,8 +165,9 @@
         [showYAxisLabel]="true"
         [xAxisLabel]="('DATE' | translate)"
         [yAxisLabel]="('OVERTIMES' | translate)"
-        [timeline]="true"
-        [autoScale]="true">
+        [autoScale]="false"
+        [xScaleMin]="xScaleMin ? xScaleMin.getTime() : 0"
+        [xScaleMax]="xScaleMax ? xScaleMax.getTime() : 0">
         </ngx-charts-line-chart>
     </div>
 </div>

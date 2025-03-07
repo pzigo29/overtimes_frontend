@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TitleBarComponent } from '../shared-components/title-bar/title-bar.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -38,8 +38,10 @@ export class StatsPanelComponent implements OnInit {
   departmentOrEmployee: string = '';
   customTimeOvertimes: Overtime[] = [];
   customTimeOvertimesData: any[] = [];
+  xScaleMin?: Date = new Date(2025, 1, 1);
+  xScaleMax?: Date = new Date(2025, 3, 3);
 
-  constructor(private dataService: DataService, private translate: TranslateService) {}
+  constructor(private dataService: DataService, private translate: TranslateService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
     this.departmentOrEmployee = await firstValueFrom(this.translate.get('EMPLOYEE'));
@@ -227,6 +229,12 @@ export class StatsPanelComponent implements OnInit {
       endDate = new Date();
     }
 
+    this.xScaleMin = startDate;
+    this.xScaleMax = endDate;
+
+    console.log('x scale min:', this.xScaleMin);
+    console.log('x scale max:', this.xScaleMax);
+
     const stringStartDate = startDate.toISOString().split('T')[0];
     const stringEndDate = endDate.toISOString().split('T')[0];
     if ((await firstValueFrom(this.translate.get(this.departmentOrEmployee))) === await firstValueFrom(this.translate.get('EMPLOYEE'))) 
@@ -247,16 +255,42 @@ export class StatsPanelComponent implements OnInit {
     }
     console.log('Custom time overtimes:', this.customTimeOvertimes);
     this.transformCustomTimeOvertimesData();
+    this.cdr.detectChanges();
   }
 
-  transformCustomTimeOvertimesData(): void 
-  {
-    if (this.customTimeOvertimes && this.customTimeOvertimes.length > 0) {
-      const transformedData = this.customTimeOvertimes.map(overtime => ({
-        name: overtime.overtimeDay,
-        value: overtime.overtimeHours
-      }));
+  // transformCustomTimeOvertimesData(): void 
+  // {
+  //   if (this.customTimeOvertimes && this.customTimeOvertimes.length > 0) {
+  //     const transformedData = this.customTimeOvertimes.map(overtime => ({
+  //       name: overtime.overtimeDay,
+  //       value: overtime.overtimeHours
+  //     }));
 
+  //     this.customTimeOvertimesData = [
+  //       {
+  //         name: this.departmentOrEmployee,
+  //         series: transformedData
+  //       }
+  //     ];
+  //     console.log('Transformed custom time overtimes data:', this.customTimeOvertimesData);
+  //   } else {
+  //     console.error('Unexpected customTimeOvertimes structure:', this.customTimeOvertimes);
+  //   }
+  // }
+
+  transformCustomTimeOvertimesData(): void {
+    if (this.customTimeOvertimes && this.customTimeOvertimes.length > 0) {
+      const transformedData = this.customTimeOvertimes.reduce((acc: { name: string, value: number }[], overtime) => {
+        const date = new Date(overtime.overtimeDay).toISOString().split('T')[0];
+        const existingEntry = acc.find(entry => entry.name === date);
+        if (existingEntry) {
+          existingEntry.value += overtime.overtimeHours;
+        } else {
+          acc.push({ name: date, value: overtime.overtimeHours });
+        }
+        return acc;
+      }, []);
+  
       this.customTimeOvertimesData = [
         {
           name: this.departmentOrEmployee,
