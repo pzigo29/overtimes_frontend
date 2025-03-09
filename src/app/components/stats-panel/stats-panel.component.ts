@@ -1,17 +1,31 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TitleBarComponent } from '../shared-components/title-bar/title-bar.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
-import { Employee, NonFulfilledOvertimes, Overtime } from '../../models/data.model';
+import { Employee, MonthOvertime, NonFulfilledOvertimes, Overtime, Month, OvertimeType } from '../../models/data.model';
 import { firstValueFrom } from 'rxjs';
+import e from 'express';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
 
 @Component({
     selector: 'app-stats-panel',
     imports: [TitleBarComponent, TranslateModule, CommonModule, NgxChartsModule, FormsModule],
+    animations: [
+      trigger('animationState', [
+        state('state1', style({ opacity: 1 })),
+        state('state2', style({ opacity: 0 })),
+        transition('state1 <=> state2', animate('300ms ease-in-out'))
+      ])
+    ],
     templateUrl: './stats-panel.component.html',
     styleUrls: ['./stats-panel.component.scss']
 })
@@ -33,13 +47,19 @@ export class StatsPanelComponent implements OnInit {
   nonFulfilledLimitsData: any[] = [];
   departments: string[] = [];
   statTypes: string[] = ['NON-FULFILLED', 'EXCEEDED-RULE', 'LONGTERM-OVERTIMES'];
+  customTimeTypes: string[] = ['OVERTIME-HOURS', 'OVERTIMES-TYPES-SHARES'];
   selectedStatType?: string;
   shownCustomTimeSelection: boolean = false;
-  departmentOrEmployee: string = '';
+  departmentOrEmployee: string = 'EMPLOYEE';
+  hoursOrType: string = 'OVERTIME-HOURS';
   customTimeOvertimes: Overtime[] = [];
   customTimeOvertimesData: any[] = [];
-  xScaleMin?: Date = new Date(2025, 1, 1);
-  xScaleMax?: Date = new Date(2025, 3, 3);
+  customTimeOvertimesTypesData: any[] = [];
+  xScaleMin?: Date = new Date(new Date().getFullYear(), 0, 1);
+  xScaleMax?: Date = new Date(new Date().getFullYear(), 11, 31);
+  shownMaxMonth: boolean = false;
+  maxMonthOvertimes?: MonthOvertime;
+  shownOvertimeTypes: boolean = false;
 
   constructor(private dataService: DataService, private translate: TranslateService, private cdr: ChangeDetectorRef) {}
 
@@ -250,7 +270,11 @@ export class StatsPanelComponent implements OnInit {
       console.log('am i here in department?');
       const departmentElement = document.getElementById('departmentsSelectCustomTime') as HTMLSelectElement;
       if (departmentElement) {
-        this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, departmentElement.value);
+        if (!this.departments.includes(departmentElement.value)) {
+          this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, 'ALL');
+        } else {
+          this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, departmentElement.value);
+        }
       }
     }
     console.log('Custom time overtimes:', this.customTimeOvertimes);
@@ -278,34 +302,205 @@ export class StatsPanelComponent implements OnInit {
   //   }
   // }
 
-  transformCustomTimeOvertimesData(): void {
-    if (this.customTimeOvertimes && this.customTimeOvertimes.length > 0) {
-      const transformedData = this.customTimeOvertimes.reduce((acc: { name: string, value: number }[], overtime) => {
-        const date = new Date(overtime.overtimeDay).toISOString().split('T')[0];
-        const existingEntry = acc.find(entry => entry.name === date);
-        if (existingEntry) {
-          existingEntry.value += overtime.overtimeHours;
-        } else {
-          acc.push({ name: date, value: overtime.overtimeHours });
-        }
-        return acc;
-      }, []);
-  
-      this.customTimeOvertimesData = [
+  async transformCustomTimeOvertimesData(): Promise<void> 
+  {
+    // if (this.customTimeOvertimes && this.customTimeOvertimes.length > 0) {
+        if (this.hoursOrType === 'OVERTIME-HOURS') 
         {
-          name: this.departmentOrEmployee,
-          series: transformedData
+          let seriesName = '';
+          console.log('departmentOrEmployee:', this.departmentOrEmployee);
+          const personalNumberElement = document.getElementById('personalNumbersCustomTime') as HTMLInputElement;
+          const departmentElement = document.getElementById('departmentsSelectCustomTime') as HTMLSelectElement;
+          
+          if (this.departmentOrEmployee === await firstValueFrom(this.translate.get('EMPLOYEE'))) {
+            const employee: Employee | undefined = await this.dataService.getEmployeeByPersonalNumber(personalNumberElement.value);
+            if (employee) 
+            {
+              seriesName = employee.firstName + ' ' + employee.lastName;
+            }
+            else
+            {
+              seriesName = 'Employee not found';
+            }
+          } else if (this.departmentOrEmployee === await firstValueFrom(this.translate.get('DEPARTMENT')) && departmentElement) {
+            seriesName = departmentElement.value;
+          }
+          const transformedData = this.customTimeOvertimes.reduce((acc: { name: string, value: number }[], overtime) => {
+            const date = new Date(overtime.overtimeDay).toISOString().split('T')[0];
+            const existingEntry = acc.find(entry => entry.name === date);
+            if (existingEntry) {
+                existingEntry.value += overtime.overtimeHours;
+            } else {
+                acc.push({ name: date, value: overtime.overtimeHours });
+            }
+            return acc;
+          }, []);
+    
+          this.customTimeOvertimesData = [
+            {
+                name: seriesName,
+                series: transformedData
+            }
+          ];
+          console.log('Transformed custom time overtimes data:', this.customTimeOvertimesData);
+        } 
+        else if (this.hoursOrType === 'OVERTIMES-TYPES-SHARES') 
+        {
+          const overtimeTypes: OvertimeType[] = await this.dataService.getOvertimeTypes();
+          const transformedData = this.customTimeOvertimes.reduce((acc: { [key: string]: { name: string, value: number }[] }, overtime) => {
+            const date = new Date(overtime.overtimeDay).toISOString().split('T')[0];
+            const typeName = overtimeTypes.find(type => type.overtimeTypeId === overtime.overtimeTypeId)?.typeName || overtime.overtimeTypeId;
+            if (!acc[typeName]) {
+                acc[typeName] = [];
+            }
+            const existingEntry = acc[typeName].find(entry => entry.name === date);
+            if (existingEntry) {
+                existingEntry.value += overtime.overtimeHours;
+            } else {
+                acc[typeName].push({ name: date, value: overtime.overtimeHours });
+            }
+            return acc;
+        }, {});
+
+        this.customTimeOvertimesTypesData = Object.keys(transformedData).map(type => ({
+            name: type,
+            series: transformedData[type]
+        }));
+        console.log('Transformed custom time overtimes types data:', this.customTimeOvertimesTypesData);
         }
-      ];
-      console.log('Transformed custom time overtimes data:', this.customTimeOvertimesData);
-    } else {
-      console.error('Unexpected customTimeOvertimes structure:', this.customTimeOvertimes);
+    // } else {
+    //     console.error('Unexpected customTimeOvertimes structure:', this.customTimeOvertimes);
+    // }
+  }
+
+  // async getOvertimeTypes(): Promise<OvertimeType[]>
+  // {
+  //   return await this.dataService.getOvertimeTypes();
+  // }
+
+  async getMaxMonthOvertimes(): Promise<void>
+  {
+    const selectedYearElement = document.getElementById('selectedYearForMaxMonth') as HTMLInputElement;
+    const year = Number(selectedYearElement.value);
+    this.maxMonthOvertimes = await this.dataService.getMaxMonthOvertimes(year);
+    console.log('Received maxMonthOvertimes total hours:', this.maxMonthOvertimes.totalHours);
+    this.cdr.detectChanges();
+    // this.transformMaxMonthOvertimesData(maxMonthOvertimes);
+  }
+
+  getLegendTitle(data: any[]): string {
+    if (data && data.length > 0) {
+      return data.map(item => item.name).join(', ');
     }
+    return 'Graph Data';
+  }
+
+  exportToPDF(title: string, graphId: string, data: any[]): void {
+    const doc = new jsPDF();
+    
+    doc.text(title, 10, 10);
+
+    // Capture the graph as an image
+    const graphElement = document.getElementById(graphId); // Replace with your graph element ID
+    if (graphElement) {
+      const svgElement = graphElement.querySelector('svg');
+      const legendElement = graphElement.querySelector('.chart-legend') as HTMLElement;
+      console.log('Legend element:', legendElement);
+      if (svgElement) 
+      {
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svgElement);
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = svgElement.clientWidth * 2;
+          canvas.height = svgElement.clientHeight * 2;
+          const context = canvas.getContext('2d');
+          if (context) {
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const imgData = canvas.toDataURL('image/png', 1.0); // Set image quality to 1.0 (maximum)
+            const imgWidth = 190; // Adjust the width as needed
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            doc.addImage(imgData, 'PNG', 10, 20, imgWidth, imgHeight);
+
+            // Add table data after the graph
+            let startY = 20 + imgHeight + 10;
+
+            if (legendElement) {
+              html2canvas(legendElement).then((legendCanvas) => {
+                const legendImgData = legendCanvas.toDataURL('image/png', 1.0);
+                doc.addImage(legendImgData, 'PNG', 10, startY, legendCanvas.width / 4, legendCanvas.height / 4);
+                startY += 10 + legendCanvas.height / 4;
+
+                if (data.length > 0) {
+                  data.forEach((item, index) => {
+                      doc.text(item.name, 10, startY + (index * 10));
+                      autoTable(doc, {
+                          head: [['Date', 'Value']],
+                          body: item.series.map((seriesItem: { name: string, value: number }) => [seriesItem.name, seriesItem.value]),
+                          startY: startY + 5 + (index * 10)
+                      });
+                      startY += 10 + (item.series.length * 10); // Adjust startY for the next table
+                  });
+                }
+
+                doc.save(title + '.pdf');
+                URL.revokeObjectURL(svgUrl);
+              }).catch((error) => {
+                console.error('Error capturing legend:', error);
+              });
+            } else {
+              console.error('Legend element not found');
+            }
+          }
+        };
+
+        img.src = svgUrl;
+      } else {
+        console.error('SVG element not found');
+      }
+    } else {
+      console.error('Graph element not found');
+    }
+  }
+
+  exportToXLSX(title: string, data: any[]): void 
+  {
+    const worksheetData = data.map(item => ({
+      Name: item.name,
+      ...item.series.reduce((acc: any, seriesItem: { name: string, value: number }) => {
+          acc[seriesItem.name] = seriesItem.value;
+          return acc;
+      }, {})
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), `${title}.xlsx`);  
   }
 
   getCurrentDate(): string
   {
     return new Date().toISOString().split('T')[0];
+  }
+
+  getCurrentYear(): number
+  {
+    return new Date().getFullYear();
+  }
+
+  getMaxMonthDate(month: number): string
+  {
+    return Month[month];
   }
 
   selectSegmentManager(event: Event): void
@@ -336,6 +531,14 @@ export class StatsPanelComponent implements OnInit {
     const selectedValue = selectElement.value;
     this.departmentOrEmployee = selectedValue;
     console.log('Selected departmentOrEmployee:', this.departmentOrEmployee);
+  }
+
+  selectCustomTimeType(event: Event): void
+  {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedValue = selectElement.value;
+    this.hoursOrType = selectedValue;
+    console.log('Selected hoursOrType:', this.hoursOrType);
   }
 
   trackByManagerId(index: number, manager: Employee): number {
@@ -373,5 +576,15 @@ export class StatsPanelComponent implements OnInit {
   toggleCustomTimeSelection(): void
   {
     this.shownCustomTimeSelection = !this.shownCustomTimeSelection;
+  }
+
+  toggleMaxMonth(): void
+  {
+    this.shownMaxMonth = !this.shownMaxMonth;
+  }
+
+  toggleOvertimeTypes(): void
+  {
+    this.shownOvertimeTypes = !this.shownOvertimeTypes;
   }
 }

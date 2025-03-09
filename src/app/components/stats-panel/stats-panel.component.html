@@ -1,12 +1,12 @@
 <div class="container">
     <app-title-bar [title]="('STATS' | translate)"></app-title-bar>
-    <p>Prehľad počtu nadčasov za vybraté časové obdobia</p>
+    <p>//Prehľad počtu nadčasov za vybraté časové obdobia</p>
     <p>Prehľad podielu nadčasov HO, Office, Office>18, Weekend</p>
-    <p>Mesiac s najviac nadčasmi</p>
+    <p>//Mesiac s najviac nadčasmi</p>
     <p>//Priemer nadčasov na zamestnanca (rok, mesiac, týždeň)</p>
     <p>Zamestnanci, ktorí dlhodobo robia nadčasy</p>
     <p>//Zamestnanci (podiel zamestnancov), ktorí v mesiaci nedosiahli min limit / presiahli max limit</p>
-    <p>Zamestnanci (podiel zamestnancov), ktorí prekročili 150/350/400 hodín</p>
+    <p>//Zamestnanci (podiel zamestnancov), ktorí prekročili 150/350/400 hodín</p>
     <p>Exporty do PDF, XLS</p>
 
     <div class="rolling-menu">
@@ -116,6 +116,8 @@
         [tooltipDisabled]="false"
         [tooltipText]="customTooltipTemplate">
         </ngx-charts-pie-chart>
+
+
     </div>
     <div class="rolling-menu">
         <div class="icon-text" (click)="toggleCustomTimeSelection()">
@@ -125,7 +127,14 @@
     </div>
     <div *ngIf="shownCustomTimeSelection">
         <p>Prehľad počtu nadčasov za vybraté časové obdobia</p>
+        <p>Prehľad podielu nadčasov HO, Office, Office>18, Weekend</p>
         <div class="input-filters overtime-form">
+            <div class="filter">
+                <label for="statTimeType">{{'STAT-TYPE' | translate}}</label>
+                <select class="filter-select" name="statTimeType" id="statTimeType" (change)="selectCustomTimeType($event)">
+                    <option *ngFor="let type of customTimeTypes">{{type | translate}}</option>
+                </select>
+            </div>
             <div class="filter">
                 <label for="selectedCustomStartDate">{{'START-DATE' | translate}}: </label>
                 <input type="date" id="selectedCustomStartDate" [value]="getCurrentDate()">
@@ -154,20 +163,97 @@
             </div>
             <button class="submit-btn" (click)="getCustomTimeOvertimes()">{{'APPLY' | translate}}</button>
         </div>
-        <ngx-charts-line-chart
-        [view]="[700, 400]"
-        [scheme]="'cool'"
-        [results]="customTimeOvertimesData"
-        [legend]="true"
-        [xAxis]="true"
-        [yAxis]="true"
-        [showXAxisLabel]="true"
-        [showYAxisLabel]="true"
-        [xAxisLabel]="('DATE' | translate)"
-        [yAxisLabel]="('OVERTIMES' | translate)"
-        [autoScale]="false"
-        [xScaleMin]="xScaleMin ? xScaleMin.getTime() : 0"
-        [xScaleMax]="xScaleMax ? xScaleMax.getTime() : 0">
-        </ngx-charts-line-chart>
+
+        <div *ngIf="hoursOrType === ('OVERTIME-HOURS' | translate) && customTimeOvertimesData">
+            <ngx-charts-line-chart
+            [view]="[700, 400]"
+            [scheme]="'cool'"
+            [results]="customTimeOvertimesData"
+            [legend]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [xAxisLabel]="('DATE' | translate)"
+            [yAxisLabel]="('OVERTIMES' | translate)"
+            [autoScale]="false"
+            [xScaleMin]="xScaleMin ? xScaleMin.getTime() : 0"
+            [xScaleMax]="xScaleMax ? xScaleMax.getTime() : 0"
+            id="customTimeOvertimesDataChart"
+            name="customTimeOvertimesDataChart">
+            </ngx-charts-line-chart>
+
+            <button class="submit-btn" 
+            (click)="exportToPDF(getLegendTitle(customTimeOvertimesData), 'customTimeOvertimesDataChart', customTimeOvertimesData)">
+            {{'EXPORT-TO-PDF' | translate}}</button>
+            <button class="submit-btn" (click)="exportToXLSX('Custom Time Overtimes Data', customTimeOvertimesData)">{{'EXPORT-TO-XLSX' | translate}}</button>
+        </div>
+        
+
+        <div *ngIf="hoursOrType === ('OVERTIMES-TYPES-SHARES' | translate) && customTimeOvertimesTypesData">
+            <ngx-charts-line-chart
+            [view]="[700, 400]"
+            [scheme]="'cool'"
+            [results]="customTimeOvertimesTypesData"
+            [legend]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            [xAxisLabel]="('DATE' | translate)"
+            [yAxisLabel]="('OVERTIMES' | translate)"
+            [autoScale]="false"
+            [xScaleMin]="xScaleMin ? xScaleMin.getTime() : 0"
+            [xScaleMax]="xScaleMax ? xScaleMax.getTime() : 0"
+            id="customTimeOvertimesTypesDataChart"
+            name="customTimeOvertimesTypesDataChart">
+            </ngx-charts-line-chart>
+    
+            <button class="submit-btn" 
+            (click)="exportToPDF(getLegendTitle(customTimeOvertimesTypesData), 'customTimeOvertimesTypesDataChart', customTimeOvertimesTypesData)">
+            {{'EXPORT-TO-PDF' | translate}}</button>
+            <button class="submit-btn" (click)="exportToXLSX('Custom Time Overtimes Types Data', customTimeOvertimesTypesData)">{{'EXPORT-TO-XLSX' | translate}}</button>
+        </div>
+        
     </div>
+    <div class="rolling-menu">
+        <div class="icon-text" (click)="toggleMaxMonth()">
+            <i class="cursor-pointer" [ngClass]="shownMaxMonth ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+            <h4 class="cursor-pointer">{{'MAX-MONTH' | translate}}</h4>
+        </div>
+    </div>
+    <div *ngIf="shownMaxMonth">
+        <p>Mesiac s najviac nadčasmi</p>
+        <div class="input-filters overtime-form">
+            <div class="filter">
+                <label for="selectedYearForMaxMonth">{{'YEAR' | translate}}: </label>
+                <input type="year" id="selectedYearForMaxMonth" [value]="getCurrentYear()">
+            </div>
+            <button class="submit-btn" (click)="getMaxMonthOvertimes()">{{'SHOW' | translate}}</button>
+        </div>
+        <table class="excel-table" *ngIf="maxMonthOvertimes">
+            <thead>
+                <tr>
+                    <th>{{'MONTH' | translate}}</th>
+                    <th>{{'OVERTIMES' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{getMaxMonthDate(maxMonthOvertimes.month) | translate}}</td>
+                    <td *ngIf="maxMonthOvertimes?.totalHours">{{maxMonthOvertimes.totalHours}} h</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- <div class="rolling-menu">
+        <div class="icon-text" (click)="toggleOvertimeTypes()">
+            <i class="cursor-pointer" [ngClass]="shownOvertimeTypes ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+            <h4 class="cursor-pointer">{{'OVERTIME-TYPES-SHARES' | translate}}</h4>
+        </div>
+    </div>
+    <div *ngIf="shownOvertimeTypes">
+        <p>Prehľad podielu nadčasov HO, Office, Office>18, Weekend</p>
+
+    </div> -->
 </div>

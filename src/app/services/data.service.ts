@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 import { of, Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { Approval, Email, Employee, NonFulfilledOvertimes, Overtime, OvertimeLimit, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
+import { Approval, Email, Employee, MonthOvertime, NonFulfilledOvertimes, Overtime, OvertimeLimit, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
@@ -233,6 +233,11 @@ export class DataService implements OnInit {
       return await firstValueFrom(this.http.get<Overtime[]>(`${this.apiUrl}/Overtime/CustomRangeOvertimes?startDate=${startDate}&endDate=${endDate}&department=${department}`));
     }
     return await firstValueFrom(this.http.get<Overtime[]>(`${this.apiUrl}/Overtime/CustomRangeOvertimes?startDate=${startDate}&endDate=${endDate}`));
+  }
+
+  async getMaxMonthOvertimes(year: number): Promise<MonthOvertime>
+  {
+    return await firstValueFrom(this.http.get<MonthOvertime>(`${this.apiUrl}/Overtime/MaxMonthOvertimes?year=${year}`));
   }
 
   async getOvertimeLimit(employee_id: number, month: Date | string): Promise<OvertimeLimit>

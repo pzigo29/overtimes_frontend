@@ -69,6 +69,18 @@
 
     "FULFILLED":"Splnené limity",
     "NON-FULFILLED": "Nesplnené limity",
-    "EXCEEDED-RULE": "Prekročené zákonné limity"
+    "EXCEEDED-RULE": "Prekročené zákonné limity",
 
+    "JANUARY": "Január",
+    "FEBRUARY": "Február",
+    "MARCH": "Marec",
+    "APRIL": "Apríl",
+    "MAY": "Máj",
+    "JUNE": "Jún",
+    "JULY": "Júl",
+    "AUGUST": "August",
+    "SEPTEMBER": "September",
+    "OCTOBER": "Október",
+    "NOVEMBER": "November",
+    "DECEMBER": "December"
 }
