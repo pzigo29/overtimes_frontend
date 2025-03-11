@@ -6,17 +6,23 @@
         "SHOW-TEAMS": "Show teams",
         "HIDE": "Hide",
         "SHOW": "Show",
-        "FILTERS": "filters",
+        "FILTERS": "Filters",
         "DELETE": "Delete",
         "EMPLOYEE-ESTIMATE": "Employee estimate",
         "SHOW-SEGMENTS": "Show segments",
         "SHOW-ALL-EMPLOYEES": "Show all employees",
-        "ADD": "Add"
+        "ADD": "Add",
+        "EXPORT-TO-PDF": "Export to PDF",
+        "EXPORT-TO-XLSX": "Export to XLSX",
+        "CONFIRM": "Confirm",
+        "APPLY": "Apply",
+        "SHOW-NON-FULFILLED": "Show non-fulfilled"
     },
 
     "SUMMARY": "Summary",
     "MONTH": "Month",
     "EMPLOYEE": "Employee",
+    "DEPARTMENT": "Department",
     "TEAM": "Team",
     "MIN-LIMIT": "Minimal limit",
     "MAX-LIMIT": "Maximal limit",
@@ -25,7 +31,7 @@
     "APPROVED": "Approved",
     "MNG-COMMENT": "Manager's comment",
     "MNG-RND-COMMENT": "RnD's Manager's comment",
-    
+
     "LIMITS": {
         "ALL": "All limits",
         "FULFILLED": "Fulfilled limits",
@@ -43,7 +49,8 @@
         "TL": "My team",
         "SEGMENT": "Segment D",
         "RND": "Overtimes RnD",
-        "ADMIN": "Administration"
+        "ADMIN": "Administration",
+        "STATS": "Statistics"
     },
 
     "OVERTIME-RULES": "Overtime rules",
@@ -66,5 +73,40 @@
     "LAST-EXECUTION-DATE": "Last execution date",
 
     "TYPE-ID": "Type ID",
-    "TYPE-NAME": "Type name"
+    "TYPE-NAME": "Type name",
+
+    "FULFILLED": "Fulfilled limits",
+    "NON-FULFILLED": "Non-fulfilled limits",
+    "EXCEEDED-RULE": "Exceeded legal limits",
+
+    "JANUARY": "January",
+    "FEBRUARY": "February",
+    "MARCH": "March",
+    "APRIL": "April",
+    "MAY": "May",
+    "JUNE": "June",
+    "JULY": "July",
+    "AUGUST": "August",
+    "SEPTEMBER": "September",
+    "OCTOBER": "October",
+    "NOVEMBER": "November",
+    "DECEMBER": "December",
+    "EMPLOYEE-AVG": "Employee average",
+    "STAT-TYPE": "Statistic type",
+    "EXCEEDED-RULE-TYPE": "Exceeded limit type",
+    "DATE": "Date",
+    "YEAR": "Year",
+    "WEEK": "Week",
+    "MAX-MONTH": "Month with most overtimes",
+    "OVERTIME-HOURS": "Overtime hours",
+    "OVERTIMES-TYPES-SHARES": "Overtime types shares",
+    "CUSTOM-TIME-SELECTION": "Custom time selection",
+
+    "START-DATE": "Start date",
+    "END-DATE": "End date",
+    "TYPE": "Type",
+
+    "LONGTERM-OVERTIMES": "Long-term overtimes",
+    "OVERTIMES": "Overtimes",
+    "AVERAGE": "Average"
 }

@@ -11,12 +11,18 @@
         "EMPLOYEE-ESTIMATE": "Odhad zamestnanca",
         "SHOW-SEGMENTS": "Zobraz segmenty",
         "SHOW-ALL-EMPLOYEES": "Zobraz všetkých zamestnancov",
-        "ADD": "Pridaj"
+        "ADD": "Pridaj",
+        "EXPORT-TO-PDF": "Export do PDF",
+        "EXPORT-TO-XLSX": "Export do XLSX",
+        "CONFIRM": "Potvrdiť",
+        "APPLY": "Použiť",
+        "SHOW-NON-FULFILLED": "Zobraziť nesplnené"
     },
 
     "SUMMARY": "Sumár",
     "MONTH": "Mesiac",
     "EMPLOYEE": "Zamestnanec",
+    "DEPARTMENT": "Oddelenie",
     "TEAM": "Tím",
     "MIN-LIMIT": "Minimálny limit",
     "MAX-LIMIT": "Maximálny limit",
@@ -42,7 +48,8 @@
         "TL": "Môj tím",
         "SEGMENT": "Segment D",
         "RND": "Nadčasy RnD",
-        "ADMIN": "Administrácia"
+        "ADMIN": "Administrácia",
+        "STATS": "Štatistiky"
     },
 
     "OVERTIME-RULES": "Pravidlá pre nadčasy",
@@ -82,5 +89,23 @@
     "SEPTEMBER": "September",
     "OCTOBER": "Október",
     "NOVEMBER": "November",
-    "DECEMBER": "December"
+    "DECEMBER": "December",
+    "EMPLOYEE-AVG": "Priemer zamestnanca",
+    "STAT-TYPE": "Typ štatistiky",
+    "EXCEEDED-RULE-TYPE": "Typ prekročeného limitu",
+    "DATE": "Dátum",
+    "YEAR": "Rok",
+    "WEEK": "Týždeň",
+    "MAX-MONTH": "Mesiac s najviac nadčasmi",
+    "OVERTIME-HOURS": "Hodiny nadčasov",
+    "OVERTIMES-TYPES-SHARES": "Podiely typov nadčasov",
+    "CUSTOM-TIME-SELECTION": "Výber časového obdobia",
+
+    "START-DATE": "Dátum začiatku",
+    "END-DATE": "Dátum konca",
+    "TYPE": "Typ",
+
+    "LONGTERM-OVERTIMES": "Dlhodobé nadčasy",
+    "OVERTIMES": "Nadčasy",
+    "AVERAGE": "Priemer"
 }

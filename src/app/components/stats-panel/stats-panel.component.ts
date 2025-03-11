@@ -15,6 +15,9 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
+import { startOfWeek, parseISO } from 'date-fns';
+
+import '../../../assets/Roboto_Condensed-Black-normal.js';
 
 @Component({
     selector: 'app-stats-panel',
@@ -31,7 +34,11 @@ import html2canvas from 'html2canvas';
 })
 export class StatsPanelComponent implements OnInit {
   months: Date[] = [];
-  selectedMonth: Date = new Date();
+  selectedYear: string = new Date().getFullYear().toString();
+  selectedMonth: string = new Date().toISOString().slice(0, 7); // YYYY-MM
+  selectedWeek: string = this.getCurrentWeek(); // YYYY-WXX
+  selectedMonthNonFulfilled: string = new Date().toISOString().slice(0, 7); // YYYY-MM
+  selectedYearNonFulfilled: string = new Date().getFullYear().toString();
   dateFilter: string = 'year';
   personalNumbers: string = '';
   selectedDate: Date = new Date();
@@ -46,8 +53,8 @@ export class StatsPanelComponent implements OnInit {
   segmentManagers: Employee[] = [];
   nonFulfilledLimitsData: any[] = [];
   departments: string[] = [];
-  statTypes: string[] = ['NON-FULFILLED', 'EXCEEDED-RULE', 'LONGTERM-OVERTIMES'];
-  customTimeTypes: string[] = ['OVERTIME-HOURS', 'OVERTIMES-TYPES-SHARES'];
+  statTypes: string[] = [];
+  customTimeTypes: string[] = [];
   selectedStatType?: string;
   shownCustomTimeSelection: boolean = false;
   departmentOrEmployee: string = 'EMPLOYEE';
@@ -61,14 +68,42 @@ export class StatsPanelComponent implements OnInit {
   maxMonthOvertimes?: MonthOvertime;
   shownOvertimeTypes: boolean = false;
 
-  constructor(private dataService: DataService, private translate: TranslateService, private cdr: ChangeDetectorRef) {}
+  constructor(private dataService: DataService, private translate: TranslateService, private cdr: ChangeDetectorRef) 
+  {
+    translate.onLangChange.subscribe(() => {
+      this.loadTranslations();
+    });
+  }
+
+  getCurrentWeek(): string {
+    const date = new Date();
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    return `${date.getFullYear()}-W${weekNumber.toString().padStart(2, '0')}`;
+  }
+
+  private async loadTranslations(): Promise<void> 
+  {
+    this.statTypes = [
+      await firstValueFrom(this.translate.get('LIMITS.NOT-FULFILLED')),
+      await firstValueFrom(this.translate.get('EXCEEDED-RULE')),
+      await firstValueFrom(this.translate.get('LONGTERM-OVERTIMES'))
+    ];
+    this.departmentOrEmployee = await firstValueFrom(this.translate.get('EMPLOYEE'));
+    this.hoursOrType = await firstValueFrom(this.translate.get('OVERTIME-HOURS'));
+    this.dataService.getMonths().subscribe(
+      async (months) => {
+      this.departmentOrEmployee = await firstValueFrom(this.translate.get('EMPLOYEE'));
+      this.customTimeTypes = [
+        this.translate.instant('OVERTIME-HOURS'), 
+        this.translate.instant('OVERTIMES-TYPES-SHARES')
+      ];
+    });
+  }
 
   async ngOnInit(): Promise<void> {
-    this.departmentOrEmployee = await firstValueFrom(this.translate.get('EMPLOYEE'));
-    this.dataService.getMonths().subscribe(
-      (months) => {
-        this.months = months;
-    });
+    await this.loadTranslations();
 
     this.dataService.getRndMng().subscribe(
       (rndMng: Employee) => {
@@ -105,43 +140,61 @@ export class StatsPanelComponent implements OnInit {
     );
   }
 
-  filterMonth(month: Date) 
-  {
-    this.selectedMonth = month;  
-  }
+  // filterMonth(month: Date) 
+  // {
+  //   this.selectedMonth = month;  
+  // }
 
-  async getEmployeeAverage(personalNumbers: string, filter: string, date: Date): Promise<void>
+  async getEmployeeAverage(personalNumbers: string, filter: string): Promise<void>
   {
-    console.log(date);
-    if (!(date instanceof Date) && date == '')
-    {
-      date = new Date();
+    let date: string;
+    switch (filter) {
+      case 'year':
+        date = `${this.selectedYear}-01-01`;
+        break;
+      case 'month':
+        date = this.selectedMonth;
+        break;
+      case 'week':
+        const [year, week] = this.selectedWeek.split('-W');
+        const firstDayOfWeek = startOfWeek(parseISO(`${year}-01-01`), { weekStartsOn: 2 });
+        const weekDate = new Date(firstDayOfWeek.setDate(firstDayOfWeek.getDate() + (parseInt(week) - 1) * 7));
+        date = weekDate.toISOString().split('T')[0];
+        break;
+      default:
+        date = this.selectedYear;
     }
-    let stringDate: string = date.toString();
-    if (date instanceof Date)
-      stringDate = date.toISOString().split('T')[0];
+    console.log('Date:', date);
     let avg: number = 0;
-    avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, stringDate);
+    avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, date);
     this.dateFilter = filter;
     this.selectedEmployee = await this.dataService.getEmployeeByPersonalNumber(personalNumbers);
-    console.log(avg);
+    console.log('Avg: ', avg);
     this.employeeAvg = avg;
     // return avg;
   }
 
   async getNonFulfilledLimits(): Promise<void> {
-    let date = new Date();
-    const selectedDateElement = document.getElementById('selectedDateNonFulfilled') as HTMLInputElement;
-    if (selectedDateElement) {
-      date = new Date(selectedDateElement.value);
+    let date: string;
+    if (this.selectedStatType === await firstValueFrom(this.translate.get('LIMITS.NOT-FULFILLED'))) {
+      date = this.selectedMonthNonFulfilled;
+    } else if (this.selectedStatType === await firstValueFrom(this.translate.get('EXCEEDED-RULE'))) {
+      date = `${this.selectedYearNonFulfilled}-01-01`;
+    } else {
+      date = this.selectedMonthNonFulfilled;
     }
-    console.log('Input date:', date);
+    console.log('Date:', date);
+    // const selectedDateElement = document.getElementById('selectedDateNonFulfilled') as HTMLInputElement;
+    // if (selectedDateElement) {
+    //   date = new Date(selectedDateElement.value);
+    // }
+    // console.log('Input date:', date);
     
-    if (!(date instanceof Date) || (date == null)) {
-      date = new Date();
-    }
+    // if (!(date instanceof Date) || (date == null)) {
+    //   date = new Date();
+    // }
   
-    let stringDate: string = date.toISOString().split('T')[0];
+    // let stringDate: string = date.toISOString().split('T')[0];
 
     const statTypeElement = document.getElementById('statType') as HTMLSelectElement;
     let statType: string = '';
@@ -159,14 +212,14 @@ export class StatsPanelComponent implements OnInit {
     console.log('Selected statType:', translatedStatType);
 
     switch (translatedStatType) {
-      case await this.translate.get('NON-FULFILLED').toPromise():
-        this.nonFulfilledLimits = await this.dataService.getNonFulfilledLimits(stringDate, this.selectedDepartment);
+      case await this.translate.get('LIMITS.NOT-FULFILLED').toPromise():
+        this.nonFulfilledLimits = await this.dataService.getNonFulfilledLimits(date, this.selectedDepartment);
         this.transformNonFulfilledLimitsData();
         break;
       case await this.translate.get('EXCEEDED-RULE').toPromise():
         const limit: number = parseInt((document.getElementById('exceededRuleType') as HTMLSelectElement).value, 10);
         console.log('Selected limit:', limit);
-        const exceededRuleLimits = await this.dataService.getExceededLawLimits(stringDate, limit, this.selectedDepartment);
+        const exceededRuleLimits = await this.dataService.getExceededLawLimits(date, limit, this.selectedDepartment);
         console.log('Received exceededRuleLimits:', exceededRuleLimits);
         this.transformExceededRuleLimitsData(exceededRuleLimits);
         break;
@@ -228,6 +281,7 @@ export class StatsPanelComponent implements OnInit {
 
   async getCustomTimeOvertimes(): Promise<void>
   {
+    this.customTimeOvertimes = [];
     let startDate = new Date();
     let endDate = new Date();
     const startDateElement = document.getElementById('selectedCustomStartDate') as HTMLInputElement;
@@ -257,26 +311,35 @@ export class StatsPanelComponent implements OnInit {
 
     const stringStartDate = startDate.toISOString().split('T')[0];
     const stringEndDate = endDate.toISOString().split('T')[0];
-    if ((await firstValueFrom(this.translate.get(this.departmentOrEmployee))) === await firstValueFrom(this.translate.get('EMPLOYEE'))) 
+    try 
     {
-      const personalNumberElement = document.getElementById('personalNumbersCustomTime') as HTMLInputElement;
-      console.log('Personal number :', personalNumberElement.value);
-      if (personalNumberElement) {
-        this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, personalNumberElement.value);
-      }
-    }
-    else if ((await firstValueFrom(this.translate.get(this.departmentOrEmployee))) === await firstValueFrom(this.translate.get('DEPARTMENT'))) 
-    {
-      console.log('am i here in department?');
-      const departmentElement = document.getElementById('departmentsSelectCustomTime') as HTMLSelectElement;
-      if (departmentElement) {
-        if (!this.departments.includes(departmentElement.value)) {
-          this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, 'ALL');
-        } else {
-          this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, departmentElement.value);
+      if ((await firstValueFrom(this.translate.get(this.departmentOrEmployee))) === await firstValueFrom(this.translate.get('EMPLOYEE'))) 
+        {
+          const personalNumberElement = document.getElementById('personalNumbersCustomTime') as HTMLInputElement;
+          console.log('Personal number :', personalNumberElement.value);
+          if (personalNumberElement) {
+            this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, personalNumberElement.value);
+          }
         }
-      }
+        else if ((await firstValueFrom(this.translate.get(this.departmentOrEmployee))) === await firstValueFrom(this.translate.get('DEPARTMENT'))) 
+        {
+          console.log('am i here in department?');
+          const departmentElement = document.getElementById('departmentsSelectCustomTime') as HTMLSelectElement;
+          if (departmentElement) {
+            if (!this.departments.includes(departmentElement.value)) {
+              this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, 'ALL');
+            } else {
+              this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, undefined, departmentElement.value);
+            }
+          }
+        }
     }
+    catch (error) 
+    {
+      this.customTimeOvertimes = [];
+      console.error('Error fetching custom time overtimes:', error);
+    }
+    
     console.log('Custom time overtimes:', this.customTimeOvertimes);
     this.transformCustomTimeOvertimesData();
     this.cdr.detectChanges();
@@ -302,77 +365,71 @@ export class StatsPanelComponent implements OnInit {
   //   }
   // }
 
-  async transformCustomTimeOvertimesData(): Promise<void> 
-  {
-    // if (this.customTimeOvertimes && this.customTimeOvertimes.length > 0) {
-        if (this.hoursOrType === 'OVERTIME-HOURS') 
-        {
-          let seriesName = '';
-          console.log('departmentOrEmployee:', this.departmentOrEmployee);
-          const personalNumberElement = document.getElementById('personalNumbersCustomTime') as HTMLInputElement;
-          const departmentElement = document.getElementById('departmentsSelectCustomTime') as HTMLSelectElement;
-          
-          if (this.departmentOrEmployee === await firstValueFrom(this.translate.get('EMPLOYEE'))) {
-            const employee: Employee | undefined = await this.dataService.getEmployeeByPersonalNumber(personalNumberElement.value);
-            if (employee) 
-            {
-              seriesName = employee.firstName + ' ' + employee.lastName;
-            }
-            else
-            {
-              seriesName = 'Employee not found';
-            }
-          } else if (this.departmentOrEmployee === await firstValueFrom(this.translate.get('DEPARTMENT')) && departmentElement) {
-            seriesName = departmentElement.value;
-          }
-          const transformedData = this.customTimeOvertimes.reduce((acc: { name: string, value: number }[], overtime) => {
-            const date = new Date(overtime.overtimeDay).toISOString().split('T')[0];
-            const existingEntry = acc.find(entry => entry.name === date);
-            if (existingEntry) {
-                existingEntry.value += overtime.overtimeHours;
-            } else {
-                acc.push({ name: date, value: overtime.overtimeHours });
-            }
-            return acc;
-          }, []);
-    
-          this.customTimeOvertimesData = [
-            {
-                name: seriesName,
-                series: transformedData
-            }
-          ];
-          console.log('Transformed custom time overtimes data:', this.customTimeOvertimesData);
-        } 
-        else if (this.hoursOrType === 'OVERTIMES-TYPES-SHARES') 
-        {
-          const overtimeTypes: OvertimeType[] = await this.dataService.getOvertimeTypes();
-          const transformedData = this.customTimeOvertimes.reduce((acc: { [key: string]: { name: string, value: number }[] }, overtime) => {
-            const date = new Date(overtime.overtimeDay).toISOString().split('T')[0];
-            const typeName = overtimeTypes.find(type => type.overtimeTypeId === overtime.overtimeTypeId)?.typeName || overtime.overtimeTypeId;
-            if (!acc[typeName]) {
-                acc[typeName] = [];
-            }
-            const existingEntry = acc[typeName].find(entry => entry.name === date);
-            if (existingEntry) {
-                existingEntry.value += overtime.overtimeHours;
-            } else {
-                acc[typeName].push({ name: date, value: overtime.overtimeHours });
-            }
-            return acc;
-        }, {});
-
-        this.customTimeOvertimesTypesData = Object.keys(transformedData).map(type => ({
-            name: type,
-            series: transformedData[type]
-        }));
-        console.log('Transformed custom time overtimes types data:', this.customTimeOvertimesTypesData);
+  async transformCustomTimeOvertimesData(): Promise<void> {
+    if (this.hoursOrType === await firstValueFrom(this.translate.get('OVERTIME-HOURS'))) {
+      let seriesName = '';
+      console.log('departmentOrEmployee:', this.departmentOrEmployee);
+      const personalNumberElement = document.getElementById('personalNumbersCustomTime') as HTMLInputElement;
+      const departmentElement = document.getElementById('departmentsSelectCustomTime') as HTMLSelectElement;
+  
+      if (this.departmentOrEmployee === await firstValueFrom(this.translate.get('EMPLOYEE'))) {
+        const employee: Employee | undefined = await this.dataService.getEmployeeByPersonalNumber(personalNumberElement.value);
+        if (employee) {
+          seriesName = employee.firstName + ' ' + employee.lastName;
+        } else {
+          seriesName = 'Employee not found';
         }
-    // } else {
-    //     console.error('Unexpected customTimeOvertimes structure:', this.customTimeOvertimes);
-    // }
+      } else if (this.departmentOrEmployee === await firstValueFrom(this.translate.get('DEPARTMENT')) && departmentElement) {
+        seriesName = departmentElement.value;
+      }
+  
+      const transformedData = this.customTimeOvertimes.reduce((acc: { name: string, value: number }[], overtime) => {
+        console.log('old Date:', overtime.overtimeDay);
+        // const date = new Date(overtime.overtimeDay).toDateString().split('T')[0]; // Use toISOString and split to get YYYY-MM-DD
+        const date = new Date(overtime.overtimeDay).toLocaleDateString('sk-SK');
+        console.log('new Date:', date);
+        const existingEntry = acc.find(entry => entry.name === date);
+        if (existingEntry) {
+          existingEntry.value += overtime.overtimeHours;
+        } else {
+          acc.push({ name: date, value: overtime.overtimeHours });
+        }
+        return acc;
+      }, []);
+  
+      this.customTimeOvertimesData = [
+        {
+          name: seriesName,
+          series: transformedData
+        }
+      ];
+      console.log('Transformed custom time overtimes data:', this.customTimeOvertimesData);
+    } else if (this.hoursOrType === await firstValueFrom(this.translate.get('OVERTIMES-TYPES-SHARES'))) {
+      const overtimeTypes: OvertimeType[] = await this.dataService.getOvertimeTypes();
+      const transformedData = this.customTimeOvertimes.reduce((acc: { [key: string]: { name: string, value: number }[] }, overtime) => {
+        const date = new Date(overtime.overtimeDay).toISOString().split('T')[0]; // Use toISOString and split to get YYYY-MM-DD
+        console.log('Date:', date);
+        const typeName = overtimeTypes.find(type => type.overtimeTypeId === overtime.overtimeTypeId)?.typeName || overtime.overtimeTypeId;
+        if (!acc[typeName]) {
+          acc[typeName] = [];
+        }
+        const existingEntry = acc[typeName].find(entry => entry.name === date);
+        if (existingEntry) {
+          existingEntry.value += overtime.overtimeHours;
+        } else {
+          acc[typeName].push({ name: date, value: overtime.overtimeHours });
+        }
+        return acc;
+      }, {});
+  
+      this.customTimeOvertimesTypesData = Object.keys(transformedData).map(type => ({
+        name: type,
+        series: transformedData[type]
+      }));
+      console.log('Transformed custom time overtimes types data:', this.customTimeOvertimesTypesData);
+    }
   }
-
+  
   // async getOvertimeTypes(): Promise<OvertimeType[]>
   // {
   //   return await this.dataService.getOvertimeTypes();
@@ -397,9 +454,25 @@ export class StatsPanelComponent implements OnInit {
 
   exportToPDF(title: string, graphId: string, data: any[]): void {
     const doc = new jsPDF();
+
+    doc.addFileToVFS('Roboto_Condensed-Black-normal.ttf', 'Roboto_Condensed-Black-normal');
+    doc.addFont('Roboto_Condensed-Black-normal', 'Roboto Condensed', 'normal');
+    // doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+    doc.setFont('Roboto');
     
     doc.text(title, 10, 10);
-
+  
+    // Add parameters to the PDF
+    const startDateElement = document.getElementById('selectedCustomStartDate') as HTMLInputElement;
+    const endDateElement = document.getElementById('selectedCustomEndDate') as HTMLInputElement;
+    const startDate = startDateElement ? startDateElement.value : '';
+    const endDate = endDateElement ? endDateElement.value : '';
+    const statType = this.hoursOrType === this.translate.instant('OVERTIME-HOURS') ? this.translate.instant('OVERTIME-HOURS') : this.hoursOrType;
+  
+    doc.text(`${this.translate.instant('START-DATE')}: ${startDate}`, 10, 20);
+    doc.text(`${this.translate.instant('END-DATE')}: ${endDate}`, 10, 30);
+    doc.text(`${this.translate.instant('STAT-TYPE')}: ${statType}`, 10, 40);
+  
     // Capture the graph as an image
     const graphElement = document.getElementById(graphId); // Replace with your graph element ID
     if (graphElement) {
@@ -412,7 +485,7 @@ export class StatsPanelComponent implements OnInit {
         const svgString = serializer.serializeToString(svgElement);
         const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         const svgUrl = URL.createObjectURL(svgBlob);
-
+  
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
@@ -423,33 +496,35 @@ export class StatsPanelComponent implements OnInit {
             context.fillStyle = '#ffffff';
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.drawImage(img, 0, 0, canvas.width, canvas.height);
-
+  
             const imgData = canvas.toDataURL('image/png', 1.0); // Set image quality to 1.0 (maximum)
             const imgWidth = 190; // Adjust the width as needed
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            doc.addImage(imgData, 'PNG', 10, 20, imgWidth, imgHeight);
-
+            doc.addImage(imgData, 'PNG', 10, 50, imgWidth, imgHeight);
+  
             // Add table data after the graph
-            let startY = 20 + imgHeight + 10;
-
+            let startY = 50 + imgHeight + 10;
+  
             if (legendElement) {
               html2canvas(legendElement).then((legendCanvas) => {
                 const legendImgData = legendCanvas.toDataURL('image/png', 1.0);
                 doc.addImage(legendImgData, 'PNG', 10, startY, legendCanvas.width / 4, legendCanvas.height / 4);
                 startY += 10 + legendCanvas.height / 4;
-
+  
                 if (data.length > 0) {
                   data.forEach((item, index) => {
                       doc.text(item.name, 10, startY + (index * 10));
                       autoTable(doc, {
                           head: [['Date', 'Value']],
-                          body: item.series.map((seriesItem: { name: string, value: number }) => [seriesItem.name, seriesItem.value]),
+                          body: item.series
+                            .filter((seriesItem: { name: string, value: number }) => seriesItem.value !== 0)
+                            .map((seriesItem: { name: string, value: number }) => [seriesItem.name, seriesItem.value]),
                           startY: startY + 5 + (index * 10)
                       });
                       startY += 10 + (item.series.length * 10); // Adjust startY for the next table
                   });
                 }
-
+  
                 doc.save(title + '.pdf');
                 URL.revokeObjectURL(svgUrl);
               }).catch((error) => {
@@ -460,7 +535,7 @@ export class StatsPanelComponent implements OnInit {
             }
           }
         };
-
+  
         img.src = svgUrl;
       } else {
         console.error('SVG element not found');
@@ -469,6 +544,7 @@ export class StatsPanelComponent implements OnInit {
       console.error('Graph element not found');
     }
   }
+  
 
   exportToXLSX(title: string, data: any[]): void 
   {

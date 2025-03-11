@@ -3,26 +3,34 @@
         "SAVE-CHANGES": "Änderungen speichern",
         "BACK": "Zurück",
         "SHOW-TEAM-MEMBERS": "Teammitglieder anzeigen",
+        "SHOW-TEAMS": "Teams anzeigen",
         "HIDE": "Verstecken",
         "SHOW": "Zeigen",
         "FILTERS": "Filter",
         "DELETE": "Löschen",
         "EMPLOYEE-ESTIMATE": "Mitarbeiterbewertung",
-        "SHOW-TEAMS": "Teams anzeigen",
         "SHOW-SEGMENTS": "Segmente anzeigen",
         "SHOW-ALL-EMPLOYEES": "Alle Mitarbeiter anzeigen",
-        "ADD": "Hinzufügen"
+        "ADD": "Hinzufügen",
+        "EXPORT-TO-PDF": "Export nach PDF",
+        "EXPORT-TO-XLSX": "Export nach XLSX",
+        "CONFIRM": "Bestätigen",
+        "APPLY": "Anwenden",
+        "SHOW-NON-FULFILLED": "Nicht erfüllte anzeigen"
     },
 
     "SUMMARY": "Zusammenfassung",
     "MONTH": "Monat",
     "EMPLOYEE": "Mitarbeiter",
+    "DEPARTMENT": "Abteilung",
     "TEAM": "Team",
     "MIN-LIMIT": "Mindestgrenze",
     "MAX-LIMIT": "Höchstgrenze",
     "REAL-OVERTIMES": "Echte Überstunden",
     "REASON": "Grund",
     "APPROVED": "Genehmigt",
+    "MNG-COMMENT": "Kommentar des Managers",
+    "MNG-RND-COMMENT": "Kommentar des RnD-Managers",
     
     "LIMITS": {
         "ALL": "Alle Grenzen",
@@ -38,10 +46,11 @@
 
     "TITLE": {
         "TL-TEAM-DETAIL": "Mitarbeiterdetail",
-        "TL": "Mein team",
+        "TL": "Mein Team",
         "SEGMENT": "Segment D",
         "RND": "Überstunden RnD",
-        "ADMIN": "Verwaltung"
+        "ADMIN": "Verwaltung",
+        "STATS": "Statistiken"
     },
 
     "OVERTIME-RULES": "Überstundenregeln",
@@ -64,5 +73,40 @@
     "LAST-EXECUTION-DATE": "Letztes Ausführungsdatum",
 
     "TYPE-ID": "Typ-ID",
-    "TYPE-NAME": "Typname"
+    "TYPE-NAME": "Typname",
+
+    "FULFILLED": "Erfüllte Grenzen",
+    "NON-FULFILLED": "Nicht erfüllte Grenzen",
+    "EXCEEDED-RULE": "Überschrittene gesetzliche Grenzen",
+
+    "JANUARY": "Januar",
+    "FEBRUARY": "Februar",
+    "MARCH": "März",
+    "APRIL": "April",
+    "MAY": "Mai",
+    "JUNE": "Juni",
+    "JULY": "Juli",
+    "AUGUST": "August",
+    "SEPTEMBER": "September",
+    "OCTOBER": "Oktober",
+    "NOVEMBER": "November",
+    "DECEMBER": "Dezember",
+    "EMPLOYEE-AVG": "Mitarbeiterdurchschnitt",
+    "STAT-TYPE": "Statistiktyp",
+    "EXCEEDED-RULE-TYPE": "Überschrittene Grenztyp",
+    "DATE": "Datum",
+    "YEAR": "Jahr",
+    "WEEK": "Woche",
+    "MAX-MONTH": "Monat mit den meisten Überstunden",
+    "OVERTIME-HOURS": "Überstunden",
+    "OVERTIMES-TYPES-SHARES": "Anteile der Überstundenarten",
+    "CUSTOM-TIME-SELECTION": "Benutzerdefinierte Zeitauswahl",
+
+    "START-DATE": "Anfangsdatum",
+    "END-DATE": "Enddatum",
+    "TYPE": "Typ",
+
+    "LONGTERM-OVERTIMES": "Langfristige Überstunden",
+    "OVERTIMES": "Überstunden",
+    "AVERAGE": "Durchschnitt"
 }
