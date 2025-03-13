@@ -5,6 +5,7 @@ import { Approval, Email, Employee, MonthOvertime, NonFulfilledOvertimes, Overti
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
+import { endOfMonth, isBefore, startOfMonth } from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'admin'; // toto sa bude načítavať z windowsu
+  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -71,6 +72,12 @@ export class DataService implements OnInit {
     //     console.error('Error fetching userEmployee', error);
     //   }
     // );
+  }
+
+  isPastMonth(month: Date): boolean
+  {
+    const today = new Date();
+    return isBefore(endOfMonth(month), startOfMonth(today));
   }
 
   getMessage(username: string): Observable<string>
@@ -271,6 +278,18 @@ export class DataService implements OnInit {
       console.error('Error fetching overtimes: ', error);
       throw new Error('Failed to retrieve overtimes');
     }
+  }
+
+  async getLimitReason(employee_id: number, month: Date): Promise<string>
+  {
+    // let limit = this.limits.find(x => x.employee_id === employee_id && this.compareYearAndMonth(x.start_date, month))?.max_hours
+    const limit: OvertimeLimit = await firstValueFrom(this.http.get<OvertimeLimit>(`${this.apiUrl}/OvertimeLimit/employee_id?employeeId=${employee_id}&month=${typeof month === 'string' ? month : month.toDateString()}`));
+    if (limit == undefined || limit == null)
+    {
+      //throw new Error('Limit was not found! ' + employee_id);
+      return '';
+    }
+    return limit.reason || '';
   }
 
   async getMaxLimit(employee_id: number, month: Date): Promise<number>

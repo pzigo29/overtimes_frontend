@@ -78,6 +78,11 @@ export class OvertimeThpComponent implements OnInit {
     );
   }
 
+  isPastMonth(month: Date): boolean
+  {
+    return this.dataService.isPastMonth(month);
+  }
+
   async setData()
   {
     if (this.employee == undefined)

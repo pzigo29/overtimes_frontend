@@ -18,7 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
     styleUrl: './overtime-tl-team.component.scss'
 })
 export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
-title: string = 'TL';
+  title: string = 'TL';
   leader?: Employee;
   wholeTeam: Employee[] = [];
   filteredTeam: Employee[] = [];
@@ -36,6 +36,9 @@ title: string = 'TL';
   private overtimeSubscription?: Subscription;
   private isSettingData: boolean = false;
   overtimeForm: FormGroup;
+  leaderSumOvertimes: number = 0;
+  leaderMinLimit: number = 0;
+  leaderMaxLimit: number = 0;
   // approved: boolean = true;
 
   constructor(private dataService: DataService, private fb: FormBuilder, private router: Router, private location: Location, private cd: ChangeDetectorRef) {
@@ -60,10 +63,10 @@ title: string = 'TL';
         
         // Initialize form controls for each team member
         this.filteredTeam.forEach(member => {
-          this.overtimeForm.addControl(member.username + '_min', new FormControl(0));
-          this.overtimeForm.addControl(member.username + '_max', new FormControl(0));
-          this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.dataService.userEmployee?.levelRole === 1) }));
-          this.overtimeForm.addControl(member.username + '_reason', new FormControl({ value: '', disabled: false }));
+          this.overtimeForm.addControl(member.username + '_min', new FormControl({value: 0, disabled: this.isPastMonth(this.selectedMonth)}));
+          this.overtimeForm.addControl(member.username + '_max', new FormControl({value: 0, disabled: this.isPastMonth(this.selectedMonth)}));
+          this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.dataService.userEmployee?.levelRole === 1) || this.isPastMonth(this.selectedMonth)}));
+          this.overtimeForm.addControl(member.username + '_reason', new FormControl({ value: '', disabled: this.isPastMonth(this.selectedMonth) }));
           this.teamRealOvertimes.set(member.username, 0);
           this.teamMinLimits.set(member.username, 0);
           this.teamMaxLimits.set(member.username, 0);
@@ -112,6 +115,12 @@ title: string = 'TL';
     }
   }
 
+  isPastMonth(month: Date): boolean
+  {
+    // console.log('am i here??')
+    return this.dataService.isPastMonth(month);
+  }
+
   async setData(): Promise<void> {
         if (this.isSettingData) {
               console.log('Already setting data');
@@ -123,6 +132,7 @@ title: string = 'TL';
       this.isSettingData = false;
       throw new Error('Leader undefined');
     }
+    await this.setLeaderOvertimes();
     this.realOvertimeSum = 0;
     this.minOvertimeSum = 0;
     this.maxOvertimeSum = 0;
@@ -145,11 +155,28 @@ title: string = 'TL';
       this.teamApproved.set(member.username, approved);
       this.teamReason.set(member.username, reason);
 
+      const isPast: boolean = this.isPastMonth(this.selectedMonth);
+
       // Update form control values
       this.overtimeForm.get(member.username + '_min')?.setValue(minLimit, { emitEvent: false });
       this.overtimeForm.get(member.username + '_max')?.setValue(maxLimit, { emitEvent: false });
       this.overtimeForm.get(member.username + '_approved')?.setValue(approved, { emitEvent: false });
       this.overtimeForm.get(member.username + '_reason')?.setValue(reason, { emitEvent: false });
+
+      if (isPast)
+      {
+        this.overtimeForm.get(member.username + '_min')?.disable({ emitEvent: false });
+        this.overtimeForm.get(member.username + '_max')?.disable({ emitEvent: false });
+        this.overtimeForm.get(member.username + '_approved')?.disable({ emitEvent: false });
+        this.overtimeForm.get(member.username + '_reason')?.disable({ emitEvent: false });
+      }
+      else
+      {
+        this.overtimeForm.get(member.username + '_min')?.enable({ emitEvent: false });
+        this.overtimeForm.get(member.username + '_max')?.enable({ emitEvent: false });
+        this.overtimeForm.get(member.username + '_approved')?.enable({ emitEvent: false });
+        this.overtimeForm.get(member.username + '_reason')?.enable({ emitEvent: false });
+      }
 
       return { overtimes, minLimit, maxLimit, approved, reason };
     });
@@ -224,14 +251,17 @@ title: string = 'TL';
     this.location.back();
   }
 
-  async selectEmployee(employee: Employee): Promise<void> 
+  async selectEmployee(employee: Employee | undefined): Promise<void> 
   {
-    try
+    if (employee)
     {
-      await this.dataService.setSelectedEmployee(employee.username);
-      this.router.navigate(['tl/team/detail'], { queryParams: { source: this.router.url } });
-    } catch (error) {
-      console.error('Error fetching employee', error);
+      try
+      {
+        await this.dataService.setSelectedEmployee(employee.username);
+        this.router.navigate(['tl/team/detail'], { queryParams: { source: this.router.url } });
+      } catch (error) {
+        console.error('Error fetching employee', error);
+      }
     }
   }
 
@@ -245,18 +275,37 @@ title: string = 'TL';
     }
   }
 
-  getOvertimeStatus(teamMember: Employee): string {
-    if ((this.teamRealOvertimes.get(teamMember.username) || 0) < (this.teamMinLimits.get(teamMember.username) || 0)) {
-      return 'low-value';
-    } else if ((this.teamRealOvertimes.get(teamMember.username) || 0) + ((this.teamMaxLimits.get(teamMember.username) || 0) * 0.1) > (this.teamMaxLimits.get(teamMember.username) || 0)) {
-      return 'high-value';
-    } else {
-      return 'medium-value';
+  getOvertimeStatus(teamMember: Employee | undefined): string {
+    if (teamMember)
+    {
+      if ((this.teamRealOvertimes.get(teamMember.username) || 0) < (this.teamMinLimits.get(teamMember.username) || 0)) {
+        return 'low-value';
+      } else if ((this.teamRealOvertimes.get(teamMember.username) || 0) + ((this.teamMaxLimits.get(teamMember.username) || 0) * 0.1) > (this.teamMaxLimits.get(teamMember.username) || 0)) {
+        return 'high-value';
+      } else {
+        return 'medium-value';
+      }
     }
+    return '';
   }
 
   getOvertimeReason(member: Employee, selectedMonth: Date): string {
     return this.teamReason.get(member.username) || '';
+  }
+
+  async setLeaderOvertimes(): Promise<void> {
+    if (this.leader)
+    {
+      this.leaderSumOvertimes = await this.dataService.getSumOvertime(this.leader?.employeeId, this.selectedMonth);
+      this.leaderMinLimit = await this.dataService.getMinLimit(this.leader.employeeId, this.selectedMonth);
+      this.leaderMaxLimit = await this.dataService.getMaxLimit(this.leader.employeeId, this.selectedMonth);
+    }
+    else
+    {
+      this.leaderSumOvertimes = 0;
+      this.leaderMaxLimit = 0;
+      this.leaderMinLimit = 0;
+    }
   }
 
   setApproved(member: Employee, event: Event): void {
@@ -268,7 +317,9 @@ title: string = 'TL';
     // this.recalculateSums();
   }
 
-  setReason(member: Employee, event: Event): void {
+  setReason(member: Employee | undefined, event: Event): void {
+    if (!member)
+      return;
     const reason: string = (event.target as HTMLInputElement).value;
     this.teamReason.set(member.username, reason);
     // this.setData();

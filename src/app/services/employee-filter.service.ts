@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Employee } from '../models/data.model';
+import { DataService } from './data.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeFilterService {
+
   filterEmployeesByManager(employees: Employee[], manager: Employee): Employee[] {
     return employees.filter(employee => employee.managerId === manager.employeeId);
   }
@@ -37,5 +39,19 @@ export class EmployeeFilterService {
   filterEmployeesByUserName(employees: Employee[], username: string): Employee[] {
     return employees.filter(employee => employee.username.toLowerCase().includes(username.toLowerCase()));
   }
-  constructor() { }
+
+  filterBySegment(employees: Employee[], segment: string): Employee[]
+  {
+    return employees.filter(employee => employee.department.toLowerCase().includes(segment.toLowerCase()));
+  }
+
+  filterByLastName(employees: Employee[], lastName: string): Employee[]
+  {
+    return employees.filter(employee => employee.lastName.toLowerCase().includes(lastName.toLowerCase()));
+  }
+
+  filterByFirstName(employees: Employee[], firstName: string): Employee[]
+  {
+    return employees.filter(employee => employee.firstName.toLowerCase().includes(firstName.toLowerCase()));
+  }
 }

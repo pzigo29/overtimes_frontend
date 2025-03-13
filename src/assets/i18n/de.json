@@ -78,6 +78,10 @@
     "FULFILLED": "Erfüllte Grenzen",
     "NON-FULFILLED": "Nicht erfüllte Grenzen",
     "EXCEEDED-RULE": "Überschrittene gesetzliche Grenzen",
+    "NOT-EXCEEDED": "Nicht überschrittene gesetzliche Grenzen",
+
+    "APPROVED-OVERTIMES": "Genehmigte Überstunden",
+    "ALL": "Alle",
 
     "JANUARY": "Januar",
     "FEBRUARY": "Februar",

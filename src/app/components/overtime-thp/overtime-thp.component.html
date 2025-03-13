@@ -3,9 +3,9 @@
     
     <div >
         <div class="wf-btn">
-            <button class="submit-btn" (click)="showWF()">Zobraz WF</button>
+            <button class="submit-btn" (click)="showWF()">{{'SHOW-WF'| translate}}</button>
         </div>
-        <div class="sidebar" [class.active]="isSidebarActive()">
+        <!-- <div class="sidebar" [class.active]="isSidebarActive()">
             <div class="sidebar-content">
                 <div *ngIf="isSidebarVisible()">
                     <table class="excel-table">
@@ -17,7 +17,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{employee?.personalNumber}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
+                                <td>{{employee?.personalNumber}}</td>
                                 <td>{{employee?.costCenter}}</td>
                             </tr>
                         </tbody>
@@ -36,13 +36,13 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{employee?.personalNumber}}</td> <!-- TREBA PRIDAŤ DO DATABAZY OS CISLO-->
+                            <td>{{employee?.personalNumber}}</td>
                             <td>{{employee?.costCenter}}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> -->
         
         <div class="row-aligned">
             <app-months-table></app-months-table>
@@ -51,6 +51,7 @@
                 <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
                     <thead>
                         <tr>
+                            <th>{{'PERSONAL-NUMBER' | translate}}</th>
                             <th>{{'EMPLOYEE' | translate}}</th>
                             <th>{{'MIN-LIMIT' | translate}}</th>
                             <th>{{'MAX-LIMIT' | translate}}</th>
@@ -61,9 +62,10 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td>{{employee?.personalNumber}}</td>
                             <td>{{employee?.firstName}} {{employee?.lastName}}</td>
-                            <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5"></td>
-                            <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5"></td>
+                            <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
+                            <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                             <td [ngClass]="getOvertimeStatus()">{{realOvertime}}</td>
                             <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
                             <td><input type="checkbox" [(ngModel)]="approved" disabled></td>
@@ -72,7 +74,7 @@
                 </table>
             </div>
             <div class="bottom-right-div">
-                <button class="submit-btn" (click)="saveLimits()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+                <button class="submit-btn" (click)="saveLimits()" [disabled]="isPastMonth(selectedMonth)">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
             </div> 
         </div>
     </div>

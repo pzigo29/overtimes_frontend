@@ -16,6 +16,50 @@
     <div *ngIf="loading" class="overtime-form-row">Loading...</div>
     <div class="overtime-form-row" *ngIf="!loading">
         <div>
+            <table class="excel-table limits-table">
+                <thead>
+                    <tr>
+                        <th>{{'SUMMARY' | translate}}</th>
+                        <th>{{'MIN-LIMIT' | translate}}</th>
+                        <th>{{'MAX-LIMIT' | translate}}</th>
+                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <!-- <th>{{'REASON' | translate}}</th>
+                        <th>{{'APPROVED' | translate}}</th> -->
+                    </tr>
+                </thead>
+                <tbody [formGroup]="overtimeForm">
+                    <tr>
+                        <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>
+                        <td class="light-green"><input type="number" [formControlName]="'minOvertimeSum'" min="0"></td>
+                        <td class="light-green"><input type="number" [formControlName]="'maxOvertimeSum'" min="0"></td>
+                        <td class="light-green" [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
+                        <!-- <td class="light-green"></td>
+                        <td class="light-green"></td> -->
+                    </tr>
+                </tbody>
+            </table>
+            <table class="excel-table limits-table">
+                <thead>
+                    <tr>
+                        <th>{{'MANAGER' | translate}}</th>
+                        <th>{{'MIN-LIMIT' | translate}}</th>
+                        <th>{{'MAX-LIMIT' | translate}}</th>
+                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <th>{{'REASON' | translate}}</th>
+                        <th>{{'APPROVED' | translate}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td (dblclick)="selectEmployee(leader)" title="Detail" class="cursor-pointer">{{leader?.firstName}} {{leader?.lastName}}</td>
+                        <td><input type="number" min="0" [value]="leaderMinLimit" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td><input type="number" min="0" [value]="leaderMaxLimit" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td [ngClass]="getOvertimeStatus(leader)">{{leaderSumOvertimes}}</td>
+                        <td><input type="text" (change)="setReason(leader, $event)" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
             <table class="excel-table limits-table" id="limits-table">
                 <thead>
                     <tr>
@@ -30,21 +74,21 @@
                 <tbody [formGroup]="overtimeForm">
                     <tr *ngFor="let member of filteredTeam">
                         <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.firstName}} {{member?.lastName}}</td>
-                        <td><input type="number" [formControlName]="member.username + '_min'" min="0" step="0.5"></td>
-                        <td><input type="number" [formControlName]="member.username + '_max'" min="0" step="0.5"></td>
+                        <td><input type="number" [formControlName]="member.username + '_min'" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td><input type="number" [formControlName]="member.username + '_max'" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                         <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
                         <!-- <td><input type="text" [formControlName]="getOvertimeReason(member, selectedMonth)" (change)="setReason(member, $event)"></td> PRIDAT DO DB overtime_limit reason -->
-                        <td><input type="text" [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)"></td>
-                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)"></td>
+                        <td><input type="text" [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="isPastMonth(selectedMonth)"></td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>
                         <td class="light-green"><input type="number" [formControlName]="'minOvertimeSum'" min="0"></td>
                         <td class="light-green"><input type="number" [formControlName]="'maxOvertimeSum'" min="0"></td>
                         <td class="light-green" [ngClass]="getOvertimeStatusSum()">{{realOvertimeSum}}</td>
                         <td class="light-green"></td>
                         <td class="light-green"></td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
         </div>

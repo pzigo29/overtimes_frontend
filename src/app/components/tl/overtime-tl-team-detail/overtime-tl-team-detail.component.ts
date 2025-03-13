@@ -69,6 +69,12 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     );
   }
 
+  isPastMonth(month: Date): boolean
+  {
+    // console.log('am i here??')
+    return this.dataService.isPastMonth(month);
+  }
+
   selectEmployee(employee: Employee): void {
     this.selectedEmployee = employee;
     if (typeof sessionStorage !== 'undefined')

@@ -15,7 +15,14 @@
                     <option value="overtime-off-limit">{{'LIMITS.NOT-FULFILLED' | translate}}</option>
                   </select>
                 </div>
-             </div>
+                <div class="filter">
+                  <label for="departmentsSelect">{{'SEGMENT' | translate}}</label>
+                  <select class="filter-select" name="departmentsSelect" id="departmentsSelect" (change)="filterEmployees()" (change)="setDSegment()">
+                      <option value="ALL">{{'ALL' | translate}}</option>
+                      <option *ngFor="let department of departments" [ngValue]="department">{{department}}</option>
+                  </select>
+                </div>
+            </div>
             <div class="input-filters overtime-form">
                 <div class="filter">
                   <label for="personalNumber">{{'PERSONAL-NUMBER' | translate}}: </label>
@@ -29,9 +36,17 @@
                   <label for="dSegment">{{'D-SEGMENT' | translate}}: </label>
                   <input type="text" id="dSegment" [(ngModel)]="dSegment" (ngModelChange)="filterEmployees()">
                 </div> -->
-                <div class="filter">
+                <!-- <div class="filter">
                   <label for="username">{{'USERNAME' | translate}}: </label>
                   <input type="text" id="username" [(ngModel)]="username" (ngModelChange)="filterEmployees()">
+                </div> -->
+                <div class="filter">
+                  <label for="lastName">{{'LASTNAME' | translate}}: </label>
+                  <input type="text" id="lastName" [(ngModel)]="lastName" (ngModelChange)="filterEmployees()">
+                </div>
+                <div class="filter">
+                  <label for="firstName">{{'FIRSTNAME' | translate}}: </label>
+                  <input type="text" id="firstName" [(ngModel)]="firstName" (ngModelChange)="filterEmployees()">
                 </div>
             </div>
         </div>

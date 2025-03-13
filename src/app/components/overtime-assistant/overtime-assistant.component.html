@@ -19,22 +19,32 @@
       <table class="excel-table limits-table" id="limits-table">
           <thead>
               <tr>
-                  <th>{{'EMPLOYEE' | translate}}</th>
-                  <th>{{'MIN-LIMIT' | translate}}</th>
-                  <th>{{'MAX-LIMIT' | translate}}</th>
-                  <th>{{'REAL-OVERTIMES' | translate}}</th>
-                  <th>{{'REASON' | translate}}</th>
-                  <th>{{'APPROVED' | translate}}</th>
+                <th>{{'PERSONAL-NUMBER' | translate}}</th>
+                <th>{{'EMPLOYEE' | translate}}</th>
+                <!-- <th>{{'MIN-LIMIT' | translate}}</th>
+                <th>{{'MAX-LIMIT' | translate}}</th>
+                <th>{{'REAL-OVERTIMES' | translate}}</th> -->
+                <th>{{'APPROVED-OVERTIMES' | translate}}</th>
+                <th>{{'REASON' | translate}}</th>
+                <!-- <th>{{'APPROVED' | translate}}</th> -->
               </tr>
           </thead>
           <tbody>
               <tr *ngFor="let employee of filteredEmployees">
-                  <td (dblclick)="selectEmployee(employee)" title="Detail" class="cursor-pointer">{{employee?.firstName}} {{employee?.lastName}}</td>
-                  <td><input type="number" [ngModel]="employeesMinLimits.get(employee.username)" (ngModelChange)="employeesMinLimits.set(employee.username, $event)" min="0" step="0.5" disabled></td>
-                  <td><input type="number" [ngModel]="employeesMaxLimits.get(employee.username)" (ngModelChange)="employeesMaxLimits.set(employee.username, $event)" min="0" step="0.5" disabled></td>
-                  <td [ngClass]="getOvertimeStatus(employee)">{{employeesRealOvertimes.get(employee.username)}}</td>
-                  <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
-                  <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
+                <td>{{employee.personalNumber}}</td>
+                <td (dblclick)="selectEmployee(employee)" title="Detail" class="cursor-pointer">{{employee?.lastName}} {{employee?.firstName}}</td>
+                <!-- <td><input type="number" [ngModel]="employeesMinLimits.get(employee.username)" (ngModelChange)="employeesMinLimits.set(employee.username, $event)" min="0" step="0.5" disabled></td>
+                <td><input type="number" [ngModel]="employeesMaxLimits.get(employee.username)" (ngModelChange)="employeesMaxLimits.set(employee.username, $event)" min="0" step="0.5" disabled></td>
+                <td [ngClass]="getOvertimeStatus(employee)">{{employeesRealOvertimes.get(employee.username)}}</td> -->
+                <td *ngIf="!limitsLoading">{{!limitsLoading ? getApprovedOvertimes(employee) : ''}}</td>
+                <td><input type="text" [ngModel]="getOvertimeReason(employee)" [disabled]="true"></td>
+                <!-- <td><input type="checkbox" [(ngModel)]="approved" disabled></td> -->
+              </tr>
+              <tr>
+                <td class="light-green"></td>
+                <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>
+                <td class="light-green" style="font-weight: bold;">{{approvedOvertimesSum}}</td>
+                <td class="light-green"></td>
               </tr>
           </tbody>
       </table>

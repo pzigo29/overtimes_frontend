@@ -3,8 +3,10 @@ import { EmployeeFilterService } from '../../../services/employee-filter.service
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Component, Input, numberAttribute, booleanAttribute, Output, EventEmitter } from '@angular/core'; 
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Employee } from '../../../models/data.model';
+import { DataService } from '../../../services/data.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-user-filters',
@@ -20,14 +22,30 @@ export class EmployeeFiltersComponent {
   @Input() realOvertimes: Map<string, number> = new Map<string, number>();
   @Input() employees: Employee[] = [];
 
-  constructor(private employeeFilterService: EmployeeFilterService) { }
-  
+  constructor(private employeeFilterService: EmployeeFilterService, private dataService: DataService, private translate: TranslateService) { }
+
+  ngOnInit(): void 
+  {
+    this.dataService.getDepartments().subscribe(
+      (data: string[]) => {
+        console.log(data);
+        this.departments = data;
+      },
+      (error: any) => {
+        console.error('Error fetching departments:', error);
+      }
+    );  
+  }
+
   filter: string = 'all';
   personalNumber: string | null = null;
   managerUsername: string | null = null;
   dSegment: string | null = null;
   username: string | null = null;
   showFilters: boolean = false;
+  departments: string[] = [];
+  lastName: string | null = null;
+  firstName: string | null = null;
 
   toggleFilters(): void {
     this.showFilters = !this.showFilters;
@@ -39,11 +57,24 @@ export class EmployeeFiltersComponent {
     this.managerUsername = null;
     this.dSegment = null;
     this.username = null;
+    this.lastName = null;
+    this.firstName = null;
+    (document.getElementById('departmentsSelect') as HTMLSelectElement).selectedIndex = 0;
     this.filteredEmployees.emit(this.employees);
   }
 
-  filterEmployees(): void {
+  async setDSegment(): Promise<void>
+  {
+    const segmentElement = document.getElementById('departmentsSelect') as HTMLSelectElement;
+    let segmentValue = segmentElement.value;
+
+    this.dSegment = segmentValue === 'ALL' ? '' : segmentValue;
+  }
+
+  async filterEmployees(): Promise<void> {
     let filteredEmployees = this.employees;
+
+    await this.setDSegment();
     
     if (this.filter === 'overtime-off-limit') {
       filteredEmployees = this.employeeFilterService.filterEmployeesByOvertimeOffLimit(this.minLimits, this.maxLimits, this.realOvertimes, filteredEmployees);
@@ -66,12 +97,21 @@ export class EmployeeFiltersComponent {
     }
 
     if (this.dSegment) {
-      // filteredUsers = this.userFilterService.filterUsersByDSegment(filteredUsers, this.dSegment);
+      filteredEmployees = this.employeeFilterService.filterBySegment(filteredEmployees, this.dSegment);
     }
 
     if (this.username) {
       filteredEmployees = this.employeeFilterService.filterEmployeesByUserName(filteredEmployees, this.username);
     }
+
+    if (this.lastName) {
+      filteredEmployees = this.employeeFilterService.filterByLastName(filteredEmployees, this.lastName);
+    }
+
+    if (this.firstName) {
+      filteredEmployees = this.employeeFilterService.filterByFirstName(filteredEmployees, this.firstName);
+    }
+
     this.filteredEmployees.emit(filteredEmployees);
   }
 

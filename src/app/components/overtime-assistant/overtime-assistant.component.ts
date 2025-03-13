@@ -27,8 +27,11 @@ export class OvertimeAssistantComponent implements OnInit {
   employeesRealOvertimes: Map<string, number> = new Map<string, number>();
   employeesMinLimits: Map<string, number> = new Map<string, number>();
   employeesMaxLimits: Map<string, number> = new Map<string, number>();
+  employeesOvertimeReasons: Map<string, string> = new Map<string, string>();
   assistant?: Employee;
   selectedMonth: Date = new Date();
+  limitsLoading: boolean = true;
+  approvedOvertimesSum: number = 0;
 
   constructor(private userFilterService: EmployeeFilterService, private dataService: DataService, private cdr: ChangeDetectorRef) { }
 
@@ -101,6 +104,7 @@ export class OvertimeAssistantComponent implements OnInit {
   }
 
   async setData(): Promise<void> {
+    this.limitsLoading = true;
     console.log('setdata teraz');
     if (this.assistant == undefined) {
       throw new Error('Assistant undefined');
@@ -111,17 +115,21 @@ export class OvertimeAssistantComponent implements OnInit {
     }
 
     const promises = this.filteredEmployees.map(async (employee) => {
-      const [overtimes, minLimit, maxLimit] = await Promise.all([
+      const [overtimes, minLimit, maxLimit, reason] = await Promise.all([
         this.dataService.getSumOvertime(employee.employeeId, this.selectedMonth),
         this.dataService.getMinLimit(employee.employeeId, this.selectedMonth),
-        this.dataService.getMaxLimit(employee.employeeId, this.selectedMonth)
+        this.dataService.getMaxLimit(employee.employeeId, this.selectedMonth),
+        this.dataService.getLimitReason(employee.employeeId, this.selectedMonth)
       ]);
       this.employeesRealOvertimes.set(employee.username, overtimes);
       this.employeesMinLimits.set(employee.username, minLimit);
       this.employeesMaxLimits.set(employee.username, maxLimit);
+      this.employeesOvertimeReasons.set(employee.username, reason);
     });
 
     await Promise.all(promises);
+    this.setApprovedOvertimesSum();
+    this.limitsLoading = false;
     this.cdr.detectChanges(); // Manually trigger change detection
   }
 
@@ -133,6 +141,38 @@ export class OvertimeAssistantComponent implements OnInit {
     } else {
       return 'medium-value';
     }
+  }
+
+  setApprovedOvertimesSum(): void
+  {
+    this.approvedOvertimesSum = 0;
+    for (let emp of this.filteredEmployees)
+    {
+      this.approvedOvertimesSum += this.getApprovedOvertimes(emp);
+    }
+  }
+
+  getApprovedOvertimes(employee: Employee): number
+  {
+    // console.log('here');
+    let approved: number = 0;
+    const minLimit: number | undefined = this.employeesMinLimits.get(employee.username);
+    const maxLimit: number | undefined = this.employeesMaxLimits.get(employee.username);
+    const realOvertimes: number | undefined = this.employeesRealOvertimes.get(employee.username);
+    // console.log('min: ', minLimit, 'max: ', maxLimit, 'real: ', realOvertimes);
+    if (realOvertimes != undefined && minLimit != undefined && maxLimit != undefined)
+    {
+      // console.log('min: ', minLimit, 'max: ', maxLimit, 'real: ', realOvertimes);
+      approved = realOvertimes <= maxLimit ? realOvertimes : maxLimit;
+      // console.log('approved: ', approved);
+    }
+    
+    return approved;
+  }
+
+  getOvertimeReason(employee: Employee): string
+  {
+    return this.employeesOvertimeReasons.get(employee.username) || '';
   }
 
   selectEmployee(employee: Employee): void {
@@ -175,6 +215,7 @@ export class OvertimeAssistantComponent implements OnInit {
 
   onFilteredEmployees(filteredEmployees: Employee[]): void {
     this.filteredEmployees = filteredEmployees;
+    this.setApprovedOvertimesSum();
     // this.recalculateSums();
   }
 

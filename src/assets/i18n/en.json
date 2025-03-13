@@ -78,6 +78,10 @@
     "FULFILLED": "Fulfilled limits",
     "NON-FULFILLED": "Non-fulfilled limits",
     "EXCEEDED-RULE": "Exceeded legal limits",
+    "NOT-EXCEEDED": "Not exceeded legal limits",
+
+    "APPROVED-OVERTIMES": "Approved overtimes",
+    "ALL": "All",
 
     "JANUARY": "January",
     "FEBRUARY": "February",
@@ -91,6 +95,7 @@
     "OCTOBER": "October",
     "NOVEMBER": "November",
     "DECEMBER": "December",
+
     "EMPLOYEE-AVG": "Employee average",
     "STAT-TYPE": "Statistic type",
     "EXCEEDED-RULE-TYPE": "Exceeded limit type",

@@ -183,6 +183,11 @@ export class OvertimeRndSegmentsComponent implements OnInit {
     
   }
 
+  isPastMonth(month: Date): boolean
+  {
+    return this.dataService.isPastMonth(month);
+  }
+
   saveChanges(): void
   {
 

@@ -77,6 +77,10 @@
     "FULFILLED":"Splnené limity",
     "NON-FULFILLED": "Nesplnené limity",
     "EXCEEDED-RULE": "Prekročené zákonné limity",
+    "NOT-EXCEEDED": "Neprekročené zákonné limity",
+
+    "APPROVED-OVERTIMES": "Schválené nadčasy",
+    "ALL": "Všetky",
 
     "JANUARY": "Január",
     "FEBRUARY": "Február",
@@ -90,6 +94,7 @@
     "OCTOBER": "Október",
     "NOVEMBER": "November",
     "DECEMBER": "December",
+
     "EMPLOYEE-AVG": "Priemer zamestnanca",
     "STAT-TYPE": "Typ štatistiky",
     "EXCEEDED-RULE-TYPE": "Typ prekročeného limitu",
