@@ -30,7 +30,7 @@
                         <td><input type="number" [ngModel]="teamMinLimits.get(manager.username)" (ngModelChange)="teamMinLimits.set(manager.username, $event)" min="0" step="0.5" disabled=""></td>
                         <td><input type="number" [ngModel]="teamMaxLimits.get(manager.username)" (ngModelChange)="teamMaxLimits.set(manager.username, $event)" min="0" step="0.5" disabled=""></td>
                         <td [ngClass]="getOvertimeStatus(manager)">{{teamRealOvertimes.get(manager.username)}}</td>
-                        <td><input type="checkbox" name="approved" id="approved" [disabled]="approvedDisabled || isPastMonth(selectedMonth)"></td>
+                        <td><input type="checkbox" name="approved" id="approved" [disabled]="approvedDisabled || isPastMonth(selectedMonth)" ></td>
                         <td><input type="text" [disabled]="isPastMonth(selectedMonth)"></td>
                     </tr>
                 </tbody>

@@ -129,3 +129,10 @@ export enum Month
   NOVEMBER = 11,
   DECEMBER = 12
 }
+
+export enum SortState
+{
+  NONE = 0,
+  ASC = 1,
+  DESC = 2  
+}

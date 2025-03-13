@@ -15,7 +15,7 @@ import { StatsPanelComponent } from './components/stats-panel/stats-panel.compon
 export const routes: Routes = [
   { path: '', redirectTo: '/thp', pathMatch: 'full' },
   { path: 'thp', component: OvertimeThpComponent },
-  { path: 'tl', component: OvertimeTLComponent },
+  { path: 'tl', component: OvertimeTLTeamComponent },
   { path: 'tl/team', component: OvertimeTLTeamComponent },
   { path: 'tl/team/detail', component: OvertimeTLTeamDetailComponent },
   { path: 'mng', component: OvertimeMngComponent },

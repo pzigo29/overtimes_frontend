@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TitleBarComponent } from "../shared-components/title-bar/title-bar.component";
-import { Employee } from "../../models/data.model";
+import { Employee, SortState } from "../../models/data.model";
 import { EmployeeFilterService } from "../../services/employee-filter.service";
 import { EmployeeFiltersComponent } from "../shared-components/employee-filters/employee-filters.component";
 import { MonthsTableComponent } from "../shared-components/months-table/months-table.component";
@@ -32,6 +32,8 @@ export class OvertimeAssistantComponent implements OnInit {
   selectedMonth: Date = new Date();
   limitsLoading: boolean = true;
   approvedOvertimesSum: number = 0;
+  approvedOvertimesSortState: SortState = SortState.DESC;
+  lastNameSortState: SortState = SortState.NONE;
 
   constructor(private userFilterService: EmployeeFilterService, private dataService: DataService, private cdr: ChangeDetectorRef) { }
 
@@ -129,6 +131,7 @@ export class OvertimeAssistantComponent implements OnInit {
 
     await Promise.all(promises);
     this.setApprovedOvertimesSum();
+    this.sortByApprovedOvertimes();
     this.limitsLoading = false;
     this.cdr.detectChanges(); // Manually trigger change detection
   }
@@ -217,6 +220,32 @@ export class OvertimeAssistantComponent implements OnInit {
     this.filteredEmployees = filteredEmployees;
     this.setApprovedOvertimesSum();
     // this.recalculateSums();
+  }
+
+  toggleSortByApprovedOvertimes(): void 
+  {
+    if (this.approvedOvertimesSortState === SortState.ASC)
+      this.filteredEmployees.sort((a, b) => this.getApprovedOvertimes(b) - this.getApprovedOvertimes(a));
+    else if (this.approvedOvertimesSortState === SortState.NONE || this.approvedOvertimesSortState === SortState.DESC)
+      this.filteredEmployees.sort((a, b) => this.getApprovedOvertimes(a) - this.getApprovedOvertimes(b));
+    this.approvedOvertimesSortState = this.approvedOvertimesSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  sortByApprovedOvertimes(): void
+  {
+    if (this.approvedOvertimesSortState === SortState.ASC)
+      this.filteredEmployees.sort((a, b) => this.getApprovedOvertimes(a) - this.getApprovedOvertimes(b));
+    else if (this.approvedOvertimesSortState === SortState.NONE || this.approvedOvertimesSortState === SortState.DESC)
+      this.filteredEmployees.sort((a, b) => this.getApprovedOvertimes(b) - this.getApprovedOvertimes(a));
+  }
+
+  toggleSortByLastName(): void
+  {
+    if (this.lastNameSortState === SortState.ASC)
+      this.filteredEmployees.sort((a, b) => b.lastName.localeCompare(a.lastName));
+    else if (this.lastNameSortState === SortState.NONE || this.lastNameSortState === SortState.DESC)
+      this.filteredEmployees.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    this.lastNameSortState = this.lastNameSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
   }
 
 }

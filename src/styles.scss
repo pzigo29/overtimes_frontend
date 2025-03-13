@@ -287,6 +287,26 @@ table.excel-table td:hover {
   // cursor: pointer;
 }
 
+.sortable-table-column {
+  position: relative;
+  padding-right: 20px; /* Adjust as needed to provide space for the icon */
+  cursor: pointer;
+  white-space: normal; /* Allow text to wrap */
+}
+
+.sortable-table-column span {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+.sortable-table-column i {
+  position: absolute;
+  right: 5px; /* Adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .row-aligned {
   display: flex;
 }

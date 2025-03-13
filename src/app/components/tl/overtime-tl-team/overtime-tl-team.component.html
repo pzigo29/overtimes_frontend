@@ -56,19 +56,44 @@
                         <td><input type="number" min="0" [value]="leaderMaxLimit" [disabled]="isPastMonth(selectedMonth)"></td>
                         <td [ngClass]="getOvertimeStatus(leader)">{{leaderSumOvertimes}}</td>
                         <td><input type="text" (change)="setReason(leader, $event)" [disabled]="isPastMonth(selectedMonth)"></td>
-                        <td></td>
+                        <td><input type="checkbox" [disabled]="true" [checked]="leaderApproved" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth)"></td>
                     </tr>
                 </tbody>
             </table>
             <table class="excel-table limits-table" id="limits-table">
                 <thead>
                     <tr>
-                        <th>{{'EMPLOYEE' | translate}}</th>
-                        <th>{{'MIN-LIMIT' | translate}}</th>
-                        <th>{{'MAX-LIMIT' | translate}}</th>
-                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <th (click)="toggleSortByLastname()" class="sortable-table-column">
+                            <span>{{'EMPLOYEE' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="lastNameSortState === 0"></i>
+                            <i class="fas fa-sort-up" *ngIf="lastNameSortState === 1"></i>
+                            <i class="fas fa-sort-down" *ngIf="lastNameSortState === 2"></i>
+                        </th>
+                        <th (click)="toggleSortByMinLimit()" class="sortable-table-column">
+                            <span>{{'MIN-LIMIT' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="minLimitSortState === 0"></i>
+                            <i class="fas fa-sort-up" *ngIf="minLimitSortState === 1"></i>
+                            <i class="fas fa-sort-down" *ngIf="minLimitSortState === 2"></i>
+                        </th>
+                        <th (click)="toggleSortByMaxLimit()" class="sortable-table-column">
+                            <span>{{'MAX-LIMIT' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="maxLimitSortState === 0"></i>
+                            <i class="fas fa-sort-up" *ngIf="maxLimitSortState === 1"></i>
+                            <i class="fas fa-sort-down" *ngIf="maxLimitSortState === 2"></i>
+                        </th>
+                        <th (click)="toggleSortByRealOvertimes()" class="sortable-table-column">
+                            <span>{{'REAL-OVERTIMES' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="realOvertimesSortState === 0"></i>
+                            <i class="fas fa-sort-up" *ngIf="realOvertimesSortState === 1"></i>
+                            <i class="fas fa-sort-down" *ngIf="realOvertimesSortState === 2"></i>
+                        </th>
                         <th>{{'REASON' | translate}}</th>
-                        <th>{{'APPROVED' | translate}}</th>
+                        <th (click)="toggleSortByApproved()" class="sortable-table-column">
+                            <span>{{'APPROVED' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="approvedSortState === 0"></i>
+                            <i class="fas fa-sort-up" *ngIf="approvedSortState === 1"></i>
+                            <i class="fas fa-sort-down" *ngIf="approvedSortState === 2"></i>
+                        </th>
                     </tr>
                 </thead>
                 <tbody [formGroup]="overtimeForm">
@@ -79,7 +104,7 @@
                         <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
                         <!-- <td><input type="text" [formControlName]="getOvertimeReason(member, selectedMonth)" (change)="setReason(member, $event)"></td> PRIDAT DO DB overtime_limit reason -->
                         <td><input type="text" [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)" [disabled]="isPastMonth(selectedMonth)"></td>
-                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth)"></td>
                     </tr>
                     <!-- <tr>
                         <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>

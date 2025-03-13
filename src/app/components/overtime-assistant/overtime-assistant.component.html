@@ -20,11 +20,21 @@
           <thead>
               <tr>
                 <th>{{'PERSONAL-NUMBER' | translate}}</th>
-                <th>{{'EMPLOYEE' | translate}}</th>
+                <th (click)="toggleSortByLastName()" class="sortable-table-column">
+                  <span>{{'EMPLOYEE' | translate}}</span>
+                  <i class="fas fa-sort" *ngIf="lastNameSortState === 0"></i>
+                  <i class="fas fa-sort-up" *ngIf="lastNameSortState === 1"></i>
+                  <i class="fas fa-sort-down" *ngIf="lastNameSortState === 2"></i>
+                </th>
                 <!-- <th>{{'MIN-LIMIT' | translate}}</th>
                 <th>{{'MAX-LIMIT' | translate}}</th>
                 <th>{{'REAL-OVERTIMES' | translate}}</th> -->
-                <th>{{'APPROVED-OVERTIMES' | translate}}</th>
+                <th (click)="toggleSortByApprovedOvertimes()" class="sortable-table-column">
+                  <span>{{'APPROVED-OVERTIMES' | translate}}</span> 
+                  <i class="fas fa-sort" *ngIf="approvedOvertimesSortState === 0"></i>
+                  <i class="fas fa-sort-up" *ngIf="approvedOvertimesSortState === 1"></i>
+                  <i class="fas fa-sort-down" *ngIf="approvedOvertimesSortState === 2"></i>
+                </th>
                 <th>{{'REASON' | translate}}</th>
                 <!-- <th>{{'APPROVED' | translate}}</th> -->
               </tr>

@@ -3,7 +3,7 @@ import { firstValueFrom, Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { TitleBarComponent } from '../../shared-components/title-bar/title-bar.component';
-import { Employee } from '../../../models/data.model';
+import { Employee, SortState } from '../../../models/data.model';
 import { EmployeeFiltersComponent } from "../../shared-components/employee-filters/employee-filters.component";
 import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
 import { DataService } from '../../../services/data.service';
@@ -39,9 +39,15 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   leaderSumOvertimes: number = 0;
   leaderMinLimit: number = 0;
   leaderMaxLimit: number = 0;
+  leaderApproved: boolean = false;
   // approved: boolean = true;
+  lastNameSortState: SortState = SortState.NONE;
+  minLimitSortState: SortState = SortState.NONE;
+  maxLimitSortState: SortState = SortState.NONE;
+  realOvertimesSortState: SortState = SortState.DESC;
+  approvedSortState: SortState = SortState.NONE;
 
-  constructor(private dataService: DataService, private fb: FormBuilder, private router: Router, private location: Location, private cd: ChangeDetectorRef) {
+  constructor(public dataService: DataService, private fb: FormBuilder, private router: Router, private location: Location, private cd: ChangeDetectorRef) {
     this.overtimeForm = this.fb.group({
       minOvertimeSum: new FormControl({ value: 0, disabled: true }),
       maxOvertimeSum: new FormControl({ value: 0, disabled: true }),
@@ -122,10 +128,10 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   }
 
   async setData(): Promise<void> {
-        if (this.isSettingData) {
-              console.log('Already setting data');
-              return; // Prevent concurrent calls to setData
-        }
+    if (this.isSettingData) {
+      console.log('Already setting data');
+      return; // Prevent concurrent calls to setData
+    }
     this.isSettingData = true;
 
     if (this.leader == undefined) {
@@ -174,8 +180,15 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       {
         this.overtimeForm.get(member.username + '_min')?.enable({ emitEvent: false });
         this.overtimeForm.get(member.username + '_max')?.enable({ emitEvent: false });
-        this.overtimeForm.get(member.username + '_approved')?.enable({ emitEvent: false });
         this.overtimeForm.get(member.username + '_reason')?.enable({ emitEvent: false });
+        if (this.dataService.userEmployee?.levelRole === 1)
+        {
+          this.overtimeForm.get(member.username + '_approved')?.enable({ emitEvent: false });
+        }
+        else
+        {
+          this.overtimeForm.get(member.username + '_approved')?.disable({ emitEvent: false });
+        }
       }
 
       return { overtimes, minLimit, maxLimit, approved, reason };
@@ -183,22 +196,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
 
     const results = await Promise.all(promises);
 
-    results.forEach(result => {
-      this.realOvertimeSum += result.overtimes;
-      this.minOvertimeSum += result.minLimit;
-      this.maxOvertimeSum += result.maxLimit;
-    });
-
-    // Enable form controls, set values, and disable them again
-    this.overtimeForm.get('minOvertimeSum')?.enable({ emitEvent: false });
-    this.overtimeForm.get('maxOvertimeSum')?.enable({ emitEvent: false });
-    this.overtimeForm.get('minOvertimeSum')?.setValue(this.minOvertimeSum, { emitEvent: false });
-    this.overtimeForm.get('maxOvertimeSum')?.setValue(this.maxOvertimeSum, { emitEvent: false });
-    this.overtimeForm.get('minOvertimeSum')?.disable({ emitEvent: false });
-    this.overtimeForm.get('maxOvertimeSum')?.disable({ emitEvent: false });
-
-    console.log('maxOvertimeSum: ' + this.maxOvertimeSum);
-    console.log('real: ', this.realOvertimeSum);
+    this.recalculateSums();
 
     this.isSettingData = false;
     
@@ -229,6 +227,10 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.minOvertimeSum += minLimit;
       this.maxOvertimeSum += maxLimit;
     });
+
+    this.realOvertimeSum += this.leaderSumOvertimes;
+    this.minOvertimeSum += this.leaderMinLimit;
+    this.maxOvertimeSum += this.leaderMaxLimit;
 
     // Enable form controls, set values, and disable them again
     this.overtimeForm.get('minOvertimeSum')?.enable({ emitEvent: false });
@@ -299,12 +301,14 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.leaderSumOvertimes = await this.dataService.getSumOvertime(this.leader?.employeeId, this.selectedMonth);
       this.leaderMinLimit = await this.dataService.getMinLimit(this.leader.employeeId, this.selectedMonth);
       this.leaderMaxLimit = await this.dataService.getMaxLimit(this.leader.employeeId, this.selectedMonth);
+      this.leaderApproved = await this.dataService.getApprovedStatus(this.leader.employeeId, this.selectedMonth);
     }
     else
     {
       this.leaderSumOvertimes = 0;
       this.leaderMaxLimit = 0;
       this.leaderMinLimit = 0;
+      this.leaderApproved = false;
     }
   }
 
@@ -328,5 +332,82 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   onFilteredEmployees(filteredEmployees: Employee[]): void {
     this.filteredTeam = filteredEmployees;
     this.recalculateSums();
+  }
+
+  toggleSortByMinLimit(): void
+  {
+    if (this.minLimitSortState === SortState.ASC)
+      this.filteredTeam.sort((a, b) => (this.teamMinLimits.get(a.username) || 0) - (this.teamMinLimits.get(b.username) || 0));
+    else if (this.minLimitSortState === SortState.DESC || this.minLimitSortState === SortState.NONE)
+      this.filteredTeam.sort((a, b) => (this.teamMinLimits.get(b.username) || 0) - (this.teamMinLimits.get(a.username) || 0));
+    this.minLimitSortState = this.minLimitSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+
+    // if (this.minLimitSortState === SortState.NONE)
+    // {
+    //   this.minLimitSortState = SortState.ASC;
+    //   this.filteredTeam.sort((a, b) => (this.teamMinLimits.get(a.username) || 0) - (this.teamMinLimits.get(b.username) || 0));
+    // }
+    // else if (this.minLimitSortState === SortState.ASC)
+    // {
+    //   this.minLimitSortState = SortState.DESC;
+    //   this.filteredTeam.sort((a, b) => (this.teamMinLimits.get(b.username) || 0) - (this.teamMinLimits.get(a.username) || 0));
+    // }
+    // else
+    // {
+    //   this.minLimitSortState = SortState.NONE;
+    //   this.filteredTeam = this.wholeTeam;
+    // }
+  }
+
+  toggleSortByMaxLimit(): void
+  {
+    if (this.maxLimitSortState === SortState.ASC)
+      this.filteredTeam.sort((a, b) => (this.teamMaxLimits.get(a.username) || 0) - (this.teamMaxLimits.get(b.username) || 0));
+    else if (this.maxLimitSortState === SortState.DESC || this.maxLimitSortState === SortState.NONE)
+      this.filteredTeam.sort((a, b) => (this.teamMaxLimits.get(b.username) || 0) - (this.teamMaxLimits.get(a.username) || 0));
+    this.maxLimitSortState = this.maxLimitSortState === SortState.ASC ? SortState.DESC : SortState.ASC
+
+    // if (this.maxLimitSortState === SortState.NONE)
+    // {
+    //   this.maxLimitSortState = SortState.ASC;
+    //   this.filteredTeam.sort((a, b) => (this.teamMaxLimits.get(a.username) || 0) - (this.teamMaxLimits.get(b.username) || 0));
+    // }
+    // else if (this.maxLimitSortState === SortState.ASC)
+    // {
+    //   this.maxLimitSortState = SortState.DESC;
+    //   this.filteredTeam.sort((a, b) => (this.teamMaxLimits.get(b.username) || 0) - (this.teamMaxLimits.get(a.username) || 0));
+    // }
+    // else
+    // {
+    //   this.maxLimitSortState = SortState.NONE;
+    //   this.filteredTeam = this.wholeTeam;
+    // }
+  }
+
+  toggleSortByRealOvertimes(): void
+  {
+    if (this.realOvertimesSortState === SortState.ASC)
+      this.filteredTeam.sort((a, b) => (this.teamRealOvertimes.get(a.username) || 0) - (this.teamRealOvertimes.get(b.username) || 0));
+    else if (this.realOvertimesSortState === SortState.DESC || this.realOvertimesSortState === SortState.NONE)
+      this.filteredTeam.sort((a, b) => (this.teamRealOvertimes.get(b.username) || 0) - (this.teamRealOvertimes.get(a.username) || 0));
+    this.realOvertimesSortState = this.realOvertimesSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  toggleSortByApproved(): void
+  {
+    if (this.approvedSortState === SortState.ASC)
+      this.filteredTeam.sort((a, b) => (this.teamApproved.get(a.username) || false) ? 1 : -1);
+    else if (this.approvedSortState === SortState.DESC || this.approvedSortState === SortState.NONE)
+      this.filteredTeam.sort((a, b) => (this.teamApproved.get(b.username) || false) ? 1 : -1);
+    this.approvedSortState = this.approvedSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  toggleSortByLastname(): void
+  {
+    if (this.lastNameSortState === SortState.ASC)
+      this.filteredTeam.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    else if (this.lastNameSortState === SortState.DESC || this.lastNameSortState === SortState.NONE)
+      this.filteredTeam.sort((a, b) => b.lastName.localeCompare(a.lastName));
+    this.lastNameSortState = this.lastNameSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
   }
 }
