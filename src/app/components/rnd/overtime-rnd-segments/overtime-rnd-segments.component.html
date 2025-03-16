@@ -16,11 +16,43 @@
             <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
                 <thead>
                     <tr>
-                        <th>{{'SEGMENT' | translate}}</th>
-                        <th>{{'MIN-LIMIT' | translate}}</th>
-                        <th>{{'MAX-LIMIT' | translate}}</th>
-                        <th>{{'REAL-OVERTIMES' | translate}}</th>
+                        <th (click)="toggleSortBySegment()" class="sortable-table-column">
+                            <span>{{'SEGMENT' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="segmentSortState === 0"></i>
+                            <i class="fas fa-sort-up" [class.inactive]="segmentSortState !== 1"></i>
+                            <i class="fas fa-sort-down" [class.inactive]="segmentSortState !== 2"></i>
+                        </th>
+                        <th (click)="toggleSortByMinLimit()" class="sortable-table-column">
+                            <span>{{'MIN-LIMIT' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="minLimitSortState === 0"></i>
+                            <i class="fas fa-sort-up" [class.inactive]="minLimitSortState !== 1"></i>
+                            <i class="fas fa-sort-down" [class.inactive]="minLimitSortState !== 2"></i>
+                        </th>
+                        <th (click)="toggleSortByMaxLimit()" class="sortable-table-column">
+                            <span>{{'MAX-LIMIT' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="maxLimitSortState === 0"></i>
+                            <i class="fas fa-sort-up" [class.inactive]="maxLimitSortState !== 1"></i>
+                            <i class="fas fa-sort-down" [class.inactive]="maxLimitSortState !== 2"></i>
+                        </th>
+                        <th (click)="toggleSortByRealOvertimes()" class="sortable-table-column">
+                            <span>{{'REAL-OVERTIMES' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="realOvertimesSortState === 0"></i>
+                            <i class="fas fa-sort-up" [class.inactive]="realOvertimesSortState !== 1"></i>
+                            <i class="fas fa-sort-down" [class.inactive]="realOvertimesSortState !== 2"></i>
+                        </th>
+                        <!-- <th (click)="toggleSortByApproved()" class="sortable-table-column">
+                            <span>{{'APPROVED' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="approvedSortState === 0"></i>
+                            <i class="fas fa-sort-up" [class.inactive]="approvedSortState !== 1"></i>
+                            <i class="fas fa-sort-down" [class.inactive]="approvedSortState !== 2"></i>
+                        </th> -->
                         <th>{{'APPROVED' | translate}}</th>
+                        <!-- <th (click)="toggleSortByComment()" class="sortable-table-column">
+                            <span>{{'MNG-RND-COMMENT' | translate}}</span>
+                            <i class="fas fa-sort" *ngIf="commentSortState === 0"></i>
+                            <i class="fas fa-sort-up" [class.inactive]="commentSortState !== 1"></i>
+                            <i class="fas fa-sort-down" [class.inactive]="commentSortState !== 2"></i>
+                        </th> -->
                         <th>{{'MNG-RND-COMMENT' | translate}}</th>
                     </tr>
                 </thead>
@@ -30,8 +62,8 @@
                         <td><input type="number" [ngModel]="teamMinLimits.get(manager.username)" (ngModelChange)="teamMinLimits.set(manager.username, $event)" min="0" step="0.5" disabled=""></td>
                         <td><input type="number" [ngModel]="teamMaxLimits.get(manager.username)" (ngModelChange)="teamMaxLimits.set(manager.username, $event)" min="0" step="0.5" disabled=""></td>
                         <td [ngClass]="getOvertimeStatus(manager)">{{teamRealOvertimes.get(manager.username)}}</td>
-                        <td><input type="checkbox" name="approved" id="approved" [disabled]="approvedDisabled || isPastMonth(selectedMonth)" ></td>
-                        <td><input type="text" [disabled]="isPastMonth(selectedMonth)"></td>
+                        <td><input type="checkbox" (change)="setTeamApproved(manager, $event)" [checked]="teamApproved.get(manager.username)" [disabled]="approvedDisabled || isPastMonth(selectedMonth)" ></td>
+                        <td><textarea [disabled]="isPastMonth(selectedMonth)"></textarea></td>
                     </tr>
                 </tbody>
             </table>

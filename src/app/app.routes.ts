@@ -18,7 +18,7 @@ export const routes: Routes = [
   { path: 'tl', component: OvertimeTLTeamComponent },
   { path: 'tl/team', component: OvertimeTLTeamComponent },
   { path: 'tl/team/detail', component: OvertimeTLTeamDetailComponent },
-  { path: 'mng', component: OvertimeMngComponent },
+  { path: 'mng', component: OvertimeMngTeamsComponent },
   { path: 'mng/teams', component: OvertimeMngTeamsComponent },
   { path: 'rnd', component: OvertimeRndComponent },
   { path: 'rnd/segments', component: OvertimeRndSegmentsComponent},

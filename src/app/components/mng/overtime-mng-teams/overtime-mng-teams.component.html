@@ -1,5 +1,5 @@
 <div class="container">
-    <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>
+    <app-title-bar [title]="('TITLE.' + title | translate) + ' ' + manager?.department"></app-title-bar>
     <div class="top-right-div">
         <app-user-filters
             [minLimits]="teamMinLimits"
@@ -18,12 +18,37 @@
         <table class="excel-table limits-table" id="limits-table">
             <thead>
                 <tr>
-                    <th>{{'TEAM' | translate}}</th>
-                    <th>{{'MIN-LIMIT' | translate}}</th>
-                    <th>{{'MAX-LIMIT' | translate}}</th>
-                    <th>{{'REAL-OVERTIMES' | translate}}</th>
+                    <th (click)="toggleSortByTeam()" class="sortable-table-column">
+                        <span>{{'TEAM' | translate}}</span>
+                        <i class="fas fa-sort" *ngIf="teamSortState === 0"></i>
+                        <i class="fas fa-sort-up" [class.inactive]="teamSortState !== 1"></i>
+                        <i class="fas fa-sort-down" [class.inactive]="teamSortState !== 2"></i>
+                    </th>
+                    <th (click)="toggleSortByMinLimit()" class="sortable-table-column">
+                        <span>{{'MIN-LIMIT' | translate}}</span>
+                        <i class="fas fa-sort" *ngIf="minLimitSortState === 0"></i>
+                        <i class="fas fa-sort-up" [class.inactive]="minLimitSortState !== 1"></i>
+                        <i class="fas fa-sort-down" [class.inactive]="minLimitSortState !== 2"></i>
+                    </th>
+                    <th (click)="toggleSortByMaxLimit()" class="sortable-table-column">
+                        <span>{{'MAX-LIMIT' | translate}}</span>
+                        <i class="fas fa-sort" *ngIf="maxLimitSortState === 0"></i>
+                        <i class="fas fa-sort-up" [class.inactive]="maxLimitSortState !== 1"></i>
+                        <i class="fas fa-sort-down" [class.inactive]="maxLimitSortState !== 2"></i>
+                    </th>
+                    <th (click)="toggleSortByRealOvertimes()" class="sortable-table-column">
+                        <span>{{'REAL-OVERTIMES' | translate}}</span>
+                        <i class="fas fa-sort" *ngIf="realOvertimesSortState === 0"></i>
+                        <i class="fas fa-sort-up" [class.inactive]="realOvertimesSortState !== 1"></i>
+                        <i class="fas fa-sort-down" [class.inactive]="realOvertimesSortState !== 2"></i>
+                    </th>
                     <!-- <th>{{'REASON' | translate}}</th> -->
-                    <th>{{'APPROVED' | translate}}</th>
+                    <th (click)="toggleSortByApproved()" class="sortable-table-column">
+                        <span>{{'APPROVED' | translate}}</span>
+                        <i class="fas fa-sort" *ngIf="approvedSortState === 0"></i>
+                        <i class="fas fa-sort-up" [class.inactive]="approvedSortState !== 1"></i>
+                        <i class="fas fa-sort-down" [class.inactive]="approvedSortState !== 2"></i>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -33,9 +58,9 @@
                     <td><input type="number" [ngModel]="teamMaxLimits.get(leader.username)" (ngModelChange)="teamMaxLimits.set(leader.username, $event)" min="0" step="0.5" disabled=""></td>
                     <td [ngClass]="getOvertimeStatus(leader)">{{teamRealOvertimes.get(leader.username)}}</td>
                     <!-- <td><input type="text" [(ngModel)]="overtimeReason">Nič zatiaľ</td> PRIDAT DO DB overtime_limit reason -->
-                    <td><!--<input type="checkbox" [(ngModel)]="approved" disabled>--></td>
+                    <td><input type="checkbox" (change)="setTeamApproved(leader, $event)" [checked]="teamApproved.get(leader?.username || '')" [disabled]="dataService.userEmployee?.levelRole !== 1 || dataService.isPastMonth(selectedMonth)" ></td>
                 </tr>
-                <tr >
+                <tr>
                     <td class="light-green" style="font-weight: bold;">{{'SUMMARY' | translate}}</td>
                     <td class="light-green"><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
                     <td class="light-green"><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
@@ -47,7 +72,7 @@
             </tbody>
         </table>
     </div>
-    <!-- <div class="bottom-right-div">
-        <button class="submit-btn">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
-    </div>  -->
+    <div class="bottom-right-div">
+        <button *ngIf="!dataService.isPastMonth(selectedMonth) && dataService.userEmployee?.levelRole === 1" class="submit-btn" (click)="saveChanges()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+    </div>  
 </div>

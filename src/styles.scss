@@ -307,6 +307,10 @@ table.excel-table td:hover {
   transform: translateY(-50%);
 }
 
+.sortable-table-column i.inactive {
+  opacity: 0.5;
+}
+
 .row-aligned {
   display: flex;
 }
@@ -368,6 +372,10 @@ table.excel-table td:hover {
 
 .light-green {
   background-color: #c3dec8 !important;
+}
+
+.light-blue {
+  background-color: #bcd4d6 !important;
 }
 
 .table-border {

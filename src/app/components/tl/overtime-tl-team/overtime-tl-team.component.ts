@@ -39,6 +39,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   leaderSumOvertimes: number = 0;
   leaderMinLimit: number = 0;
   leaderMaxLimit: number = 0;
+  leaderReason: string = '';
   leaderApproved: boolean = false;
   // approved: boolean = true;
   lastNameSortState: SortState = SortState.NONE;
@@ -46,6 +47,8 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   maxLimitSortState: SortState = SortState.NONE;
   realOvertimesSortState: SortState = SortState.DESC;
   approvedSortState: SortState = SortState.NONE;
+
+  editable: boolean = false;
 
   constructor(public dataService: DataService, private fb: FormBuilder, private router: Router, private location: Location, private cd: ChangeDetectorRef) {
     this.overtimeForm = this.fb.group({
@@ -69,10 +72,10 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
         
         // Initialize form controls for each team member
         this.filteredTeam.forEach(member => {
-          this.overtimeForm.addControl(member.username + '_min', new FormControl({value: 0, disabled: this.isPastMonth(this.selectedMonth)}));
-          this.overtimeForm.addControl(member.username + '_max', new FormControl({value: 0, disabled: this.isPastMonth(this.selectedMonth)}));
-          this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.dataService.userEmployee?.levelRole === 1) || this.isPastMonth(this.selectedMonth)}));
-          this.overtimeForm.addControl(member.username + '_reason', new FormControl({ value: '', disabled: this.isPastMonth(this.selectedMonth) }));
+          this.overtimeForm.addControl(member.username + '_min', new FormControl({value: 0, disabled: this.isPastMonth(this.selectedMonth) || !this.editable}));
+          this.overtimeForm.addControl(member.username + '_max', new FormControl({value: 0, disabled: this.isPastMonth(this.selectedMonth) || !this.editable}));
+          this.overtimeForm.addControl(member.username + '_approved', new FormControl({ value: false, disabled: !(this.dataService.userEmployee?.levelRole === 1) || this.isPastMonth(this.selectedMonth) || !this.editable}));
+          this.overtimeForm.addControl(member.username + '_reason', new FormControl({ value: '', disabled: this.isPastMonth(this.selectedMonth) || !this.editable}));
           this.teamRealOvertimes.set(member.username, 0);
           this.teamMinLimits.set(member.username, 0);
           this.teamMaxLimits.set(member.username, 0);
@@ -169,7 +172,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.overtimeForm.get(member.username + '_approved')?.setValue(approved, { emitEvent: false });
       this.overtimeForm.get(member.username + '_reason')?.setValue(reason, { emitEvent: false });
 
-      if (isPast)
+      if (isPast || !this.editable)
       {
         this.overtimeForm.get(member.username + '_min')?.disable({ emitEvent: false });
         this.overtimeForm.get(member.username + '_max')?.disable({ emitEvent: false });
@@ -203,7 +206,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
     this.cd.detectChanges();
   }
 
-  async saveLimits(): Promise<void> {
+  async saveLimits(): Promise<void> { 
     const savePromises = this.filteredTeam.map(member => {
       this.dataService.setLimit(member.employeeId, this.selectedMonth, this.teamMinLimits.get(member.username) || 0, this.teamMaxLimits.get(member.username) || 0, this.teamReason.get(member.username) || '');
       this.dataService.setApprovedStatus(member.employeeId, this.leader?.employeeId || 0, this.selectedMonth, (this.teamApproved.get(member.username) || false) ? 'A' : 'W', '');
@@ -211,6 +214,11 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
 
     await Promise.all(savePromises);
     // await this.setData();
+    await this.dataService.setLimit(this.leader?.employeeId || 0, this.selectedMonth, this.leaderMinLimit, this.leaderMaxLimit, this.leaderReason);
+    console.log('Leader approved: ', this.leaderApproved);
+    await this.dataService.setApprovedStatus(this.leader?.employeeId || 0, this.dataService.userEmployee?.employeeId || 0 , this.selectedMonth, this.leaderApproved ? 'A' : 'W', '');
+    this.editable = false;
+    this.setData();
   }
 
   recalculateSums(): void {
@@ -302,6 +310,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.leaderMinLimit = await this.dataService.getMinLimit(this.leader.employeeId, this.selectedMonth);
       this.leaderMaxLimit = await this.dataService.getMaxLimit(this.leader.employeeId, this.selectedMonth);
       this.leaderApproved = await this.dataService.getApprovedStatus(this.leader.employeeId, this.selectedMonth);
+      this.leaderReason = await this.dataService.getLimitReason(this.leader.employeeId, this.selectedMonth);
     }
     else
     {
@@ -309,7 +318,20 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.leaderMaxLimit = 0;
       this.leaderMinLimit = 0;
       this.leaderApproved = false;
+      this.leaderReason = '';
     }
+  }
+
+  setLeaderMinLimit(event: Event): void 
+  {
+    const minLimit: number = (event.target as HTMLInputElement).valueAsNumber;
+    this.leaderMinLimit = minLimit;
+  }
+
+  setLeaderMaxLimit(event: Event): void
+  {
+    const maxLimit: number = (event.target as HTMLInputElement).valueAsNumber;
+    this.leaderMaxLimit = maxLimit;
   }
 
   setApproved(member: Employee, event: Event): void {
@@ -321,12 +343,24 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
     // this.recalculateSums();
   }
 
+  setLeaderApproved(event: Event): void 
+  {
+    this.leaderApproved = (event.target as HTMLInputElement).checked;
+  }
+
+
+
   setReason(member: Employee | undefined, event: Event): void {
     if (!member)
       return;
     const reason: string = (event.target as HTMLInputElement).value;
     this.teamReason.set(member.username, reason);
     // this.setData();
+  }
+
+  setLeaderReason(event: Event): void 
+  {
+    this.leaderReason = (event.target as HTMLInputElement).value;
   }
 
   onFilteredEmployees(filteredEmployees: Employee[]): void {

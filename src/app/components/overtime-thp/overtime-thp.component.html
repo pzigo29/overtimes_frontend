@@ -67,14 +67,14 @@
                             <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                             <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                             <td [ngClass]="getOvertimeStatus()">{{realOvertime}}</td>
-                            <td><!--<input type="text" [(ngModel)]="overtimeReason">-->Nič zatiaľ</td> <!-- PRIDAT DO DB overtime_limit reason-->
+                            <td><textarea [(ngModel)]="overtimeReason" [disabled]="isPastMonth(selectedMonth)"></textarea></td> <!-- PRIDAT DO DB overtime_limit reason-->
                             <td><input type="checkbox" [(ngModel)]="approved" disabled></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="bottom-right-div">
-                <button class="submit-btn" (click)="saveLimits()" [disabled]="isPastMonth(selectedMonth)">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+                <button class="submit-btn" (click)="saveLimits()" *ngIf="!isPastMonth(selectedMonth)">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
             </div> 
         </div>
     </div>

@@ -6,8 +6,8 @@ import { EmployeeFiltersComponent } from '../../shared-components/employee-filte
 import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
 import { DataService } from '../../../services/data.service';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { Employee } from '../../../models/data.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Employee, SortState } from '../../../models/data.model';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -21,9 +21,12 @@ export class OvertimeMngTeamsComponent implements OnInit {
 
   title: string = 'SEGMENT';
   loading: boolean = false;
+
   teamRealOvertimes: Map<string, number> = new Map<string, number>();
   teamMinLimits: Map<string, number> = new Map<string, number>();
   teamMaxLimits: Map<string, number> = new Map<string, number>();
+  teamApproved: Map<string, boolean> = new Map<string, boolean>();
+
   minOvertimeSum: number = 0;
   maxOvertimeSum: number = 0;
   realOvertimeSum: number = 0;
@@ -34,7 +37,13 @@ export class OvertimeMngTeamsComponent implements OnInit {
   manager?: Employee;
   selectedEmployee?: Employee;
 
-  constructor(private dataService: DataService, private router: Router, private location: Location) { }
+  teamSortState: SortState = SortState.NONE;
+  minLimitSortState: SortState = SortState.NONE;
+  maxLimitSortState: SortState = SortState.NONE;
+  realOvertimesSortState: SortState = SortState.DESC;
+  approvedSortState: SortState = SortState.NONE;
+
+  constructor(public dataService: DataService, private router: Router, private location: Location) { }
 
   async ngOnInit() 
   {
@@ -79,6 +88,19 @@ export class OvertimeMngTeamsComponent implements OnInit {
   goBack(): void
   {
     this.location.back();
+  }
+
+  saveChanges(): void
+  {
+    if (this.manager === undefined) {
+      throw new Error('Leader undefined');
+    }
+    this.filteredTeamLeaders.forEach(async member => {
+      const approved = this.teamApproved.get(member.username) || false;
+      console.log(`Saving changes for ${member.username}:`, { approved });
+      await this.dataService.postApprovalsByManager(member.employeeId, this.selectedMonth, (this.teamApproved.get(member.username) || false) ? 'A' : 'W');
+      // await this.dataService.setApprovedTeam(member.employeeId, this.selectedMonth, approved);
+    });
   }
 
   selectEmployee(employee: Employee): void
@@ -128,6 +150,8 @@ export class OvertimeMngTeamsComponent implements OnInit {
         const overtimes = await this.dataService.getSumOvertimeTeam(member.employeeId, this.selectedMonth);
         const minLimit = await this.dataService.getMinLimitTeam(member.employeeId, this.selectedMonth);
         const maxLimit = await this.dataService.getMaxLimitTeam(member.employeeId, this.selectedMonth);
+        console.log('Approved status:', member.employeeId, this.selectedMonth);
+        const approved = await this.dataService.getApprovedStatusManager(member.employeeId, this.selectedMonth);
   
         console.log(`Fetched data for ${member.username}:`, { overtimes, minLimit, maxLimit });
   
@@ -150,6 +174,7 @@ export class OvertimeMngTeamsComponent implements OnInit {
         this.teamRealOvertimes.set(member.username, overtimesSum);
         this.teamMinLimits.set(member.username, minLimitSum);
         this.teamMaxLimits.set(member.username, maxLimitSum);
+        this.teamApproved.set(member.username, approved);
   
         return { overtimesSum, minLimitSum, maxLimitSum };
       }));
@@ -168,11 +193,82 @@ export class OvertimeMngTeamsComponent implements OnInit {
     } catch (error) {
       console.error('Error in setData:', error);
     }
+    console.log('real overtimes sort state: ', this.realOvertimesSortState);
+  }
+
+  setTeamApproved(manager: Employee | undefined, event: Event): void
+  {
+    if (manager === undefined) {
+      throw new Error('Leader undefined');
+    }
+    const target = event.target as HTMLInputElement;
+    this.teamApproved.set(manager.username, target.checked);
   }
 
   onFilteredEmployees(filteredEmployees: Employee[]): void {
     this.filteredTeamLeaders = filteredEmployees;
     // this.recalculateSums();
+  }
+
+  toggleSortByTeam(): void 
+  {
+    console.log('Sort by team');
+    this.filteredTeamLeaders.sort((a, b) => {
+      if (this.teamSortState === SortState.ASC) {
+        return a.username.localeCompare(b.username);
+      } else {
+        return b.username.localeCompare(a.username);
+      }
+    });
+    this.teamSortState = this.teamSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  toggleSortByMinLimit(): void
+  {
+    this.filteredTeamLeaders.sort((a, b) => {
+      if (this.minLimitSortState === SortState.ASC) {
+        return (this.teamMinLimits.get(a.username) || 0) - (this.teamMinLimits.get(b.username) || 0);
+      } else {
+        return (this.teamMinLimits.get(b.username) || 0) - (this.teamMinLimits.get(a.username) || 0);
+      }
+    });
+    this.minLimitSortState = this.minLimitSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  toggleSortByMaxLimit(): void
+  {
+    this.filteredTeamLeaders.sort((a, b) => {
+      if (this.maxLimitSortState === SortState.ASC) {
+        return (this.teamMaxLimits.get(a.username) || 0) - (this.teamMaxLimits.get(b.username) || 0);
+      } else {
+        return (this.teamMaxLimits.get(b.username) || 0) - (this.teamMaxLimits.get(a.username) || 0);
+      }
+    });
+    this.maxLimitSortState = this.maxLimitSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  toggleSortByRealOvertimes(): void
+  {
+    this.filteredTeamLeaders.sort((a, b) => {
+      if (this.realOvertimesSortState === SortState.ASC) {
+        return (this.teamRealOvertimes.get(a.username) || 0) - (this.teamRealOvertimes.get(b.username) || 0);
+      } else {
+        return (this.teamRealOvertimes.get(b.username) || 0) - (this.teamRealOvertimes.get(a.username) || 0);
+      }
+    });
+    this.realOvertimesSortState = this.realOvertimesSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
+  }
+
+  toggleSortByApproved(): void
+  {
+    this.filteredTeamLeaders.sort((a, b) => {
+      if (this.approvedSortState === SortState.ASC) {
+        return (this.teamRealOvertimes.get(a.username) || 0) - (this.teamRealOvertimes.get(b.username) || 0);
+      } else {
+        return (this.teamRealOvertimes.get(b.username) || 0) - (this.teamRealOvertimes.get(a.username) || 0);
+      }
+    });
+    this.approvedSortState = this.approvedSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
   }
 
 }

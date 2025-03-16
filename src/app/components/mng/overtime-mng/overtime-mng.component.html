@@ -1,5 +1,5 @@
 <div class="container">
-    <app-title-bar [title]="('TITLE.' + title | translate) + segment"></app-title-bar>
+    <app-title-bar [title]="('TITLE.' + title | translate) + ' ' + manager?.department"></app-title-bar>
     <div class="top-right-div" *ngIf="sourceSite === '/rnd/segments'">
         <!-- <app-user-filters></app-user-filters> -->
         <div></div>
@@ -22,7 +22,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{{'TITLE.' + title | translate}}{{segment}}</td>
+                        <td>{{'TITLE.' + title | translate}} {{manager?.department}}</td>
                         <td><input type="number" [(ngModel)]="minOvertimeSum" min="0" disabled=""></td>
                         <td><input type="number" [(ngModel)]="maxOvertimeSum" min="0" disabled=""></td>
                         <!-- <td></td> -->

@@ -23,6 +23,7 @@ export class OvertimeThpComponent implements OnInit {
   realOvertime: number = 0;
   minOvertime: number = 0;
   maxOvertime: number = 0;
+  overtimeReason: string = '';
   approved: boolean = false; //this.dataService.getApproval(limit_id);
   loading: boolean = true;
   selectedMonth: Date = new Date();
@@ -91,13 +92,14 @@ export class OvertimeThpComponent implements OnInit {
     this.realOvertime = await this.dataService.getSumOvertime(this.employee.employeeId, this.selectedMonth);
     this.minOvertime = await this.dataService.getMinLimit(this.employee.employeeId, this.selectedMonth);
     this.maxOvertime = await this.dataService.getMaxLimit(this.employee.employeeId, this.selectedMonth);
-    this.approved = false;
+    this.approved = await this.dataService.getApprovedStatus(this.employee.employeeId, this.selectedMonth);
+    this.overtimeReason = await this.dataService.getLimitReason(this.employee.employeeId, this.selectedMonth);
     //console.log('data: ', this.realOvertime, this.minOvertime, this.maxOvertime, this.approved);
   }
 
   async saveLimits(): Promise<void>
   {
-    await this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime);
+    await this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime, this.overtimeReason);
   }
 
   isSidebarActive(): boolean 

@@ -19,7 +19,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
+  username: string = 'dakto'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -327,6 +327,8 @@ export class DataService implements OnInit {
     return limit.statusId === 'A';
   }
 
+  // async setApprovedStatusHierarchy(manager_id: number, )
+
   async setApprovedStatus(employee_id: number, approverId: number, month: Date, status: string, comment: string): Promise<void>
   {
     try
@@ -337,7 +339,27 @@ export class DataService implements OnInit {
         throw new Error('Limit was not found! ' + employee_id);
       }
       console.log('Setting approved status, limit: ', limit);
-      await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalByLimit?limitId=${limit.limitId}&approverId=${approverId}&comment=${comment}&approvalStatus=${status}`, null));
+      if (comment === undefined || comment === null || comment === '')
+      {
+        await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalByLimit?limitId=${limit.limitId}&approverId=${approverId}&approvalStatus=${status}`, null));
+      }
+      else
+      {
+        await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalByLimit?limitId=${limit.limitId}&approverId=${approverId}&comment=${comment}&approvalStatus=${status}`, null));
+      }
+   }
+    catch (error)
+    {
+      console.error('Error setting approved status: ', error);
+      throw error;
+    }
+  }
+
+  async postApprovalsByManager(managerId: number, month: Date, status: string): Promise<void>
+  {
+    try
+    {
+      await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalsByManager?managerId=${managerId}&month=${month.toDateString()}&status=${status}`, null));
     }
     catch (error)
     {
@@ -451,6 +473,34 @@ export class DataService implements OnInit {
       teamRealOvertimes.set(member.username, await this.getSumOvertime(member.employeeId, month));
     }
     return teamRealOvertimes;
+  }
+
+  async getApprovedStatusHierarchy(managerIds: number[], month: Date): Promise<Map<string, boolean>>
+  {
+    let approvedStatuses: Map<string, boolean> = new Map;
+    for (const managerId of managerIds)
+    {
+      let approvedStatus: boolean = await this.getApprovedStatusManager(managerId, month);
+      const employee = await firstValueFrom(this.getEmployeeById(managerId));
+      if (employee) {
+        approvedStatuses.set(employee.username, approvedStatus);
+      }
+    }
+    return approvedStatuses;
+  }
+
+  async getApprovedStatusManager(managerId: number, month: Date): Promise<boolean>
+  {
+    try
+    {
+      return await firstValueFrom(this.http.get<boolean>(`${this.apiUrl}/Approval/GetApprovalsByManager?managerId=${managerId}&month=${typeof month === 'string' ? month : month.toDateString()}`));
+    }
+    catch (error)
+    {
+      console.error('Error fetching approved status: ', error);
+      // throw error;
+    }
+    return false;
   }
 
   async getMinLimitTeamSum(manager_id: number, month: Date): Promise<number>
