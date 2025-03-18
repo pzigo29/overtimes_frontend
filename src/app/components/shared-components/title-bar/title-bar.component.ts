@@ -45,6 +45,7 @@ export class TitleBarComponent {
 
   showOvertimeRules(): void
   {
-    alert('Not implemented yet!');
+    const pdfUrl = '/assets/overtime_rules.pdf';
+    window.open(pdfUrl, '_blank');
   }
 }

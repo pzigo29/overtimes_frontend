@@ -24,19 +24,37 @@
             <option value="week">{{'WEEK' | translate}}</option>
         </select>
         <div class="input-filters overtime-form">
-            <div class="filter">
+            <!-- <div class="filter">
               <label for="personalNumbers">{{'PERSONAL-NUMBER' | translate}}: </label>
               <input type="text" id="personalNumbers" [(ngModel)]="personalNumbers">
+            </div> -->
+            <div class="filter">
+                <label for="departmentOrEmployeeSelectAvg">{{'TYPE' | translate}}</label>
+                <select class="filter-select" name="departmentOrEmployeeSelectAvg" id="departmentOrEmployeeSelectAvg" (change)="selectDepartmentOrEmployeeAvg($event)">
+                    <option selected>{{'EMPLOYEE' | translate}}</option>
+                    <option>{{'DEPARTMENT' | translate}}</option>
+                </select>
+            </div>
+            <div class="filter" *ngIf="departmentOrEmployeeAvg === ('DEPARTMENT' | translate)">
+                <label for="departmentsSelectAvg">{{'SEGMENT' | translate}}</label>
+                <select class="filter-select" name="departmentsSelectAvg" id="departmentsSelectAvg" (change)="selectDepartmentAvg($event)">
+                    <option value="ALL">{{'ALL' | translate}}</option>
+                    <option *ngFor="let department of departments; trackBy: trackByDepartment" [ngValue]="department">{{department}}</option>
+                </select>
+            </div>
+            <div class="filter" *ngIf="departmentOrEmployeeAvg === ('EMPLOYEE' | translate)">
+                <label for="personalNumbers">{{'PERSONAL-NUMBER' | translate}}: </label>
+                <input type="text" id="personalNumbers" [(ngModel)]="personalNumbers">
             </div>
             <div class="filter">
               <label for="selectedDate">{{'DATE' | translate}}: </label>
               <ng-container [ngSwitch]="dateFilter">
-                <input *ngSwitchCase="'year'" type="number" id="selectedYear" [(ngModel)]="selectedYear" min="2000" max="2100">
+                <input *ngSwitchCase="'year'" type="number" id="selectedYear" [(ngModel)]="selectedYear">
                 <input *ngSwitchCase="'month'" type="month" id="selectedMonth" [(ngModel)]="selectedMonth">
                 <input *ngSwitchCase="'week'" type="week" id="selectedWeek" [(ngModel)]="selectedWeek">
               </ng-container>
             </div>
-            <button class="submit-btn" (click)="getEmployeeAverage(personalNumbers, dateFilter)">{{'BUTTON.CONFIRM' | translate}}</button>
+            <button class="submit-btn" (click)="getEmployeeAverage(dateFilter, personalNumbers, selectedDepartmentAvg)">{{'BUTTON.CONFIRM' | translate}}</button>
         </div>
         <table class="excel-table" *ngIf="selectedEmployee">
             <thead>
@@ -152,7 +170,7 @@
             </div>
             <div class="filter">
                 <label for="departmentOrEmployeeSelect">{{'TYPE' | translate}}</label>
-                <select class="filter-select" name="departmentOrEmployeeSelect" id="departmentOrEmployeeSelect" (change)="selectDepartmentOrEmployee($event)">
+                <select class="filter-select" name="departmentOrEmployeeSelect" id="departmentOrEmployeeSelect" (change)="selectDepartmentOrEmployeeCustomTime($event)">
                     <option selected>{{'EMPLOYEE' | translate}}</option>
                     <option>{{'DEPARTMENT' | translate}}</option>
                 </select>

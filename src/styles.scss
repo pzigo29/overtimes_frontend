@@ -332,7 +332,7 @@ table.excel-table td:hover {
   max-width: 50%;
   justify-content: center;
   align-items: center;
-  // display: flex;
+  display: flex;
   flex-direction: row;
   padding: 20px;
   margin: 0 auto;
@@ -343,7 +343,7 @@ table.excel-table td:hover {
   max-width: 50%;
   justify-content: center;
   align-items: center;
-  // display: flex;
+  display: flex;
   flex-direction: column;
   padding: 20px;
   margin: 0 auto;
@@ -384,6 +384,38 @@ table.excel-table td:hover {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.info-icon {
+  font-size: 16px;
+  // color: #000000;
+  cursor: pointer;
+  position: relative;
+}
+
+.info-popup {
+  // display: none;
+  position: absolute;
+  top: 20px;
+  left: 0;
+  background-color: white;
+  opacity: 0.9;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  width: 200px;
+  z-index: 1000;
+  font-size: 15px;
+}
+
+.info-icon:hover .info-popup {
+  display: block;
+}
+
+.info-popup p {
+  margin: 0;
 }
 
 // .language-selector {

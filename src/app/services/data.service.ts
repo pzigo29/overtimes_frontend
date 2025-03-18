@@ -19,7 +19,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'dakto'; // toto sa bude načítavať z windowsu
+  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -181,6 +181,11 @@ export class DataService implements OnInit {
   getDepartments(): Observable<string[]>
   {
     return this.http.get<string[]>(`${this.apiUrl}/Employee/Departments`);
+  }
+
+  async getDepartmentAverage(filter: string, date: string, department?: string): Promise<number>
+  {
+    return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/GetAverageOvertime?department=${department}&filter=${filter}&date=${date}`));
   }
 
   async getEmployeeAverage(personalNumbers: string, filter: string, date: string): Promise<number>

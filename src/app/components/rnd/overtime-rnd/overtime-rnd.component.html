@@ -2,7 +2,7 @@
     <app-title-bar [title]="('TITLE.' + title | translate)"></app-title-bar>    
     <div class="row-aligned">
         <app-months-table></app-months-table>
-        <div class="overtime-form-row" *ngIf="!loading">
+        <div class="overtime-form-col" *ngIf="!loading">
             <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
                 <thead>
                     <tr>

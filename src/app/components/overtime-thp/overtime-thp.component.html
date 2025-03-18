@@ -47,15 +47,24 @@
         <div class="row-aligned">
             <app-months-table></app-months-table>
             <div *ngIf="loading" class="overtime-form-row">Loading...</div>
-            <div class="overtime-form-row" *ngIf="!loading">
+            <div class="overtime-form-col" *ngIf="!loading">
                 <table class="excel-table limits-table" id="limits-table" *ngIf="isTableVisible">
                     <thead>
                         <tr>
                             <th>{{'PERSONAL-NUMBER' | translate}}</th>
+                            <th style="text-wrap: nowrap;">{{'K-KONTO' | translate}}</th>
                             <th>{{'EMPLOYEE' | translate}}</th>
                             <th>{{'MIN-LIMIT' | translate}}</th>
                             <th>{{'MAX-LIMIT' | translate}}</th>
-                            <th>{{'REAL-OVERTIMES' | translate}}</th>
+                            <th class="sortable-table-column" style="cursor: default;">
+                                <span>{{'REAL-OVERTIMES' | translate}}</span>
+                                <div (mouseenter)="showOvertimesInfoPopup()" (mouseleave)="hideOvertimesInfoPopup()">
+                                    <i class="fas fa-info-circle info-icon"></i>
+                                    <div class="info-popup" *ngIf="isOvertimesInfoPopupVisible">
+                                        <p [innerHTML]="'INFO-REAL-OVERTIMES' | translate"></p>
+                                    </div>
+                                </div>
+                            </th>
                             <th>{{'REASON' | translate}}</th>
                             <th>{{'APPROVED' | translate}}</th>
                         </tr>
@@ -63,12 +72,31 @@
                     <tbody>
                         <tr>
                             <td>{{employee?.personalNumber}}</td>
+                            <td></td>
                             <td>{{employee?.firstName}} {{employee?.lastName}}</td>
                             <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                             <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                             <td [ngClass]="getOvertimeStatus()">{{realOvertime}}</td>
                             <td><textarea [(ngModel)]="overtimeReason" [disabled]="isPastMonth(selectedMonth)"></textarea></td> <!-- PRIDAT DO DB overtime_limit reason-->
                             <td><input type="checkbox" [(ngModel)]="approved" disabled></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="excel-table limits-table" *ngIf="isTableVisible">
+                    <thead>
+                        <tr>
+                            <th>{{'YEAR' | translate}}</th>
+                            <th>{{'OVERTIMES' | translate}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>nejaký rok</td>
+                            <td>hodnota nadčasov za rok</td>
+                        </tr>
+                        <tr>
+                            <td>iný rok</td>
+                            <td>hodnota nadčasov za rok</td>
                         </tr>
                     </tbody>
                 </table>

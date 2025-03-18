@@ -113,5 +113,7 @@
 
     "LONGTERM-OVERTIMES": "Long-term overtimes",
     "OVERTIMES": "Overtimes",
-    "AVERAGE": "Average"
+    "AVERAGE": "Average",
+
+    "INFO-REAL-OVERTIMES": "Data from <a href ='https://example.com' target='_blank'>ESS</a>. This data is correct only when attendance is okay"
 }

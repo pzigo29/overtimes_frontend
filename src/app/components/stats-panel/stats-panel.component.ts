@@ -50,6 +50,7 @@ export class StatsPanelComponent implements OnInit {
   shownNonFulfilledLimits: boolean = false;
   selectedSegmentManager?: Employee; 
   selectedDepartment?: string;
+  selectedDepartmentAvg?: string;
   segmentManagers: Employee[] = [];
   nonFulfilledLimitsData: any[] = [];
   departments: string[] = [];
@@ -57,8 +58,9 @@ export class StatsPanelComponent implements OnInit {
   customTimeTypes: string[] = [];
   selectedStatType?: string;
   shownCustomTimeSelection: boolean = false;
-  departmentOrEmployee: string = 'EMPLOYEE';
-  hoursOrType: string = 'OVERTIME-HOURS';
+  departmentOrEmployee: string = '';
+  departmentOrEmployeeAvg: string = '';
+  hoursOrType: string = '';
   customTimeOvertimes: Overtime[] = [];
   customTimeOvertimesData: any[] = [];
   customTimeOvertimesTypesData: any[] = [];
@@ -91,6 +93,7 @@ export class StatsPanelComponent implements OnInit {
       await firstValueFrom(this.translate.get('LONGTERM-OVERTIMES'))
     ];
     this.departmentOrEmployee = await firstValueFrom(this.translate.get('EMPLOYEE'));
+    this.departmentOrEmployeeAvg = await firstValueFrom(this.translate.get('EMPLOYEE'));
     this.hoursOrType = await firstValueFrom(this.translate.get('OVERTIME-HOURS'));
     this.dataService.getMonths().subscribe(
       async (months) => {
@@ -145,7 +148,7 @@ export class StatsPanelComponent implements OnInit {
   //   this.selectedMonth = month;  
   // }
 
-  async getEmployeeAverage(personalNumbers: string, filter: string): Promise<void>
+  async getEmployeeAverage(filter: string, personalNumbers?: string, department?: string): Promise<void>
   {
     let date: string;
     switch (filter) {
@@ -165,10 +168,38 @@ export class StatsPanelComponent implements OnInit {
         date = this.selectedYear;
     }
     console.log('Date:', date);
+    console.log('Department:', department);
     let avg: number = 0;
-    avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, date);
-    this.dateFilter = filter;
-    this.selectedEmployee = await this.dataService.getEmployeeByPersonalNumber(personalNumbers);
+    if (this.departmentOrEmployeeAvg === await firstValueFrom(this.translate.get('EMPLOYEE')))
+    {
+      department = undefined;
+    }
+    else if (this.departmentOrEmployeeAvg === await firstValueFrom(this.translate.get('DEPARTMENT')))
+    {
+      personalNumbers = undefined;
+    }
+    else
+    {
+      console.error('Unexpected departmentOrEmployeeAvg:', this.departmentOrEmployeeAvg);
+      department = undefined;
+      personalNumbers = undefined;
+    }
+    if (department !== undefined && department.length > 0)
+    {
+      if (department === 'ALL') 
+      {
+        department = undefined;
+      }
+      avg = await this.dataService.getDepartmentAverage(filter, date, department);
+      this.dateFilter = filter;
+      // this.selectedDepartmentAvg = department;
+    }
+    else if (personalNumbers !== undefined && personalNumbers.length > 0 ) 
+    {
+      avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, date);
+      this.dateFilter = filter;
+      this.selectedEmployee = await this.dataService.getEmployeeByPersonalNumber(personalNumbers);
+    }
     console.log('Avg: ', avg);
     this.employeeAvg = avg;
     // return avg;
@@ -594,6 +625,16 @@ export class StatsPanelComponent implements OnInit {
     this.selectedDepartment = this.departments[selectedIndex];
   }
 
+  selectDepartmentAvg(event: Event): void
+  {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedIndex = selectElement.selectedIndex - 1;
+    this.selectedDepartmentAvg = this.departments[selectedIndex];
+    if (this.selectedDepartmentAvg === undefined)
+      this.selectedDepartmentAvg = 'ALL';
+    console.log('Selected department:', this.selectedDepartmentAvg);
+  }
+
   async selectStatType(event: Event): Promise<void> {
     const selectElement = event.target as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex;
@@ -601,12 +642,20 @@ export class StatsPanelComponent implements OnInit {
     console.log('Selected statType:', this.selectedStatType);
   }
 
-  selectDepartmentOrEmployee(event: Event): void
+  selectDepartmentOrEmployeeCustomTime(event: Event): void
   {
     const selectElement = event.target as HTMLSelectElement;
     const selectedValue = selectElement.value;
     this.departmentOrEmployee = selectedValue;
     console.log('Selected departmentOrEmployee:', this.departmentOrEmployee);
+  }
+
+  selectDepartmentOrEmployeeAvg(event: Event): void
+  {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedValue = selectElement.value;
+    this.departmentOrEmployeeAvg = selectedValue;
+    console.log('Selected departmentOrEmployee:', this.departmentOrEmployeeAvg);
   }
 
   selectCustomTimeType(event: Event): void

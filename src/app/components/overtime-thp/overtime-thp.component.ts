@@ -28,6 +28,8 @@ export class OvertimeThpComponent implements OnInit {
   loading: boolean = true;
   selectedMonth: Date = new Date();
 
+  isOvertimesInfoPopupVisible: boolean = false;
+
   name: string = '';
 
   constructor(private dataService: DataService, private cd: ChangeDetectorRef) { }
@@ -143,6 +145,16 @@ export class OvertimeThpComponent implements OnInit {
 
     this.isTableVisible = bodyWidth <= windowWidth;
     //console.log('Toggle table: ', this.realOvertime);
+  }
+
+  showOvertimesInfoPopup(): void
+  {
+    this.isOvertimesInfoPopupVisible = true;
+  }
+
+  hideOvertimesInfoPopup(): void
+  {
+    this.isOvertimesInfoPopupVisible = false;
   }
 
   showWF(): void

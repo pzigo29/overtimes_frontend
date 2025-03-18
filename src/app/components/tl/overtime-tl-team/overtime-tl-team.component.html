@@ -103,7 +103,7 @@
                         <td class="light-blue"><input type="number" min="0" [value]="leaderMaxLimit" (change)="setLeaderMaxLimit($event)" [disabled]="isPastMonth(selectedMonth) || !editable"></td>
                         <td class="light-blue" [ngClass]="getOvertimeStatus(leader)">{{leaderSumOvertimes}}</td>
                         <td class="light-blue"><textarea [value]="leaderReason" (change)="setLeaderReason($event)" [disabled]="isPastMonth(selectedMonth) || !editable"></textarea></td>
-                        <td class="light-blue"><input type="checkbox" [disabled]="true" [checked]="leaderApproved" (change)="setLeaderApproved($event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth)"></td>
+                        <td class="light-blue"><input type="checkbox" [disabled]="true" [checked]="leaderApproved" (change)="setLeaderApproved($event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth) || !editable"></td>
                     </tr>
                     <tr *ngFor="let member of filteredTeam">
                         <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.firstName}} {{member?.lastName}}</td>
@@ -112,7 +112,7 @@
                         <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
                         <!-- <td><input type="text" [formControlName]="getOvertimeReason(member, selectedMonth)" (change)="setReason(member, $event)"></td> PRIDAT DO DB overtime_limit reason -->
                         <td><textarea [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)" [disabled]="isPastMonth(selectedMonth) || !editable"></textarea></td>
-                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth)"></td>
+                        <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth) || !editable"></td>
                     </tr>
                 </tbody>
             </table>

@@ -112,5 +112,8 @@
 
     "LONGTERM-OVERTIMES": "Dlhodobé nadčasy",
     "OVERTIMES": "Nadčasy",
-    "AVERAGE": "Priemer"
+    "AVERAGE": "Priemer",
+    
+
+    "INFO-REAL-OVERTIMES": "Dáta z <a href ='https://example.com' target='_blank'>ESS</a>. Tieto dáta platia iba v prípade, že je správne zaznamenaná dochádzka"
 }
