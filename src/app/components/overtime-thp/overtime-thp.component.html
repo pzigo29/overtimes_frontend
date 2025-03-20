@@ -52,7 +52,7 @@
                     <thead>
                         <tr>
                             <th>{{'PERSONAL-NUMBER' | translate}}</th>
-                            <th style="text-wrap: nowrap;">{{'K-KONTO' | translate}}</th>
+                            <th style="text-wrap: nowrap;">{{'KKONTO-PREV' | translate}}</th>
                             <th>{{'EMPLOYEE' | translate}}</th>
                             <th>{{'MIN-LIMIT' | translate}}</th>
                             <th>{{'MAX-LIMIT' | translate}}</th>
@@ -72,7 +72,7 @@
                     <tbody>
                         <tr>
                             <td>{{employee?.personalNumber}}</td>
-                            <td></td>
+                            <td>(Data from SAP)</td>
                             <td>{{employee?.firstName}} {{employee?.lastName}}</td>
                             <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
                             <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
@@ -82,7 +82,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <table class="excel-table limits-table" *ngIf="isTableVisible">
+                <table class="excel-table limits-table" *ngIf="isTableVisible && notNullYearsLoaded">
                     <thead>
                         <tr>
                             <th>{{'YEAR' | translate}}</th>
@@ -90,13 +90,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>nejaký rok</td>
-                            <td>hodnota nadčasov za rok</td>
-                        </tr>
-                        <tr>
-                            <td>iný rok</td>
-                            <td>hodnota nadčasov za rok</td>
+                        <tr *ngFor="let entry of notNullYears | keyvalue: sortByKeyDescending">
+                            <td>{{entry.key}}</td>
+                            <td>{{entry.value}} h</td>
                         </tr>
                     </tbody>
                 </table>

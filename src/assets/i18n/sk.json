@@ -115,5 +115,5 @@
     "AVERAGE": "Priemer",
     
 
-    "INFO-REAL-OVERTIMES": "Dáta z <a href ='https://example.com' target='_blank'>ESS</a>. Tieto dáta platia iba v prípade, že je správne zaznamenaná dochádzka"
+    "INFO-REAL-OVERTIMES": "Dáta z <a href ='https://webup1.schaeffler.com:62884/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=100#SGD_HR_TIMESLIP-display' target='_blank'>ESS</a>. Tieto dáta platia iba v prípade, že je správne zaznamenaná dochádzka"
 }

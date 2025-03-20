@@ -70,6 +70,8 @@ export class StatsPanelComponent implements OnInit {
   maxMonthOvertimes?: MonthOvertime;
   shownOvertimeTypes: boolean = false;
 
+  loading: boolean = true;
+
   constructor(private dataService: DataService, private translate: TranslateService, private cdr: ChangeDetectorRef) 
   {
     translate.onLangChange.subscribe(() => {
@@ -108,25 +110,38 @@ export class StatsPanelComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.loadTranslations();
 
-    this.dataService.getRndMng().subscribe(
-      (rndMng: Employee) => {
-        this.dataService.getSegmentManagers(rndMng.employeeId).subscribe(
-          (data: Employee[]) => {
-            console.log(data);
-            this.segmentManagers = data;
-            console.log('sgmt', this.segmentManagers);
-            // Initialize selectedSegmentManager to the first manager
-            if (this.segmentManagers.length > 0) 
-            {
-              this.selectedSegmentManager = this.segmentManagers[0];
-            }
-          },
-          (error) => {
-            console.error('Error fetching segment managers:', error);
-          }
-        );
-        this.segmentManagers.push(rndMng);
-        this.dataService.getDepartments().subscribe(
+    if (!this.dataService.userEmployee)
+      return;
+    this.dataService.getEmployee(this.dataService.userEmployee.username).subscribe(
+      (mng?: Employee) => {
+        // this.dataService.getSegmentManagers(rndMng.employeeId).subscribe(
+        //   (data: Employee[]) => {
+        //     console.log(data);
+        //     this.segmentManagers = data;
+        //     console.log('sgmt', this.segmentManagers);
+        //     // Initialize selectedSegmentManager to the first manager
+        //     if (this.segmentManagers.length > 0) 
+        //     {
+        //       this.selectedSegmentManager = this.segmentManagers[0];
+        //     }
+        //   },
+        //   (error) => {
+        //     console.error('Error fetching segment managers:', error);
+        //   }
+        // );
+        // this.segmentManagers.push(rndMng);
+        if (!mng || mng.levelRole > 4)
+        {
+          this.loading = true;
+          alert('Not a manager! Redirecting to the homepage.');
+          window.location.href = '/';
+          return;
+        }
+        else
+        {
+          this.loading = false;
+        }
+        this.dataService.getDepartments(mng?.employeeId).subscribe(
           (data: string[]) => {
             console.log(data);
             this.departments = data;
@@ -184,6 +199,7 @@ export class StatsPanelComponent implements OnInit {
       department = undefined;
       personalNumbers = undefined;
     }
+    console.log('departmentOrEmployeeAvg is: ', this.departmentOrEmployeeAvg);
     if (department !== undefined && department.length > 0)
     {
       if (department === 'ALL') 
@@ -196,9 +212,17 @@ export class StatsPanelComponent implements OnInit {
     }
     else if (personalNumbers !== undefined && personalNumbers.length > 0 ) 
     {
-      avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, date);
-      this.dateFilter = filter;
-      this.selectedEmployee = await this.dataService.getEmployeeByPersonalNumber(personalNumbers);
+      const hierarchy: Employee[] = await this.dataService.getHierarchy(this.dataService.userEmployee?.employeeId ?? -1);
+      if (hierarchy.find(emp => emp.personalNumber === personalNumbers))
+      {
+        avg = await this.dataService.getEmployeeAverage(personalNumbers, filter, date);
+        this.dateFilter = filter;
+        this.selectedEmployee = await this.dataService.getEmployeeByPersonalNumber(personalNumbers);
+      }
+      else
+      {
+        alert('Employee is not in your hierarchy!');
+      }
     }
     console.log('Avg: ', avg);
     this.employeeAvg = avg;
@@ -348,8 +372,14 @@ export class StatsPanelComponent implements OnInit {
         {
           const personalNumberElement = document.getElementById('personalNumbersCustomTime') as HTMLInputElement;
           console.log('Personal number :', personalNumberElement.value);
-          if (personalNumberElement) {
+          const hierarchy: Employee[] = await this.dataService.getHierarchy(this.dataService.userEmployee?.employeeId ?? -1);
+          if (personalNumberElement && hierarchy.find(emp => emp.personalNumber === personalNumberElement.value)) 
+          {
             this.customTimeOvertimes = await this.dataService.getCustomTimeOvertimes(stringStartDate, stringEndDate, personalNumberElement.value);
+          }
+          else
+          {
+            alert('Invalid employee!');
           }
         }
         else if ((await firstValueFrom(this.translate.get(this.departmentOrEmployee))) === await firstValueFrom(this.translate.get('DEPARTMENT'))) 
@@ -610,13 +640,13 @@ export class StatsPanelComponent implements OnInit {
     return Month[month];
   }
 
-  selectSegmentManager(event: Event): void
-  {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedIndex = selectElement.selectedIndex;
-    this.selectedSegmentManager = this.segmentManagers[selectedIndex];
-    console.log('Selected Segment Manager:', this.selectedSegmentManager);
-  }
+  // selectSegmentManager(event: Event): void
+  // {
+  //   const selectElement = event.target as HTMLSelectElement;
+  //   const selectedIndex = selectElement.selectedIndex;
+  //   this.selectedSegmentManager = this.segmentManagers[selectedIndex];
+  //   console.log('Selected Segment Manager:', this.selectedSegmentManager);
+  // }
 
   selectDepartment(event: Event): void
   {
@@ -655,7 +685,7 @@ export class StatsPanelComponent implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     const selectedValue = selectElement.value;
     this.departmentOrEmployeeAvg = selectedValue;
-    console.log('Selected departmentOrEmployee:', this.departmentOrEmployeeAvg);
+    console.log('Selected departmentOrEmployeeAvg:', this.departmentOrEmployeeAvg);
   }
 
   selectCustomTimeType(event: Event): void

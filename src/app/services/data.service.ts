@@ -19,7 +19,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
+  username: string = 'zigopvo'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -137,6 +137,7 @@ export class DataService implements OnInit {
   // VSETKY TIETO GETTRE BY ASI MALI BYT API VOLANIA NA BACKEND, KTORE BY UROBILI SELECT Z DATABAZY!!!
 
   getEmployee(username: string): Observable<Employee | undefined> {
+    console.log('am i getting employee??' , username);
     return this.http.get<Employee>(`${this.apiUrl}/Employee/${username}`);
   }
 
@@ -178,8 +179,10 @@ export class DataService implements OnInit {
     return this.http.get<Employee[]>(`${this.apiUrl}/Employee`);
   }
 
-  getDepartments(): Observable<string[]>
+  getDepartments(managerId?: number): Observable<string[]>
   {
+    if (managerId != undefined)
+      return this.http.get<string[]>(`${this.apiUrl}/Employee/Departments?managerId=${managerId}`);
     return this.http.get<string[]>(`${this.apiUrl}/Employee/Departments`);
   }
 
@@ -200,6 +203,11 @@ export class DataService implements OnInit {
     // });
     // console.log('NumbersApiString: ', numbersApiString);
     return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/GetAverageOvertime?personalNumbers=${personalNumbers}&filter=${filter}&date=${date}`));
+  }
+
+  async getHierarchy(managerId: number): Promise<Employee[]>
+  {
+    return await firstValueFrom(this.http.get<Employee[]>(`${this.apiUrl}/Approval/GetEmployeesInHierarchy?managerId=${managerId}`));
   }
 
   // async getNonFulfilledLimits(date: string, managerId?: number): Promise<NonFulfilledOvertimes>
@@ -364,7 +372,8 @@ export class DataService implements OnInit {
   {
     try
     {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalsByManager?managerId=${managerId}&month=${month.toDateString()}&status=${status}`, null));
+      const monthString: string = typeof month === 'string' ? month : month.toDateString();
+      await firstValueFrom(this.http.post(`${this.apiUrl}/Approval/PostApprovalsByManager?managerId=${managerId}&month=${monthString}&status=${status}`, null));
     }
     catch (error)
     {
@@ -704,5 +713,15 @@ export class DataService implements OnInit {
 
   getOvertimeChanges(): Observable<Map<string, number>> {
     return this.overtimeSubject.asObservable();
+  }
+
+  async getNotNullYears(employeeId: number): Promise<number[]>
+  {
+    return await firstValueFrom(this.http.get<number[]>(`${this.apiUrl}/Overtime/NotNullYears?employeeId=${employeeId}`));
+  }
+
+  async getSumOvertimesYear(employeeId: number, year: number): Promise<number>
+  {
+    return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/SumOvertimesYear?year=${year}&employeeId=${employeeId}`));
   }
 }

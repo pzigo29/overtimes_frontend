@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, HostListener, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, KeyValue } from '@angular/common';
 import { TitleBarComponent } from "../shared-components/title-bar/title-bar.component";
 import { MonthsTableComponent } from "../shared-components/months-table/months-table.component";
 import { Employee, Overtime, OvertimeLimit } from '../../models/data.model';
@@ -30,6 +30,10 @@ export class OvertimeThpComponent implements OnInit {
 
   isOvertimesInfoPopupVisible: boolean = false;
 
+  notNullYears: Map<number, number> = new Map();
+  notNullYearsLoaded: boolean = false;
+  // sumOvertimeYears: number[] = []; // pridat sumOvertimeYears
+
   name: string = '';
 
   constructor(private dataService: DataService, private cd: ChangeDetectorRef) { }
@@ -47,7 +51,17 @@ export class OvertimeThpComponent implements OnInit {
         console.log('Employee received from service:', this.employee);
         this.name = this.employee?.firstName || '';
         if (this.employee) {
-          this.setData(); // Now we are sure that the employee is not undefined
+          const years: number[] = await this.dataService.getNotNullYears(this.employee.employeeId);
+          for (const year of years)
+          {
+            const sumOvertimes: number = await this.dataService.getSumOvertimesYear(this.employee.employeeId, year);
+            this.notNullYears.set(year, sumOvertimes);
+          }
+          this.dataService.selectedMonth$.subscribe(month => {
+            this.selectedMonth = month; // Update selected month
+            this.setData(); // Call setData only if employee is defined
+          });
+          this.notNullYearsLoaded = true;
         } else {
           console.error('Employee is undefined for username:', username);
         }
@@ -59,14 +73,6 @@ export class OvertimeThpComponent implements OnInit {
     } finally {
       this.loading = false; // End loading state
     }
-
-    // Subscribe to the selectedMonth$ 
-    this.dataService.selectedMonth$.subscribe(month => {
-      if (this.employee) {
-        this.selectedMonth = month; // Update selected month
-        this.setData(); // Call setData only if employee is defined
-      }
-    });
   }
 
   fetchMessage(): void
@@ -159,8 +165,32 @@ export class OvertimeThpComponent implements OnInit {
 
   showWF(): void
   {
-    alert('Not implemented yet!');
+    // alert('Not implemented yet!');
+    const pdfUrl = '/assets/workflow.pdf';
+    window.open(pdfUrl, '_blank');
   }
+
+  async getNotNullYears(): Promise<number[]>
+  {
+    if (!this.employee?.employeeId) {
+      throw new Error('Employee ID is undefined');
+    }
+    return await this.dataService.getNotNullYears(this.employee.employeeId);
+  }
+
+  sortByKeyDescending = (a: KeyValue<number, number>, b: KeyValue<number, number>): number => 
+  {
+    return b.key - a.key;
+  };
+
+  // async getSumOvertimesYear(year: number): Promise<number>
+  // {
+  //   console.log('am i getting sumOvertimesYear??');
+  //   if (!this.employee?.employeeId) {
+  //     throw new Error('Employee ID is undefined');
+  //   }
+  //   return await this.dataService.getSumOvertimesYear(this.employee.employeeId, year);
+  // }
 
   // calculateHoursToLimit(): void {
   //   this.hoursToLimit = this.overtimeMaxLimit - this.realOvertime;
