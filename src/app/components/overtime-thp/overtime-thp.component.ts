@@ -34,6 +34,8 @@ export class OvertimeThpComponent implements OnInit {
   notNullYearsLoaded: boolean = false;
   // sumOvertimeYears: number[] = []; // pridat sumOvertimeYears
 
+  shownOvertimeLimitChangeRequest: boolean = false;
+
   name: string = '';
 
   constructor(private dataService: DataService, private cd: ChangeDetectorRef) { }
@@ -92,6 +94,14 @@ export class OvertimeThpComponent implements OnInit {
     return this.dataService.isPastMonth(month);
   }
 
+  isPastDeadline(): boolean
+  {
+    let isPast = true;
+    console.log('isPastDeadline()', isPast);
+    // this.dataService.isPastDeadline().then(result => isPast = result).catch(error => console.error(error));
+    return isPast;
+  }
+
   async setData()
   {
     if (this.employee == undefined)
@@ -108,6 +118,16 @@ export class OvertimeThpComponent implements OnInit {
   async saveLimits(): Promise<void>
   {
     await this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime, this.overtimeReason);
+  }
+
+  showOvertimeLimitChangeRequest(): void
+  {
+    this.shownOvertimeLimitChangeRequest = true;
+  }
+
+  hideOvertimeLimitChangeRequest(): void
+  {
+    this.shownOvertimeLimitChangeRequest = false;
   }
 
   isSidebarActive(): boolean 

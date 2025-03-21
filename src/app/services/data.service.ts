@@ -19,7 +19,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'zigopvo'; // toto sa bude načítavať z windowsu
+  username: string = 'admin'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -80,10 +80,10 @@ export class DataService implements OnInit {
     return isBefore(endOfMonth(month), startOfMonth(today));
   }
 
-  getMessage(username: string): Observable<string>
+  async isPastDeadline(): Promise<boolean>
   {
-    // return this.http.get<string>(`${this.apiUrl}/Employee?username=${username}`, { responseType: 'text' as 'json' });
-    return this.http.get<string>(`${this.apiUrl}/WeatherForecast`, { responseType: 'text' as 'json' });
+    return await firstValueFrom(this.http.get<boolean>(`${this.apiUrl}/Overtime/IsPastDeadline`));
+    // return false;
   }
 
   compareYearAndMonth(date1: Date, date2: Date): boolean

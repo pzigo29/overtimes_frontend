@@ -74,11 +74,19 @@
                             <td>{{employee?.personalNumber}}</td>
                             <td>(Data from SAP)</td>
                             <td>{{employee?.firstName}} {{employee?.lastName}}</td>
-                            <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
-                            <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth)"></td>
+                            <td><input type="number" [(ngModel)]="minOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth) || isPastDeadline()"></td>
+                            <td><input type="number" [(ngModel)]="maxOvertime" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth) || isPastDeadline()"></td>
                             <td [ngClass]="getOvertimeStatus()">{{realOvertime}}</td>
-                            <td><textarea [(ngModel)]="overtimeReason" [disabled]="isPastMonth(selectedMonth)"></textarea></td> <!-- PRIDAT DO DB overtime_limit reason-->
+                            <td><textarea [(ngModel)]="overtimeReason" [disabled]="isPastMonth(selectedMonth) || isPastDeadline()"></textarea></td> <!-- PRIDAT DO DB overtime_limit reason-->
                             <td><input type="checkbox" [(ngModel)]="approved" disabled></td>
+                        </tr>
+                        <tr *ngIf="shownOvertimeLimitChangeRequest">
+                            <td colspan="3">{{'OVERTIME-LIMIT-CHANGE-REQUEST' | translate}}</td>
+                            <td><input type="number"></td>
+                            <td><input type="number"></td>
+                            <td></td>
+                            <td><textarea name="" id=""></textarea></td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,7 +106,9 @@
                 </table>
             </div>
             <div class="bottom-right-div">
-                <button class="submit-btn" (click)="saveLimits()" *ngIf="!isPastMonth(selectedMonth)">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+                <button class="submit-btn" (click)="showOvertimeLimitChangeRequest()" *ngIf="!isPastMonth(selectedMonth) && !shownOvertimeLimitChangeRequest && isPastDeadline()">{{'REQUEST-LIMIT-CHANGE' | translate}}</button>
+                <button class="submit-btn" (click)="hideOvertimeLimitChangeRequest()" *ngIf="!isPastMonth(selectedMonth) && shownOvertimeLimitChangeRequest">{{'CANCEL-REQUEST-LIMIT-CHANGE' | translate}}</button>
+                <button class="submit-btn" (click)="saveLimits()" *ngIf="(!isPastMonth(selectedMonth) && !isPastDeadline()) || shownOvertimeLimitChangeRequest">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
             </div> 
         </div>
     </div>
