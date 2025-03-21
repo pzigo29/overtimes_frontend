@@ -32,6 +32,17 @@ export interface OvertimeLimit
   reason: string | null;
 }
 
+export interface OvertimeLimitRequest
+{
+  requestId: number; //PK
+  employeeId: number; //FK Employee
+  minHours: number;
+  maxHours: number;
+  startDate: Date;
+  endDate: Date;
+  reason: string | null;
+}
+
 export interface Approval
 {
   approvalId: number; //PK

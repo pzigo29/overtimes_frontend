@@ -5,13 +5,14 @@ import { TitleBarComponent } from "../shared-components/title-bar/title-bar.comp
 import { MonthsTableComponent } from "../shared-components/months-table/months-table.component";
 import { Employee, Overtime, OvertimeLimit } from '../../models/data.model';
 import { DataService } from '../../services/data.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-overtime-thp',
     standalone: true,
-    imports: [FormsModule, CommonModule, TitleBarComponent, MonthsTableComponent, TranslateModule],
+    imports: [FormsModule, CommonModule, TitleBarComponent, MonthsTableComponent, TranslateModule, MatSnackBarModule],
     templateUrl: './overtime-thp.component.html',
     styleUrl: './overtime-thp.component.scss'
 })
@@ -35,17 +36,19 @@ export class OvertimeThpComponent implements OnInit {
   // sumOvertimeYears: number[] = []; // pridat sumOvertimeYears
 
   shownOvertimeLimitChangeRequest: boolean = false;
+  isPastDeadlineValue: boolean = true;
 
   name: string = '';
 
-  constructor(private dataService: DataService, private cd: ChangeDetectorRef) { }
+  constructor(private dataService: DataService, private cd: ChangeDetectorRef, private snackBar: MatSnackBar, private translate: TranslateService) { }
 
   async ngOnInit() {
     this.loading = true; // Start loading state
     try {
       let username: string | null = null;
       username = await firstValueFrom(this.dataService.getThpUsername());
-      
+      this.isPastDeadlineValue = await this.dataService.isPastDeadline();
+      console.log('isPastDeadlineValue:', this.isPastDeadlineValue);
       if (username) {
         console.log('Fetched username:', username);
         this.employee = await firstValueFrom(this.dataService.getEmployee(username));
@@ -96,10 +99,10 @@ export class OvertimeThpComponent implements OnInit {
 
   isPastDeadline(): boolean
   {
-    let isPast = true;
-    console.log('isPastDeadline()', isPast);
+    // let isPast = true;
+    // console.log('isPastDeadline()', isPast);
     // this.dataService.isPastDeadline().then(result => isPast = result).catch(error => console.error(error));
-    return isPast;
+    return this.isPastDeadlineValue;
   }
 
   async setData()
@@ -117,7 +120,41 @@ export class OvertimeThpComponent implements OnInit {
 
   async saveLimits(): Promise<void>
   {
-    await this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime, this.overtimeReason);
+    const close = this.translate.instant('CLOSE');
+    try
+    {
+      if (!this.isPastDeadlineValue)
+      {
+        await this.dataService.setLimit(this.employee?.employeeId || 0, this.selectedMonth, this.minOvertime, this.maxOvertime, this.overtimeReason);
+      }
+      else
+      {
+        const minLimit = (document.getElementById('requestMinLimit') as HTMLInputElement).value;
+        const maxLimit = (document.getElementById('requestMaxLimit') as HTMLInputElement).value;
+        const reason = (document.getElementById('requestReason') as HTMLInputElement).value;
+        await this.dataService.postLimitRequest(this.employee?.employeeId || 0, this.selectedMonth, +minLimit, +maxLimit, reason);
+        this.shownOvertimeLimitChangeRequest = false;
+      }
+      const goodMessage = this.translate.instant('SAVED-LIMITS');
+      this.snackBar.open(goodMessage, close, {
+        duration: 3000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success', 'snackbar'],
+      });
+    }
+    catch (error)
+    {
+      console.error('Error saving limits:', error);
+      const badMessage = this.translate.instant('ERROR-SAVING');
+
+      this.snackBar.open(badMessage, close, {
+        duration: 3000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error', 'snackbar'],
+      });
+    }
   }
 
   showOvertimeLimitChangeRequest(): void

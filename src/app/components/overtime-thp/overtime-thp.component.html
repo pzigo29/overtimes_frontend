@@ -82,10 +82,10 @@
                         </tr>
                         <tr *ngIf="shownOvertimeLimitChangeRequest">
                             <td colspan="3">{{'OVERTIME-LIMIT-CHANGE-REQUEST' | translate}}</td>
-                            <td><input type="number"></td>
-                            <td><input type="number"></td>
+                            <td><input type="number" id="requestMinLimit"></td>
+                            <td><input type="number" id="requestMaxLimit"></td>
                             <td></td>
-                            <td><textarea name="" id=""></textarea></td>
+                            <td><textarea id="requestReason"></textarea></td>
                             <td></td>
                         </tr>
                     </tbody>

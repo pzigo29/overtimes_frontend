@@ -99,29 +99,30 @@
                 <tbody [formGroup]="overtimeForm">
                     <tr>
                         <td (dblclick)="selectEmployee(leader)" title="Detail" class="cursor-pointer light-blue">{{leader?.firstName}} {{leader?.lastName}}</td>
-                        <td class="light-blue"><input type="number" min="0" [value]="leaderMinLimit" (change)="setLeaderMinLimit($event)" [disabled]="isPastMonth(selectedMonth) || !editable"></td>
-                        <td class="light-blue"><input type="number" min="0" [value]="leaderMaxLimit" (change)="setLeaderMaxLimit($event)" [disabled]="isPastMonth(selectedMonth) || !editable"></td>
+                        <td class="light-blue"><input type="number" min="0" [value]="leaderMinLimit" (change)="setLeaderMinLimit($event)" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></td>
+                        <td class="light-blue"><input type="number" min="0" [value]="leaderMaxLimit" (change)="setLeaderMaxLimit($event)" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></td>
                         <td class="light-blue" [ngClass]="getOvertimeStatus(leader)">{{leaderSumOvertimes}}</td>
-                        <td class="light-blue"><textarea [value]="leaderReason" (change)="setLeaderReason($event)" [disabled]="isPastMonth(selectedMonth) || !editable"></textarea></td>
+                        <td class="light-blue"><textarea [value]="leaderReason" (change)="setLeaderReason($event)" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></textarea></td>
                         <td class="light-blue"><input type="checkbox" [disabled]="true" [checked]="leaderApproved" (change)="setLeaderApproved($event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth) || !editable"></td>
                     </tr>
                     <tr *ngFor="let member of filteredTeam">
                         <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.firstName}} {{member?.lastName}}</td>
-                        <td><input type="number" [formControlName]="member.username + '_min'" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth) || !editable"></td>
-                        <td><input type="number" [formControlName]="member.username + '_max'" min="0" step="0.5" [disabled]="isPastMonth(selectedMonth) || !editable"></td>
+                        <td><input type="number" [formControlName]="member.username + '_min'" min="0" step="0.5" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></td>
+                        <td><input type="number" [formControlName]="member.username + '_max'" min="0" step="0.5" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></td>
                         <td [ngClass]="getOvertimeStatus(member)">{{teamRealOvertimes.get(member.username)}}</td>
                         <!-- <td><input type="text" [formControlName]="getOvertimeReason(member, selectedMonth)" (change)="setReason(member, $event)"></td> PRIDAT DO DB overtime_limit reason -->
-                        <td><textarea [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)" [disabled]="isPastMonth(selectedMonth) || !editable"></textarea></td>
+                        <td><textarea [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></textarea></td>
                         <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth) || !editable"></td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="bottom-right-div">
-            <button *ngIf="!isPastMonth(selectedMonth) && editable" class="submit-btn" (click)="editable = false; setData()">{{'BUTTON.DISCARD' | translate}}</button>
-            <button *ngIf="!isPastMonth(selectedMonth) && editable" class="submit-btn" (click)="saveLimits()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
-            <button *ngIf="!isPastMonth(selectedMonth) && !editable" class="submit-btn" (click)="editable = true; setData()">{{'BUTTON.EDIT' | translate}}</button>
+            <button *ngIf="dataService.userEmployee?.levelRole !== 5 && (!isPastMonth(selectedMonth) && editable)" class="submit-btn" (click)="editable = false; setData()">{{'BUTTON.DISCARD' | translate}}</button>
+            <button *ngIf="dataService.userEmployee?.levelRole !== 5 && (!isPastMonth(selectedMonth) && editable)" class="submit-btn" (click)="saveLimits()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+            <button *ngIf="dataService.userEmployee?.levelRole !== 5 && (!isPastMonth(selectedMonth) && !editable)" class="submit-btn" (click)="editable = true; setData()">{{'BUTTON.EDIT' | translate}}</button>
         </div>
+    </div>
     </div>
 </div>
 

@@ -10,18 +10,19 @@ body {
   padding: 0;
   background-color: #f4f4f4;
   overflow-x: auto;
+  height: 100%;
 }
 
 .container {
   width: 95%;
-  height: 95%;
-  margin: 50px auto;
-  padding: 20px;
+  min-height: 95vh;
+  margin: 20px auto 20px auto;
+  padding: 20px 20px 50px 20px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
-  
+  overflow: auto;
 }
 
 .filter-btn-container {
@@ -491,6 +492,33 @@ body.dark-mode .container-dark-mode {
   color: #ffffff;
 }
 
+.snackbar {
+  border-radius: 8px;
+}
+
+.snackbar-success .mat-button {
+  color: white !important; /* Farba textu tlačidla */
+}
+
+.snackbar-success .mat-button:hover {
+  color: #4caf50 !important; /* Farba textu pri hoveri (zelená) */
+}
+
+.snackbar-success {
+  background-color: #49ba4d !important;
+  color: white !important;
+}
+
+.snackbar-danger {
+  background-color: #e6f109 !important;
+  color: white !important;
+}
+
+.snackbar-error {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
 @media (max-width: $limits-table-max-width) {
   .limits-table {
     display: none;
@@ -579,3 +607,5 @@ body.dark-mode .container-dark-mode {
       width: max-content;
     }
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

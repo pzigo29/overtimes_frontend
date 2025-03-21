@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 import { of, Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
-import { Approval, Email, Employee, MonthOvertime, NonFulfilledOvertimes, Overtime, OvertimeLimit, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
+import { Approval, Email, Employee, MonthOvertime, NonFulfilledOvertimes, Overtime, OvertimeLimit, OvertimeLimitRequest, OvertimeType, ScheduledJobs, WorkflowActionSchedule } from '../models/data.model';
 import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
@@ -19,7 +19,7 @@ export class DataService implements OnInit {
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'admin'; // toto sa bude načítavať z windowsu
+  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -82,8 +82,9 @@ export class DataService implements OnInit {
 
   async isPastDeadline(): Promise<boolean>
   {
-    return await firstValueFrom(this.http.get<boolean>(`${this.apiUrl}/Overtime/IsPastDeadline`));
-    // return false;
+    console.log('isPastDeadline');
+    return await firstValueFrom(this.http.get<boolean>(`${this.apiUrl}/WorkflowActionsSchedule/IsPastTHPDeadline`));8
+    // return true;
   }
 
   compareYearAndMonth(date1: Date, date2: Date): boolean
@@ -406,6 +407,29 @@ export class DataService implements OnInit {
       currentOvertimes.set(employee_id.toString(), max_hours);
       this.overtimeSubject.next(currentOvertimes);
     } catch (error) {
+      console.error('Error setting limit:', error);
+      throw error;
+    }
+  }
+
+  async postLimitRequest(employee_id: number, month: Date, min_hours: number, max_hours: number, reason: string | null): Promise<void>
+  {
+    try
+    {
+      const request: OvertimeLimitRequest = 
+      {
+        requestId: 0,
+        employeeId: employee_id,
+        minHours: min_hours,
+        maxHours: max_hours,
+        startDate: month,
+        endDate: new Date(month.getFullYear(), month.getMonth() + 1, 0),
+        reason: reason
+      }
+      await firstValueFrom(this.http.post(`${this.apiUrl}/OvertimeLimitRequest/PostLimitRequest`, request));
+    }
+    catch (error)
+    {
       console.error('Error setting limit:', error);
       throw error;
     }
