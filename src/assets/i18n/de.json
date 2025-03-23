@@ -16,9 +16,11 @@
         "EXPORT-TO-XLSX": "Export nach XLSX",
         "CONFIRM": "Bestätigen",
         "APPLY": "Anwenden",
-        "SHOW-NON-FULFILLED": "Nicht erfüllte anzeigen"
+        "SHOW-NON-FULFILLED": "Nicht erfüllte anzeigen",
+        "EDIT": "Bearbeiten",
+        "DISCARD": "Verwerfen",
+        "DELEGATE-SETTING": "Delegateneinstellungen"
     },
-
     "SUMMARY": "Zusammenfassung",
     "MONTH": "Monat",
     "EMPLOYEE": "Mitarbeiter",
@@ -31,58 +33,51 @@
     "APPROVED": "Genehmigt",
     "MNG-COMMENT": "Kommentar des Managers",
     "MNG-RND-COMMENT": "Kommentar des RnD-Managers",
-    
     "LIMITS": {
         "ALL": "Alle Grenzen",
         "FULFILLED": "Erfüllte Grenzen",
         "NOT-FULFILLED": "Nicht erfüllte Grenzen"
     },
-
     "PERSONAL-NUMBER": "Personalnummer",
     "SUPERIOR": "Vorgesetzter",
     "D-SEGMENT": "D-Segment",
     "USERNAME": "Benutzername",
     "COST-CENTER": "Kostenstelle",
-
+    "LASTNAME": "Nachname",
+    "FIRSTNAME": "Vorname",
     "TITLE": {
         "TL-TEAM-DETAIL": "Mitarbeiterdetail",
         "TL": "Mein Team",
         "SEGMENT": "Segment",
         "RND": "Überstunden RnD",
         "ADMIN": "Verwaltung",
-        "STATS": "Statistiken"
+        "STATS": "Statistiken",
+        "MY-OVERTIMES": "Meine Überstunden"
     },
-
     "OVERTIME-RULES": "Überstundenregeln",
     "SEGMENT": "Segment",
-
     "WORKFLOW": "Arbeitsablauf",
     "EMAILS": "E-Mails",
     "SCHEDULED-JOBS": "Geplante Aufgaben",
     "OVERTIME-TYPES": "Überstundenarten",
-
     "ACTION": "Aktion",
     "WORK-DAY": "Arbeitstag",
     "EMAIL-ID": "E-Mail-ID",
-
     "SUBJECT": "Betreff",
     "MESSAGE": "Nachricht",
-
     "JOB-ID": "Job-ID",
     "JOB-NAME": "Jobname",
     "LAST-EXECUTION-DATE": "Letztes Ausführungsdatum",
-
     "TYPE-ID": "Typ-ID",
     "TYPE-NAME": "Typname",
-
     "FULFILLED": "Erfüllte Grenzen",
     "NON-FULFILLED": "Nicht erfüllte Grenzen",
     "EXCEEDED-RULE": "Überschrittene gesetzliche Grenzen",
     "NOT-EXCEEDED": "Nicht überschrittene gesetzliche Grenzen",
-
     "APPROVED-OVERTIMES": "Genehmigte Überstunden",
+    "HO-OVERTIMES": "HO-Überstunden",
+    "OFFICE-OVERTIMES": "Büro-Überstunden",
     "ALL": "Alle",
-
     "JANUARY": "Januar",
     "FEBRUARY": "Februar",
     "MARCH": "März",
@@ -105,12 +100,21 @@
     "OVERTIME-HOURS": "Überstunden",
     "OVERTIMES-TYPES-SHARES": "Anteile der Überstundenarten",
     "CUSTOM-TIME-SELECTION": "Benutzerdefinierte Zeitauswahl",
-
     "START-DATE": "Anfangsdatum",
     "END-DATE": "Enddatum",
     "TYPE": "Typ",
-
     "LONGTERM-OVERTIMES": "Langfristige Überstunden",
     "OVERTIMES": "Überstunden",
-    "AVERAGE": "Durchschnitt"
+    "AVERAGE": "Durchschnitt",
+    "SHOW-WF": "Workflow anzeigen",
+    "KKONTO-PREV": "KKonto (vorherig)",
+    "REQUEST-LIMIT-CHANGE": "Grenzänderung anfordern",
+    "OVERTIME-LIMIT-CHANGE-REQUEST": "Anfrage zur Änderung der Überstundenbegrenzung",
+    "CANCEL-REQUEST-LIMIT-CHANGE": "Anfrage zur Grenzänderung abbrechen",
+    "CHANGE-REQUEST": "Änderungsanfrage",
+    "CHANGE-REQUESTS": "Änderungsanfragen",
+    "SAVED-LIMITS": "Gespeicherte Grenzen",
+    "ERROR-SAVING": "Fehler beim Speichern",
+    "CLOSE": "Schließen",
+    "INFO-REAL-OVERTIMES": "Daten von <a href ='https://webup1.schaeffler.com:62884/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=100#SGD_HR_TIMESLIP-display' target='_blank'>ESS</a>. Diese Daten sind nur korrekt, wenn die Anwesenheit korrekt ist"
 }

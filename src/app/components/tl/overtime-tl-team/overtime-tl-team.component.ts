@@ -27,6 +27,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   teamMaxLimits: Map<string, number> = new Map<string, number>();
   teamApproved: Map<string, boolean> = new Map<string, boolean>();
   teamReason: Map<string, string> = new Map<string, string>();
+  teamRequestCounts: Map<string, number> = new Map<string, number>();
   realOvertimeSum: number = 0;
   minOvertimeSum: number = 0;
   maxOvertimeSum: number = 0;
@@ -41,6 +42,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   leaderMaxLimit: number = 0;
   leaderReason: string = '';
   leaderApproved: boolean = false;
+  leaderRequestCount: number = 0;
   // approved: boolean = true;
   lastNameSortState: SortState = SortState.NONE;
   minLimitSortState: SortState = SortState.NONE;
@@ -49,6 +51,8 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
   approvedSortState: SortState = SortState.NONE;
 
   editable: boolean = false;
+
+  isPastDeadlineValue: boolean = true;
 
   constructor(public dataService: DataService, private fb: FormBuilder, private router: Router, private location: Location, private cd: ChangeDetectorRef) {
     this.overtimeForm = this.fb.group({
@@ -64,6 +68,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       let username: string | null = await firstValueFrom(this.dataService.getTlUsername());
       if (username) {
         this.leader = await firstValueFrom(this.dataService.getEmployee(username));
+        this.isPastDeadlineValue = await this.dataService.isPastDeadline();
         if (this.leader) 
         {
           this.filteredTeam = await firstValueFrom(this.dataService.getTeamMembers(this.leader.employeeId));
@@ -79,6 +84,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
           this.teamRealOvertimes.set(member.username, 0);
           this.teamMinLimits.set(member.username, 0);
           this.teamMaxLimits.set(member.username, 0);
+          this.teamRequestCounts.set(member.username, 0);
         });
 
         await this.setData(); // Call the function to set whatever data is necessary
@@ -157,12 +163,14 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       const maxLimit = (limit?.maxHours || 0) < 0 ? 0 : limit?.maxHours || 0;
       const approved = limit?.statusId === 'A' ? true : false;
       const reason = limit?.reason || '';
-
+      const requestCount = await this.dataService.getRequestCount(member.employeeId, this.selectedMonth);
+      
       this.teamRealOvertimes.set(member.username, overtimes);
       this.teamMinLimits.set(member.username, minLimit);
       this.teamMaxLimits.set(member.username, maxLimit);
       this.teamApproved.set(member.username, approved);
       this.teamReason.set(member.username, reason);
+      this.teamRequestCounts.set(member.username, requestCount);
 
       const isPast: boolean = this.isPastMonth(this.selectedMonth);
 
@@ -311,6 +319,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.leaderMaxLimit = await this.dataService.getMaxLimit(this.leader.employeeId, this.selectedMonth);
       this.leaderApproved = await this.dataService.getApprovedStatus(this.leader.employeeId, this.selectedMonth);
       this.leaderReason = await this.dataService.getLimitReason(this.leader.employeeId, this.selectedMonth);
+      this.leaderRequestCount = await this.dataService.getRequestCount(this.leader.employeeId, this.selectedMonth);
     }
     else
     {
@@ -319,6 +328,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.leaderMinLimit = 0;
       this.leaderApproved = false;
       this.leaderReason = '';
+      this.leaderRequestCount = 0;
     }
   }
 
@@ -444,4 +454,28 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
       this.filteredTeam.sort((a, b) => b.lastName.localeCompare(a.lastName));
     this.lastNameSortState = this.lastNameSortState === SortState.ASC ? SortState.DESC : SortState.ASC;
   }
+
+  isPastDeadline(): boolean
+  {
+    return this.isPastDeadlineValue;
+  }
+
+  async openChangeRequests(employee?: Employee): Promise<void>
+  {
+    if (employee)
+      {
+        try
+        {
+          await this.dataService.setSelectedEmployee(employee.username);
+          this.router.navigate(['tl/team/detail'], { queryParams: { source: this.router.url, action: 'showChangeRequests' } });
+        } catch (error) {
+          console.error('Error fetching employee', error);
+        }
+      }
+  }
+
+  // getRequestCount(employee: Employee, month: Date): number
+  // {
+  //   return this.dataService.getRequestCount(employee.employeeId, month);
+  // }
 }

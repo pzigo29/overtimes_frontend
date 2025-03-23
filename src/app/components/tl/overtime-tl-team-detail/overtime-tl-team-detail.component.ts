@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TitleBarComponent } from "../../shared-components/title-bar/title-bar.component";
-import { Employee } from '../../../models/data.model';
+import { Employee, OvertimeLimitRequest } from '../../../models/data.model';
 import { DataService } from '../../../services/data.service';
 import { Router } from '@angular/router';
 import { NgModel } from '@angular/forms';
@@ -8,23 +8,40 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
 import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
+import { DraggableModalComponent } from '../../../draggable-modal/draggable-modal.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-overtime-tl-team-detail',
     standalone: true,
-    imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent, TranslateModule],
+    imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent, TranslateModule, DraggableModalComponent],
     templateUrl: './overtime-tl-team-detail.component.html',
     styleUrl: './overtime-tl-team-detail.component.scss'
 })
 export class OvertimeTLTeamDetailComponent implements OnInit {
+  @ViewChild('myModal') modal!: DraggableModalComponent;
+
+  modalReady: boolean = false;
+
   title: string = 'TL-TEAM-DETAIL';
   selectedEmployee?: Employee;
   minLimit: number = 0;
   maxLimit: number = 0;
   realOvertime: number = 0;
+  reason: string = '';
+  approved: boolean = false;
   selectedMonth: Date = new Date();
 
-  constructor(private dataService: DataService, private router: Router, private location: Location) {}
+  requestCount: number = 0;
+  requests: OvertimeLimitRequest[] = [];
+
+  constructor(private dataService: DataService, private router: Router, private location: Location, private route: ActivatedRoute) {}
+
+  ngAfterViewInit(): void 
+  {
+    this.modalReady = true;
+    console.log('Modal ready:', this.modal);
+  }
 
   ngOnInit(): void {
     if (typeof sessionStorage !== 'undefined') 
@@ -40,6 +57,12 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     {
       console.warn('Session storage is not available');
     }
+
+    this.route.queryParams.subscribe(params => {
+      if (params['action'] === 'showChangeRequests') {
+        this.showChangeRequests();
+      }
+    });
 
     this.dataService.getSelectedEmployee().subscribe(
       (data: Employee | undefined) => {
@@ -99,11 +122,39 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     this.minLimit = await this.dataService.getMinLimit(this.selectedEmployee.employeeId, this.selectedMonth);
     this.maxLimit = await this.dataService.getMaxLimit(this.selectedEmployee.employeeId, this.selectedMonth);
     this.realOvertime = await this.dataService.getSumOvertime(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.requestCount = await this.dataService.getRequestCount(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.requests = await this.dataService.getRequests(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.reason = await this.dataService.getLimitReason(this.selectedEmployee.employeeId, this.selectedMonth);
+    this.approved = await this.dataService.getApprovedStatus(this.selectedEmployee.employeeId, this.selectedMonth);
   }
 
   async saveLimits(): Promise<void>
   {
     await this.dataService.setLimit(this.selectedEmployee?.employeeId || 0, this.selectedMonth, this.minLimit, this.maxLimit);
+  }
+
+  showChangeRequests(): void {
+    this.openModal();
+  }
+
+  openModal(): void {
+    console.log('Opening modal', this.modal);
+    if (this.modalReady && this.modal) {
+      this.modal.open();
+    } else {
+      // Alternatívne riešenie - skúsiť znova po krátkom čase
+      setTimeout(() => {
+        if (this.modal) {
+          this.modal.open();
+        } else {
+          console.error('Modal is still not defined after timeout');
+        }
+      }, 100);
+    }
+  }
+
+  closeModal(): void {
+    this.modal.close();
   }
 
   getOvertimeStatus(employee: Employee): string {

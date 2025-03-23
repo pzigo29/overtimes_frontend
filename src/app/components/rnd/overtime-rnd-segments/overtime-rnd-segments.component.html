@@ -71,7 +71,7 @@
                 <button class="submit-btn" (click)="showTeamsSite()">{{'BUTTON.SHOW-TEAMS' | translate}}</button>
             </div> -->
             <div class="bottom-right-div">
-                <button class="submit-btn" (click)="saveChanges()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
+                <button class="submit-btn" (click)="saveChanges()" *ngIf="!isPastMonth(selectedMonth)">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
             </div>
         </div>
         <div *ngIf="loading" class="overtime-form-row">Loading...</div> 

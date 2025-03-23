@@ -1,0 +1,19 @@
+<div class="modal-backdrop" *ngIf="isVisible" (click)="closeOnBackdrop && close()">
+    <div
+        class="modal"
+        [style.top.px]="modalTop"
+        [style.left.px]="modalLeft"
+        (click)="$event.stopPropagation()"
+        #modalElement>
+        <div
+            class="modal-header"
+            (mousedown)="startDragging($event)"
+            #modalHeader>
+            <h3>{{title}}</h3>
+            <button (click)="close()" class="close-btn">X</button>
+        </div>
+        <div class="modal-body">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

@@ -16,7 +16,10 @@
         "EXPORT-TO-XLSX": "Export do XLSX",
         "CONFIRM": "Potvrdiť",
         "APPLY": "Použiť",
-        "SHOW-NON-FULFILLED": "Zobraziť nesplnené"
+        "SHOW-NON-FULFILLED": "Zobraziť nesplnené",
+        "EDIT": "Upraviť",
+        "DISCARD": "Zrušiť",
+        "DELEGATE-SETTING": "Nastavenie zástupcov"
     },
 
     "SUMMARY": "Sumár",
@@ -43,13 +46,16 @@
     "D-SEGMENT": "D-segment",
     "USERNAME": "Používateľské meno",
     "COST-CENTER": "Nákladové stredisko",
+    "LASTNAME": "Priezvisko",
+    "FIRSTNAME": "Meno",
     "TITLE": {
         "TL-TEAM-DETAIL": "Detail zamestnanca",
         "TL": "Môj tím",
         "SEGMENT": "Segment",
         "RND": "Nadčasy RnD",
         "ADMIN": "Administrácia",
-        "STATS": "Štatistiky"
+        "STATS": "Štatistiky",
+        "MY-OVERTIMES": "Moje nadčasy"
     },
 
     "OVERTIME-RULES": "Pravidlá pre nadčasy",
@@ -80,6 +86,8 @@
     "NOT-EXCEEDED": "Neprekročené zákonné limity",
 
     "APPROVED-OVERTIMES": "Schválené nadčasy",
+    "HO-OVERTIMES": "HO nadčasy",
+    "OFFICE-OVERTIMES": "Office nadčasy",
     "ALL": "Všetky",
 
     "JANUARY": "Január",
@@ -113,7 +121,16 @@
     "LONGTERM-OVERTIMES": "Dlhodobé nadčasy",
     "OVERTIMES": "Nadčasy",
     "AVERAGE": "Priemer",
-    
+    "SHOW-WF": "Zobraz workflow",
+    "KKONTO-PREV": "KKonto (predch.)",
+    "REQUEST-LIMIT-CHANGE": "Požiadať o zmenu limitu",
+    "OVERTIME-LIMIT-CHANGE-REQUEST": "Žiadosť o zmenu limitu nadčasov",
+    "CANCEL-REQUEST-LIMIT-CHANGE": "Zrušiť žiadosť o zmenu limitu",
+    "CHANGE-REQUEST": "Žiadosť o zmenu",
+    "CHANGE-REQUESTS": "Žiadosti o zmenu",
+    "SAVED-LIMITS": "Uložené limity",
+    "ERROR-SAVING": "Chyba pri ukladaní",
+    "CLOSE": "Zavrieť",
 
     "INFO-REAL-OVERTIMES": "Dáta z <a href ='https://webup1.schaeffler.com:62884/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=100#SGD_HR_TIMESLIP-display' target='_blank'>ESS</a>. Tieto dáta platia iba v prípade, že je správne zaznamenaná dochádzka"
 }

@@ -16,7 +16,10 @@
         "EXPORT-TO-XLSX": "Export to XLSX",
         "CONFIRM": "Confirm",
         "APPLY": "Apply",
-        "SHOW-NON-FULFILLED": "Show non-fulfilled"
+        "SHOW-NON-FULFILLED": "Show non-fulfilled",
+        "EDIT": "Edit",
+        "DISCARD": "Discard",
+        "DELEGATE-SETTING": "Delegate setting"
     },
 
     "SUMMARY": "Summary",
@@ -43,6 +46,8 @@
     "D-SEGMENT": "D-segment",
     "USERNAME": "Username",
     "COST-CENTER": "Cost center",
+    "LASTNAME": "Last name",
+    "FIRSTNAME": "First name",
 
     "TITLE": {
         "TL-TEAM-DETAIL": "Employee detail",
@@ -50,7 +55,8 @@
         "SEGMENT": "Segment",
         "RND": "Overtimes RnD",
         "ADMIN": "Administration",
-        "STATS": "Statistics"
+        "STATS": "Statistics",
+        "MY-OVERTIMES": "My overtimes"
     },
 
     "OVERTIME-RULES": "Overtime rules",
@@ -81,6 +87,8 @@
     "NOT-EXCEEDED": "Not exceeded legal limits",
 
     "APPROVED-OVERTIMES": "Approved overtimes",
+    "HO-OVERTIMES": "HO overtimes",
+    "OFFICE-OVERTIMES": "Office overtimes",
     "ALL": "All",
 
     "JANUARY": "January",
@@ -114,6 +122,17 @@
     "LONGTERM-OVERTIMES": "Long-term overtimes",
     "OVERTIMES": "Overtimes",
     "AVERAGE": "Average",
+
+    "SHOW-WF": "Show workflow",
+    "KKONTO-PREV": "KKonto (previous)",
+    "REQUEST-LIMIT-CHANGE": "Request limit change",
+    "OVERTIME-LIMIT-CHANGE-REQUEST": "Overtime limit change request",
+    "CANCEL-REQUEST-LIMIT-CHANGE": "Cancel limit change request",
+    "CHANGE-REQUEST": "Change request",
+    "CHANGE-REQUESTS": "Change requests",
+    "SAVED-LIMITS": "Saved limits",
+    "ERROR-SAVING": "Error while saving",
+    "CLOSE": "Close",
 
     "INFO-REAL-OVERTIMES": "Data from <a href ='https://webup1.schaeffler.com:62884/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=100#SGD_HR_TIMESLIP-display' target='_blank'>ESS</a>. This data is correct only when attendance is okay"
 }

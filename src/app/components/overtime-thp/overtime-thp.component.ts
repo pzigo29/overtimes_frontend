@@ -18,7 +18,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 })
 
 export class OvertimeThpComponent implements OnInit {
-  title: string = 'Moje nadčasy';
+  title: string = 'MY-OVERTIMES';
   employee?: Employee;
   isTableVisible: boolean = true;
   realOvertime: number = 0;
@@ -136,6 +136,7 @@ export class OvertimeThpComponent implements OnInit {
         this.shownOvertimeLimitChangeRequest = false;
       }
       const goodMessage = this.translate.instant('SAVED-LIMITS');
+      console.log('mal by sa objaviť snackbar');
       this.snackBar.open(goodMessage, close, {
         duration: 3000,
         horizontalPosition: 'right',

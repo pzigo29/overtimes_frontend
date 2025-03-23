@@ -748,4 +748,24 @@ export class DataService implements OnInit {
   {
     return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/Overtime/SumOvertimesYear?year=${year}&employeeId=${employeeId}`));
   }
+
+  async getRequestCount(employeeId: number, month: Date): Promise<number>
+  {
+    // console.log('Request count: ', employeeId, month);
+    if (typeof month === 'string')
+    {
+      month = new Date(month);
+    }
+    console.log('Request count: ', employeeId, month);
+    return await firstValueFrom(this.http.get<number>(`${this.apiUrl}/OvertimeLimitRequest/RequestCount?employeeId=${employeeId}&month=${month.getFullYear()}-${month.getMonth() + 1}`));
+  }
+
+  async getRequests(employeeId: number, month: Date): Promise<OvertimeLimitRequest[]>
+  {
+    if (typeof month === 'string')
+    {
+      month = new Date(month);
+    }
+    return await firstValueFrom(this.http.get<OvertimeLimitRequest[]>(`${this.apiUrl}/OvertimeLimitRequest/Requests?employeeId=${employeeId}&month=${month.getFullYear()}-${month.getMonth() + 1}`));
+  }
 }

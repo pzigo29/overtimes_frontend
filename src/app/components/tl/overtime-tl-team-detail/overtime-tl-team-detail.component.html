@@ -28,31 +28,59 @@
                         <td [ngClass]="selectedEmployee ? getOvertimeStatus(selectedEmployee) : ''">{{realOvertime}}</td>
                     </tr>
                     <tr>
-                        <td>HO hodiny</td>
+                        <td>{{'HO-OVERTIMES' | translate}}</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Office hodiny</td>
+                        <td>{{'OFFICE-OVERTIMES' | translate}}</td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>{{'REASON' | translate}}</td>
-                        <td>Nič zatiaľ</td>
+                        <td><textarea [ngModel]="reason" [disabled]="isPastMonth(selectedMonth)"></textarea></td>
                     </tr>
                     <tr>
                         <td>{{'APPROVED' | translate}}</td>
-                        <td><input type="checkbox" name="approved" id="approved" disabled></td>
+                        <td><input type="checkbox" [(ngModel)]="approved" disabled></td>
                     </tr>
-                    <tr>
-                        <td>Žiadosť o zmenu</td>
+                    <!-- <tr>
+                        <td>{{'CHANGE-REQUESTS' | translate}}</td>
                         <td><input type="checkbox" name="changeRequest" id="changeRequest" disabled></td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
             <div class="button-container">
-                <button class="submit-btn">{{ 'BUTTON.EMPLOYEE-ESTIMATE' | translate }}</button>
+                <button class="submit-btn" (click)="showChangeRequests()" *ngIf="requests.length > 0">{{ 'CHANGE-REQUESTS' | translate }}</button>
                 <button class="submit-btn" (click)="saveLimits()">{{ 'BUTTON.SAVE-CHANGES' | translate }}</button>
             </div>
+            <app-draggable-modal #myModal [title]="'CHANGE-REQUESTS' | translate" [hidden]="false">
+                <div class="modal-content">
+                    <div class="overtime-form-col">
+                        <table class="excel-table limits-table" *ngFor="let changeRequest of requests; let i = index">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">{{'CHANGE-REQUEST' | translate}} #{{i + 1}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{'MIN-LIMIT' | translate}}</td>
+                                    <td>{{changeRequest.minHours}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{'MAX-LIMIT' | translate}}</td>
+                                    <td>{{changeRequest.maxHours}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{'REASON' | translate}}</td>
+                                    <td><textarea [disabled]="true">{{changeRequest.reason}}</textarea></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="submit-btn" (click)="closeModal()">{{'CLOSE' | translate}}</button>
+                    </div>
+                </div>
+            </app-draggable-modal>
         </div>
     </div>
     

@@ -94,6 +94,9 @@
                             <i class="fas fa-sort-up" [class.inactive]="approvedSortState !== 1"></i>
                             <i class="fas fa-sort-down" [class.inactive]="approvedSortState !== 2"></i>
                         </th>
+                        <th *ngIf="isPastDeadline() && !isPastMonth(selectedMonth)">
+                            {{'CHANGE-REQUESTS' | translate}}
+                        </th>
                     </tr>
                 </thead>
                 <tbody [formGroup]="overtimeForm">
@@ -104,6 +107,9 @@
                         <td class="light-blue" [ngClass]="getOvertimeStatus(leader)">{{leaderSumOvertimes}}</td>
                         <td class="light-blue"><textarea [value]="leaderReason" (change)="setLeaderReason($event)" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></textarea></td>
                         <td class="light-blue"><input type="checkbox" [disabled]="true" [checked]="leaderApproved" (change)="setLeaderApproved($event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth) || !editable"></td>
+                        <td class="light-blue" *ngIf="isPastDeadline() && !isPastMonth(selectedMonth)">
+                            <span *ngIf="leaderRequestCount > 0" class="circle-badge cursor-pointer" (click)="openChangeRequests(leader)">{{leaderRequestCount}}</span>
+                        </td>
                     </tr>
                     <tr *ngFor="let member of filteredTeam">
                         <td (dblclick)="selectEmployee(member)" title="Detail" class="cursor-pointer">{{member?.firstName}} {{member?.lastName}}</td>
@@ -113,6 +119,9 @@
                         <!-- <td><input type="text" [formControlName]="getOvertimeReason(member, selectedMonth)" (change)="setReason(member, $event)"></td> PRIDAT DO DB overtime_limit reason -->
                         <td><textarea [formControlName]="member.username + '_reason'" (change)="setReason(member, $event)" [disabled]="dataService.userEmployee?.levelRole === 5 || isPastMonth(selectedMonth) || !editable"></textarea></td>
                         <td><input type="checkbox" [formControlName]="member.username + '_approved'" (change)="setApproved(member, $event)" [disabled]="dataService.userEmployee?.levelRole !== 1 || isPastMonth(selectedMonth) || !editable"></td>
+                        <td *ngIf="isPastDeadline() && !isPastMonth(selectedMonth)">
+                            <span *ngIf="(teamRequestCounts.get(member.username) ?? 0) > 0" class="circle-badge cursor-pointer" (click)="openChangeRequests(member)">{{teamRequestCounts.get(member.username) ?? 0}}</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>

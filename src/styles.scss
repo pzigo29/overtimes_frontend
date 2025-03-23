@@ -15,7 +15,7 @@ body {
 
 .container {
   width: 95%;
-  min-height: 95vh;
+  // height: 95%;
   margin: 20px auto 20px auto;
   padding: 20px 20px 50px 20px;
   background: #fff;
@@ -237,7 +237,19 @@ input[readonly] {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  
+}
+
+.close-btn {
+  background-color: #181d1a; /* Green background */
+  color: #fff; /* White text color */
+  padding: 10px;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.close-btn:hover {
+  background-color: #de1a14; /* Darker green */
 }
 
 .back-btn {
@@ -377,6 +389,19 @@ table.excel-table td:hover {
 
 .light-blue {
   background-color: #bcd4d6 !important;
+}
+
+.circle-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: rgb(220, 23, 23);
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .table-border {
