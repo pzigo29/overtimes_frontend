@@ -92,7 +92,7 @@ export class StatsPanelComponent implements OnInit {
     this.statTypes = [
       await firstValueFrom(this.translate.get('LIMITS.NOT-FULFILLED')),
       await firstValueFrom(this.translate.get('EXCEEDED-RULE')),
-      await firstValueFrom(this.translate.get('LONGTERM-OVERTIMES'))
+      // await firstValueFrom(this.translate.get('LONGTERM-OVERTIMES'))
     ];
     this.departmentOrEmployee = await firstValueFrom(this.translate.get('EMPLOYEE'));
     this.departmentOrEmployeeAvg = await firstValueFrom(this.translate.get('EMPLOYEE'));
@@ -607,22 +607,71 @@ export class StatsPanelComponent implements OnInit {
   }
   
 
-  exportToXLSX(title: string, data: any[]): void 
-  {
-    const worksheetData = data.map(item => ({
-      Name: item.name,
-      ...item.series.reduce((acc: any, seriesItem: { name: string, value: number }) => {
-          acc[seriesItem.name] = seriesItem.value;
-          return acc;
-      }, {})
-  }));
+  // exportToXLSX(title: string, data: any[]): void 
+  // {
+  //   const worksheetData = data.map(item => ({
+  //     Name: item.name,
+  //     ...item.series.reduce((acc: any, seriesItem: { name: string, value: number }) => {
+  //         acc[seriesItem.name] = seriesItem.value;
+  //         return acc;
+  //     }, {})
+  // }));
 
-  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  // const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  // const workbook = XLSX.utils.book_new();
+  // XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), `${title}.xlsx`);  
+  // const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  // saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), `${title}.xlsx`);  
+  // }
+
+  exportToXLSX(title: string, data: any[]): void {
+    // Predpokladáme, že `data` obsahuje pole objektov s `name` a `series`
+    if (data.length === 0) {
+      console.error('No data to export');
+      return;
+    }
+  
+    // Predpokladáme, že exportujeme len prvý záznam (meno a jeho nadčasy)
+    const firstItem = data[0];
+
+    const startDateElement = document.getElementById('selectedCustomStartDate') as HTMLInputElement;
+    const endDateElement = document.getElementById('selectedCustomEndDate') as HTMLInputElement;
+    const startDate = startDateElement ? startDateElement.value : '';
+    const endDate = endDateElement ? endDateElement.value : '';
+    const statType = this.hoursOrType === this.translate.instant('OVERTIME-HOURS') ? this.translate.instant('OVERTIME-HOURS') : this.hoursOrType;
+  
+    // Pripravte hlavičku tabuľky
+    const worksheetData: any[][] = [
+      [this.translate.instant('NAME'), `${firstItem.name}`], // Prvý riadok: Meno a meno priezvisko
+      [this.translate.instant('STAT-TYPE'), `${statType}`], // Typ štatistiky
+      [], // Prázdny riadok
+      [this.translate.instant('START-DATE'), `${startDate}`], // Dátum začiatku
+      [this.translate.instant('END-DATE'), `${endDate}`], // Dátum konca
+      [],
+      [this.translate.instant('DATE'), this.translate.instant('OVERTIMES')] // Hlavička pre dátumy a nadčasy
+    ];
+  
+    let sum = 0;
+
+    // Pridajte riadky s dátumami a nadčasmi, kde nadčasy nie sú nulové
+    firstItem.series
+      .filter((seriesItem: { name: string; value: number }) => seriesItem.value !== 0) // Filtrovanie nulových hodnôt
+      .forEach((seriesItem: { name: string; value: number }) => {
+        worksheetData.push([seriesItem.name, seriesItem.value]);
+        sum += seriesItem.value;
+      });
+
+    worksheetData.push([this.translate.instant('SUM'), sum]);
+  
+    // Vytvorte worksheet a workbook
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  
+    // Exportujte do XLSX
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), `${title}.xlsx`);
   }
 
   getCurrentDate(): string

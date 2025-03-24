@@ -21,6 +21,8 @@
         "DISCARD": "Verwerfen",
         "DELEGATE-SETTING": "Delegateneinstellungen"
     },
+
+    "SUM": "Summe",
     "SUMMARY": "Zusammenfassung",
     "MONTH": "Monat",
     "EMPLOYEE": "Mitarbeiter",
@@ -45,6 +47,7 @@
     "COST-CENTER": "Kostenstelle",
     "LASTNAME": "Nachname",
     "FIRSTNAME": "Vorname",
+    "NAME": "Name",
     "TITLE": {
         "TL-TEAM-DETAIL": "Mitarbeiterdetail",
         "TL": "Mein Team",

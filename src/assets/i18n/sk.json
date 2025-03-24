@@ -22,6 +22,7 @@
         "DELEGATE-SETTING": "Nastavenie zástupcov"
     },
 
+    "SUM": "Suma",
     "SUMMARY": "Sumár",
     "MONTH": "Mesiac",
     "EMPLOYEE": "Zamestnanec",
@@ -48,6 +49,7 @@
     "COST-CENTER": "Nákladové stredisko",
     "LASTNAME": "Priezvisko",
     "FIRSTNAME": "Meno",
+    "NAME": "Meno",
     "TITLE": {
         "TL-TEAM-DETAIL": "Detail zamestnanca",
         "TL": "Môj tím",

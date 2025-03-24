@@ -22,6 +22,7 @@
         "DELEGATE-SETTING": "Delegate setting"
     },
 
+    "SUM": "Sum",
     "SUMMARY": "Summary",
     "MONTH": "Month",
     "EMPLOYEE": "Employee",
@@ -48,6 +49,7 @@
     "COST-CENTER": "Cost center",
     "LASTNAME": "Last name",
     "FIRSTNAME": "First name",
+    "NAME": "Name",
 
     "TITLE": {
         "TL-TEAM-DETAIL": "Employee detail",
