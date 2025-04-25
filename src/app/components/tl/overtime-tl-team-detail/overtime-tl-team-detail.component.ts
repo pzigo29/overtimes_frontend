@@ -8,13 +8,14 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
 import { MonthsTableComponent } from "../../shared-components/months-table/months-table.component";
 import { TranslateModule } from '@ngx-translate/core';
-import { DraggableModalComponent } from '../../../draggable-modal/draggable-modal.component';
+import { DraggableModalComponent } from '../../draggable-modal/draggable-modal.component';
 import { ActivatedRoute } from '@angular/router';
+import { min } from 'date-fns';
 
 @Component({
     selector: 'app-overtime-tl-team-detail',
     standalone: true,
-    imports: [TitleBarComponent, FormsModule, CommonModule, MonthsTableComponent, TranslateModule, DraggableModalComponent],
+    imports: [FormsModule, CommonModule, TranslateModule, TitleBarComponent, DraggableModalComponent, MonthsTableComponent],
     templateUrl: './overtime-tl-team-detail.component.html',
     styleUrl: './overtime-tl-team-detail.component.scss'
 })
@@ -126,6 +127,13 @@ export class OvertimeTLTeamDetailComponent implements OnInit {
     this.requests = await this.dataService.getRequests(this.selectedEmployee.employeeId, this.selectedMonth);
     this.reason = await this.dataService.getLimitReason(this.selectedEmployee.employeeId, this.selectedMonth);
     this.approved = await this.dataService.getApprovedStatus(this.selectedEmployee.employeeId, this.selectedMonth);
+  }
+
+  setLimits(minLimit: number, maxLimit: number)
+  {
+    this.minLimit = minLimit;
+    this.maxLimit = maxLimit;
+    this.saveLimits();
   }
 
   async saveLimits(): Promise<void>

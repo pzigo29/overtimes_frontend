@@ -54,28 +54,50 @@ export class AdminPanelComponent implements OnInit {
   selectedOvertimeType: OvertimeType | null = null;
   loading: boolean = true;
 
-  admin: Employee | null = null;
+  admin: Employee | undefined = undefined;
 
   constructor(private dataService: DataService) { }
 
   async ngOnInit() 
   {
-    if (this.dataService.userEmployee?.levelRole !== 6)
-    {
-      console.error('User is not an admin. Redirecting to home page.');
-      alert('You are not an admin. Redirecting to home page.');
-      window.location.href = '/';
+      this.dataService.username$.subscribe((username) => {
+        if (username) {
+          console.log('admin: ' + username);
+          this.dataService.getEmployee(username).subscribe(
+            (data: Employee | undefined) => {
+              this.admin = data;
+              console.log('userEmployee: ' + this.admin?.username);
+              
+              if (this.admin?.levelRole !== 6)
+                {
+                  console.error('User is not an admin. Redirecting to home page.');
+                  alert('You are not an admin. Redirecting to home page.');
+                  window.location.href = '/';
+                }
+        
+                this.loadAdminData();
+            },
+            (error: any) => {
+              console.error('Error fetching userEmployee', error);
+            }
+          );
+          
+        } else {
+          console.log('No username found!');
+        }
+      });
     }
-
-    this.wfActions = await this.dataService.getWorkflowActionsSchedules();
-
-    this.emails = await this.dataService.getEmails();
-
-    this.jobs = await this.dataService.getScheduledJobs();
-
-    this.overtimeTypes = await this.dataService.getOvertimeTypes();
-
-    this.loading = false;
+  
+    private async loadAdminData(): Promise<void> {
+      try {
+        this.wfActions = await this.dataService.getWorkflowActionsSchedules();
+        this.emails = await this.dataService.getEmails();
+        this.jobs = await this.dataService.getScheduledJobs();
+        this.overtimeTypes = await this.dataService.getOvertimeTypes();
+        this.loading = false;
+      } catch (error) {
+        console.error('Error loading admin data:', error);
+      }
   }
 
   saveNewWfAction(): WorkflowActionSchedule | null

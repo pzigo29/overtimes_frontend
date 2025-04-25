@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DataService } from '../../services/data.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-overtime-assistant',
@@ -35,7 +36,7 @@ export class OvertimeAssistantComponent implements OnInit {
   approvedOvertimesSortState: SortState = SortState.DESC;
   lastNameSortState: SortState = SortState.NONE;
 
-  constructor(private userFilterService: EmployeeFilterService, private dataService: DataService, private cdr: ChangeDetectorRef) { }
+  constructor(private userFilterService: EmployeeFilterService, private dataService: DataService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
     this.loadAssistantData();
@@ -178,10 +179,10 @@ export class OvertimeAssistantComponent implements OnInit {
     return this.employeesOvertimeReasons.get(employee.username) || '';
   }
 
-  selectEmployee(employee: Employee): void {
-    // this.selectedEmployee = employee;
-    // this.router.navigate(['/employee', employee.username]);
-  }
+  // selectEmployee(employee: Employee): void {
+  //   // this.selectedEmployee = employee;
+  //   // this.router.navigate(['/employee', employee.username]);
+  // }
 
   isSidebarActive(): boolean {
     return TitleBarComponent.isSidebarActive;
@@ -221,6 +222,20 @@ export class OvertimeAssistantComponent implements OnInit {
     this.setApprovedOvertimesSum();
     // this.recalculateSums();
   }
+
+  async selectEmployee(employee: Employee | undefined): Promise<void> 
+    {
+      if (employee)
+      {
+        try
+        {
+          await this.dataService.setSelectedEmployee(employee.username);
+          this.router.navigate(['tl/team/detail'], { queryParams: { source: this.router.url } });
+        } catch (error) {
+          console.error('Error fetching employee', error);
+        }
+      }
+    }
 
   toggleSortByApprovedOvertimes(): void 
   {

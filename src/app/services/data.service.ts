@@ -6,20 +6,26 @@ import { error } from 'node:console';
 import { HttpClient } from '@angular/common/http';
 import * as os from 'os';
 import { endOfMonth, isBefore, startOfMonth } from 'date-fns';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataService implements OnInit {
+export class DataService {
 
   private overtimeSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private selectedMonthSubject = new BehaviorSubject<Date>(new Date());
+  private usernameSubject = new BehaviorSubject<string>('');
   overtime$ = this.overtimeSubject.asObservable();
   selectedMonth$ = this.selectedMonthSubject.asObservable();
+  username$ = this.usernameSubject.asObservable();
 
   // const os = require('os');
   // username: string = os.userInfo().username;
-  username: string = 'klmkjn'; // toto sa bude načítavať z windowsu
+
+  private usernameKey: string = 'username';
+
+  username: string = ''; // toto sa bude načítavať z windowsu
   rndUsername: string = '';
   mngUsername: string | null = this.username;
   tlUsername: string | null = this.username;
@@ -32,46 +38,57 @@ export class DataService implements OnInit {
   // private apiUrl = 'https://localhost:7198/api';
   private apiUrl = 'http://localhost:5001/api';
 
-  constructor(private http: HttpClient) 
+  constructor(private http: HttpClient, private localStorage: LocalStorageService) 
   {
     // this.username = os.userInfo().username;
+    const savedUsername = this.localStorage.getItem(this.usernameKey);
+    const initialUsername = savedUsername ?? 'defaultUsername';
+    this.usernameSubject.next(initialUsername);
+
+    this.usernameSubject.subscribe((username) => {
+      if (username) {
+        this.username = username;
+        console.log('Username found:', this.username);
+      } else {
+        console.log('No username found');
+      }
+    });
+    
     this.initUserEmployee();
+
+    
   } 
+
+  setUsername(newUsername: string): void {
+    // this.username = newUsername;
+    this.usernameSubject.next(newUsername);
+    this.localStorage.setItem(this.usernameKey, newUsername);
+    console.log('Username updated to:', this.username);
+  }
 
   private initUserEmployee(): void
   {
-    this.getEmployee(this.username).subscribe(
-      (data: Employee | undefined) => {
-        this.userEmployee = data;
-        console.log('userEmployee: ' + this.userEmployee?.username);
-      },
-      (error: any) => {
-        console.error('Error fetching userEmployee', error);
+    this.username$.subscribe((username) => {
+      if (username) {
+        this.getEmployee(this.username).subscribe(
+          (data: Employee | undefined) => {
+            this.userEmployee = data;
+            console.log('userEmployee: ' + this.userEmployee?.username);
+            this.rndUsername = this.userEmployee?.levelRole === 1 ? this.userEmployee.username : '';
+            this.mngUsername = this.username;
+            this.tlUsername = this.username;
+            this.thpUsername = this.username;
+            this.assistantUsername = this.username;
+            console.log('username is: ' + this.username);
+            console.log('rndUsername is: ' + this.rndUsername);
+          },
+          (error: any) => {
+            console.error('Error fetching userEmployee', error);
+          }
+        );
+        this.rndUsername = this.userEmployee?.levelRole === 1 ? this.userEmployee.username : '';
       }
-    );
-    this.rndUsername = this.userEmployee?.levelRole === 1 ? this.userEmployee.username : '';
-  }
-
-  ngOnInit()
-  {
-    // console.log('hereeeeeeee');
-    // try
-    // {
-    //   this.username = os.userInfo().username;
-    // }
-    // catch (error)
-    // {
-    //   console.error('Error fetching username in dataService: ', error);
-    // }
-    // this.getEmployee(this.username).subscribe(
-    //   (data: Employee | undefined) => {
-    //     this.userEmployee = data;
-    //     console.log('userEmployee: ' + this.userEmployee?.username);
-    //   },
-    //   (error: any) => {
-    //     console.error('Error fetching userEmployee', error);
-    //   }
-    // );
+    })
   }
 
   isPastMonth(month: Date): boolean
@@ -83,7 +100,7 @@ export class DataService implements OnInit {
   async isPastDeadline(): Promise<boolean>
   {
     console.log('isPastDeadline');
-    return await firstValueFrom(this.http.get<boolean>(`${this.apiUrl}/WorkflowActionsSchedule/IsPastTHPDeadline`));8
+    return await firstValueFrom(this.http.get<boolean>(`${this.apiUrl}/WorkflowActionsSchedule/IsPastTHPDeadline`));
     // return true;
   }
 
@@ -135,11 +152,14 @@ export class DataService implements OnInit {
   //   return of(this.selectedMonth);
   // }
 
-  // VSETKY TIETO GETTRE BY ASI MALI BYT API VOLANIA NA BACKEND, KTORE BY UROBILI SELECT Z DATABAZY!!!
-
   getEmployee(username: string): Observable<Employee | undefined> {
     console.log('am i getting employee??' , username);
     return this.http.get<Employee>(`${this.apiUrl}/Employee/${username}`);
+  }
+
+  async getAllUsernames(): Promise<string[]>
+  {
+    return await firstValueFrom(this.http.get<string[]>(`${this.apiUrl}/Employee/usernames`));
   }
 
   async getEmployeeByPersonalNumber(personalNumber: string): Promise<Employee | undefined>
@@ -751,7 +771,6 @@ export class DataService implements OnInit {
 
   async getRequestCount(employeeId: number, month: Date): Promise<number>
   {
-    // console.log('Request count: ', employeeId, month);
     if (typeof month === 'string')
     {
       month = new Date(month);

@@ -1,11 +1,11 @@
 
-<!-- <nav>
+<nav>
   <a href="/thp">Overtime THP</a>
   <a href="/tl">Overtime TL</a>
   <a href="/mng">Overtime MNG</a>
   <a href="/rnd">Overtime R&D</a>
   <a href="/assistant">Overtime Assistant</a>
-</nav> -->
+</nav>
 <!-- <div>
   <select [value]="currentLang" (change)="changeLanguage($event)">
     <option value="sk">Slovenčina</option>
@@ -41,9 +41,19 @@
       </a>
     </div>
   </div>
+  
   <div>
+    <div class="dropdown">
+      <button class="drop-btn">
+        <i class="fas fa-user"></i>
+      </button>
+      <div class="dropdown-content">
+        <a *ngFor="let username of allUsernames" class="cursor-pointer" [ngStyle]="newUsername === username ? {'background-color': 'green'} : {}" (click)="updateUsername(username)">{{username}}</a>
+      </div>
+    </div>
     <button class="submit-btn" (click)="showDelegateSite()">{{'BUTTON.DELEGATE-SETTING' | translate}}</button>
   </div>
+
 </div>
 
 <!-- <button (click)="toggleDarkMode()">Toggle Theme</button> -->

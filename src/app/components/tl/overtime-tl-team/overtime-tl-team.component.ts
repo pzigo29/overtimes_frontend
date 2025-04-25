@@ -63,7 +63,7 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
     });
   }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     try {
       let username: string | null = await firstValueFrom(this.dataService.getTlUsername());
       if (username) {
