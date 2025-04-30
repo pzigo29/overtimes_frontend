@@ -16,9 +16,11 @@ export class DataService {
   private overtimeSubject = new BehaviorSubject<Map<string, number>>(new Map<string, number>());
   private selectedMonthSubject = new BehaviorSubject<Date>(new Date());
   private usernameSubject = new BehaviorSubject<string>('');
+  private initializationSubject = new BehaviorSubject<boolean>(false);
   overtime$ = this.overtimeSubject.asObservable();
   selectedMonth$ = this.selectedMonthSubject.asObservable();
   username$ = this.usernameSubject.asObservable();
+  initialization$ = this.initializationSubject.asObservable();
 
   // const os = require('os');
   // username: string = os.userInfo().username;
@@ -34,6 +36,8 @@ export class DataService {
   // assistantUsername: string | null = 'mikimaja';
   selectedEmployee?: Employee;
   userEmployee?: Employee;
+
+  initialized: boolean = false;
 
   // private apiUrl = 'https://localhost:7198/api';
   private apiUrl = 'http://localhost:5001/api';
@@ -56,7 +60,7 @@ export class DataService {
     
     this.initUserEmployee();
 
-    
+    this.initializeService();
   } 
 
   setUsername(newUsername: string): void {
@@ -74,21 +78,34 @@ export class DataService {
           (data: Employee | undefined) => {
             this.userEmployee = data;
             console.log('userEmployee: ' + this.userEmployee?.username);
+            console.log(this.initialized);
             this.rndUsername = this.userEmployee?.levelRole === 1 ? this.userEmployee.username : '';
             this.mngUsername = this.username;
             this.tlUsername = this.username;
             this.thpUsername = this.username;
             this.assistantUsername = this.username;
             console.log('username is: ' + this.username);
+            console.log('mngUsername is: ' + this.mngUsername);
+            console.log('tlUsername is: ' + this.tlUsername);
             console.log('rndUsername is: ' + this.rndUsername);
+
+            this.initialized = true;
           },
           (error: any) => {
             console.error('Error fetching userEmployee', error);
           }
         );
         this.rndUsername = this.userEmployee?.levelRole === 1 ? this.userEmployee.username : '';
+        
       }
+      
     })
+  }
+
+  private async initializeService(): Promise<void>
+  {
+    this.initializationSubject.next(true);
+    this.initializationSubject.complete();
   }
 
   isPastMonth(month: Date): boolean

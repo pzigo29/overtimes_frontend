@@ -109,7 +109,11 @@ export class StatsPanelComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadTranslations();
-
+    this.loading = true; // Start loading state
+      while (!this.dataService.initialized) {
+        console.log('Waiting for DataService to initialize... ');
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
+      }
     if (!this.dataService.userEmployee)
       return;
     this.dataService.getEmployee(this.dataService.userEmployee.username).subscribe(

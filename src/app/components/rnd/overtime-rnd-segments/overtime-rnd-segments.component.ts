@@ -48,7 +48,11 @@ export class OvertimeRndSegmentsComponent implements OnInit {
 
   async ngOnInit() 
       {
-        this.loading = true;
+        this.loading = true; // Start loading state
+        while (!this.dataService.initialized) {
+          console.log('Waiting for DataService to initialize... ');
+          await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
+        }
         const username: string = await this.dataService.getRndUsername().toPromise() || '';
         if (username !== '')
         {

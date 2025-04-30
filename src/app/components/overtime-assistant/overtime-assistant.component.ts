@@ -53,7 +53,12 @@ export class OvertimeAssistantComponent implements OnInit {
     );
   }
 
-  private loadAssistantData(): void {
+  private async loadAssistantData(): Promise<void> {
+    this.loading = true; // Start loading state
+      while (!this.dataService.initialized) {
+        console.log('Waiting for DataService to initialize... ');
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
+      }
     let username = '';
     this.dataService.getAssistantUsername().subscribe(
       (data: string | null) => {
@@ -71,7 +76,7 @@ export class OvertimeAssistantComponent implements OnInit {
             async (data: Employee | undefined) => {
               this.assistant = data;
               if (this.assistant === undefined) {
-                this.loading = false;
+                this.loading = true;
                 throw new Error('Employee undefined' + username);
               }
               console.log('assistant: ' + this.assistant.username);
@@ -86,21 +91,21 @@ export class OvertimeAssistantComponent implements OnInit {
                     this.cdr.detectChanges(); // Manually trigger change detection
                   },
                   (error: any) => {
-                    this.loading = false;
+                    this.loading = true;
                     console.error('Error fetching employees', error);
                   }
                 );
               } else {
-                this.loading = false;
+                this.loading = true;
               }
             },
             (error: any) => {
-              this.loading = false;
+              this.loading = true;
               console.error('Error fetching employee', error);
             }
           );
         } else {
-          this.loading = false;
+          this.loading = true;
         }
       }
     );

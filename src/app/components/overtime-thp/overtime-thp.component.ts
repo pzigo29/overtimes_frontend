@@ -44,8 +44,15 @@ export class OvertimeThpComponent implements OnInit {
 
   async ngOnInit() {
     this.loading = true; // Start loading state
+    
     try {
       let username: string | null = null;
+      while (!this.dataService.initialized) {
+        console.log('Waiting for DataService to initialize...');
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
+      }
+      console.log('DataService initialized: ', this.dataService.initialized);
+      this.dataService.initialized = false; // Reset initialized flag
       username = await firstValueFrom(this.dataService.getThpUsername());
       this.isPastDeadlineValue = await this.dataService.isPastDeadline();
       console.log('isPastDeadlineValue:', this.isPastDeadlineValue);

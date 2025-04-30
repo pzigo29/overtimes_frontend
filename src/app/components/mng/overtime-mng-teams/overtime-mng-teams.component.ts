@@ -47,6 +47,12 @@ export class OvertimeMngTeamsComponent implements OnInit {
 
   async ngOnInit() 
   {
+    this.loading = true; // Start loading state
+      while (!this.dataService.initialized) {
+        console.log('Waiting for DataService to initialize... ');
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
+      }
+      console.log('DataService initialized: ', this.dataService.initialized);
     const username: string = await firstValueFrom(this.dataService.getMngUsername()) || '';
     if (username !== '')
     {

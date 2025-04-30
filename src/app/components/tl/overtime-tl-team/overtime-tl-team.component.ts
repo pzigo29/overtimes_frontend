@@ -65,6 +65,13 @@ export class OvertimeTLTeamComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     try {
+      this.loading = true; // Start loading state
+      while (!this.dataService.initialized) {
+        console.log('Waiting for DataService to initialize... ');
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100ms
+      }
+      console.log('DataService initialized: ', this.dataService.initialized);
+      //this.dataService.initialized = false; // Reset initialized flag
       let username: string | null = await firstValueFrom(this.dataService.getTlUsername());
       if (username) {
         this.leader = await firstValueFrom(this.dataService.getEmployee(username));
